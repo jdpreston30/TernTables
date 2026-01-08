@@ -35,16 +35,85 @@ export_to_word <- function(tbl, filename, round_intg = FALSE) {
   # Update the Variable column header
   colnames(modified_tbl)[1] <- "Variable\n   Stratified Variable"
   
-  # Create the footer text with conditional rounding note
-  footer_text <- "Statistical Methods: For continuous variables, normality was assessed using the Shapiro–Wilk test (when enabled). Normally distributed variables were summarized as mean ± SD and compared using Welch's t-test for two-group comparisons or one-way ANOVA for three-group comparisons. Non-normally distributed or user-specified ordinal variables were summarized as median [IQR] and compared using the Wilcoxon rank-sum test (two groups) or Kruskal–Wallis test (three groups). Categorical variables were summarized as n (%) and compared using Chi-squared tests or Fisher's exact tests when expected counts were <5. For binary categorical variables, odds ratios with 95% confidence intervals were computed using Fisher's exact or Wald methods, as appropriate. Approximate p-values were used for non-parametric tests with tied data.\n\n*- All values are presented as mean ± SD for normally distributed continuous variables, median [IQR] for non-normally distributed continuous or ordinal variables, and n (%) for categorical variables."
+  # Detect which statistical tests were actually used
+  has_test_column <- "test" %in% colnames(tbl)
+  tests_used <- character(0)
+  
+  if (has_test_column) {
+    tests_used <- unique(tbl$test)
+    tests_used <- tests_used[!is.na(tests_used) & tests_used != "" & tests_used != "-"]
+  }
+  
+  # Determine if this is a two-group or multi-group comparison
+  has_ttest <- any(grepl("t-test", tests_used, ignore.case = TRUE))
+  has_anova <- any(grepl("ANOVA", tests_used, ignore.case = TRUE))
+  has_wilcoxon <- any(grepl("Wilcoxon", tests_used, ignore.case = TRUE))
+  has_kruskal <- any(grepl("Kruskal", tests_used, ignore.case = TRUE))
+  has_fisher <- any(grepl("Fisher", tests_used, ignore.case = TRUE))
+  has_chisq <- any(grepl("Chi-squared", tests_used, ignore.case = TRUE))
+  
+  # Build dynamic text for continuous variable comparisons
+  continuous_comparison_text <- ""
+  if (has_ttest && has_anova) {
+    continuous_comparison_text <- "Welch's t-test for two-group comparisons or one-way ANOVA for multi-group comparisons"
+  } else if (has_ttest) {
+    continuous_comparison_text <- "Welch's t-test"
+  } else if (has_anova) {
+    continuous_comparison_text <- "one-way ANOVA"
+  }
+  
+  nonparametric_comparison_text <- ""
+  if (has_wilcoxon && has_kruskal) {
+    nonparametric_comparison_text <- "the Wilcoxon rank-sum test (two groups) or Kruskal–Wallis test (multi-group comparisons)"
+  } else if (has_wilcoxon) {
+    nonparametric_comparison_text <- "the Wilcoxon rank-sum test"
+  } else if (has_kruskal) {
+    nonparametric_comparison_text <- "the Kruskal–Wallis test"
+  }
+  
+  # Build footer text
+  footer_text <- "†- "
+  
+  # Determine if this is a comparison table (ternG) or descriptive only (ternD)
+  has_comparisons <- continuous_comparison_text != "" || nonparametric_comparison_text != "" || has_fisher || has_chisq
+  
+  if (has_comparisons) {
+    # ternG: Table with group comparisons
+    if (continuous_comparison_text != "") {
+      footer_text <- paste0(footer_text, "Continuous variables presented as mean ± SD were compared using ", continuous_comparison_text, ". ")
+    }
+    
+    if (nonparametric_comparison_text != "") {
+      footer_text <- paste0(footer_text, "Continuous variables presented as median [IQR] were compared using ", nonparametric_comparison_text, ". ")
+    }
+    
+    if (has_fisher || has_chisq) {
+      footer_text <- paste0(footer_text, "Categorical variables were summarized as n (%) and compared using ")
+      if (has_fisher && has_chisq) {
+        footer_text <- paste0(footer_text, "Chi-squared tests or Fisher's exact tests when expected counts were <5. ")
+      } else if (has_fisher) {
+        footer_text <- paste0(footer_text, "Fisher's exact tests. ")
+      } else {
+        footer_text <- paste0(footer_text, "Chi-squared tests. ")
+      }
+    }
+    
+    if ("OR" %in% colnames(tbl)) {
+      footer_text <- paste0(footer_text, "For binary categorical variables, odds ratios with 95% confidence intervals were computed using Fisher's exact or Wald methods, as appropriate. ")
+    }
+    
+    if ("p" %in% colnames(tbl)) {
+      footer_text <- paste0(footer_text, "p-values are bolded for p ≤ 0.05.")
+    }
+  } else {
+    # ternD: Descriptive statistics only
+    footer_text <- paste0(footer_text, "Continuous variables are presented as mean ± SD for normally distributed variables or median [IQR] for non-normally distributed or ordinal variables. Categorical variables are presented as n (%).")
+  }
   
   # Add rounding note if round_intg is TRUE
   if (round_intg) {
     footer_text <- paste0(footer_text, " All means, medians, SDs, and IQRs are rounded to the nearest integer value.")
   }
-  
-  # Add the final dagger note
-  footer_text <- paste0(footer_text, "\n†- Welch's t-test was used to compute p-values for normally distributed continuous variables. Wilcoxon Rank Sum test was used to compute p-values for non-normally distributed continuous or ordinal variables. Fisher's exact or chi-squared test was used to compute p-values for categorical variables, as appropriate. p-values are bolded for p ≤ 0.05.")
   
   # Add footer row
   footer_row <- modified_tbl[1,]
