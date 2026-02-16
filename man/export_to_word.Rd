@@ -4,7 +4,15 @@
 \alias{export_to_word}
 \title{Export TernTablesR output to a formatted Word document}
 \usage{
-export_to_word(tbl, filename, round_intg = FALSE)
+export_to_word(
+  tbl,
+  filename,
+  round_intg = FALSE,
+  font_size = 9,
+  category_start = NULL,
+  manual_italic_indent = NULL,
+  manual_underline = NULL
+)
 }
 \arguments{
 \item{tbl}{A tibble created by ternG or ternD}
@@ -12,6 +20,14 @@ export_to_word(tbl, filename, round_intg = FALSE)
 \item{filename}{Output file path ending in .docx}
 
 \item{round_intg}{Logical; if TRUE, adds note about integer rounding. Default is FALSE.}
+
+\item{font_size}{Numeric; font size for table body. Default is 9.}
+
+\item{category_start}{Named character vector specifying category headers. Names are variable names, values are category labels.}
+
+\item{manual_italic_indent}{Character vector of variable names to manually format as indented and italicized (like level 6).}
+
+\item{manual_underline}{Character vector of variable names to manually format as underlined (like multi-category headers).}
 }
 \description{
 Export TernTablesR output to a formatted Word document
