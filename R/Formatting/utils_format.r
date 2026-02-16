@@ -20,6 +20,10 @@ fmt_p <- function(p, digits = 3) {
   if (p < 0.001) {
     base <- signif(p, 1)
     sci <- format(base, scientific = TRUE, digits = 1)
+    # Capitalize E and remove leading zeros from exponent
+    sci <- gsub("e", "E", sci)
+    sci <- gsub("E-0", "E-", sci)
+    sci <- gsub("E\\+0", "E+", sci)
     return(sci)
   }
 

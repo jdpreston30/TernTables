@@ -69,8 +69,11 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
                   output_xlsx = NULL, output_docx = NULL,
                   consider_normality = FALSE, print_normality = FALSE, 
                   round_intg = FALSE, smart_rename = FALSE, insert_subheads = TRUE,
-                  factor_order = "frequency") {
+                  factor_order = "frequency", category_start = NULL) {
   stopifnot(is.data.frame(data))
+  
+  # Store total N for column header
+  total_n <- nrow(data)
 
   # Helper function for proper rounding (0.5 always rounds up)
   round_up_half <- function(x, digits = 0) {
@@ -254,6 +257,9 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
 
   out_tbl <- dplyr::bind_rows(lapply(vars, function(v) summarize_variable(data, v)))
   
+  # Rename Summary column to include total N
+  names(out_tbl)[names(out_tbl) == "Summary"] <- paste0("Summary (N = ", total_n, ")")
+  
   # Apply smart variable name cleaning if requested
   if (smart_rename) {
     # Source the cleaning function if not already loaded
@@ -296,7 +302,7 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
   }
 
   if (!is.null(output_xlsx)) export_to_excel(out_tbl, output_xlsx)
-  if (!is.null(output_docx)) export_to_word(out_tbl, output_docx)
+  if (!is.null(output_docx)) export_to_word(out_tbl, output_docx, category_start = category_start)
 
   out_tbl
 }

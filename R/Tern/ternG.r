@@ -46,7 +46,13 @@ ternG <- function(data,
                   round_intg = FALSE,
                   smart_rename = FALSE,
                   insert_subheads = TRUE,
-                  factor_order = "frequency") {
+                  factor_order = "frequency",
+                  table_font_size = 9,
+                  methods_doc = TRUE,
+                  methods_filename = "methods.docx",
+                  category_start = NULL,
+                  manual_italic_indent = NULL,
+                  manual_underline = NULL) {
 
   # Helper function for proper rounding (0.5 always rounds up)
   round_up_half <- function(x, digits = 0) {
@@ -79,6 +85,9 @@ ternG <- function(data,
     paste0(group_levels, " (n = ", group_counts, ")"),
     group_levels
   )
+  
+  # Calculate total N for the Total column header
+  total_n <- nrow(data)
 
   # Initialize normality tracking variables
   normality_results <- list()
@@ -168,7 +177,7 @@ ternG <- function(data,
             ref_level <- names(sort(colSums(tab), decreasing = TRUE))[1]
           }
         }
-        result <- tibble(Variable = paste0("  ", var))
+        result <- tibble(Variable = var, .indent = 2)
         for (g_lvl in group_levels) {
           result[[group_labels[g_lvl]]] <- paste0(
             tab_n[g_lvl, ref_level], " (", tab_pct[g_lvl, ref_level], "%)"
@@ -227,7 +236,7 @@ ternG <- function(data,
         }
         
         # Create header row for the main variable (no data, just variable name)
-        header_row <- tibble(Variable = paste0("  ", .clean_variable_name_for_header(var)))
+        header_row <- tibble(Variable = .clean_variable_name_for_header(var), .indent = 2)
         for (g_lvl in group_levels) {
           header_row[[group_labels[g_lvl]]] <- ""
         }
@@ -245,7 +254,7 @@ ternG <- function(data,
         
         # Create sub-category rows (indented)
         sub_rows <- lapply(sorted_levels, function(level) {
-          out <- tibble(Variable = paste0("      ", level))
+          out <- tibble(Variable = level, .indent = 6)
           for (g_lvl in group_levels) {
             val <- if (g_lvl %in% rownames(tab_n) && level %in% colnames(tab_n)) {
               paste0(tab_n[g_lvl, level], " (", tab_pct[g_lvl, level], "%)")
@@ -294,7 +303,7 @@ ternG <- function(data,
         Q1 = if (round_intg) round_up_half(quantile(.data[[var]], 0.25, na.rm = TRUE), 0) else round(quantile(.data[[var]], 0.25, na.rm = TRUE), 1),
         med = if (round_intg) round_up_half(median(.data[[var]], na.rm = TRUE), 0) else round(median(.data[[var]], na.rm = TRUE), 1),
         Q3 = if (round_intg) round_up_half(quantile(.data[[var]], 0.75, na.rm = TRUE), 0) else round(quantile(.data[[var]], 0.75, na.rm = TRUE), 1), .groups = "drop")
-      result <- tibble(Variable = paste0("  ", var))
+      result <- tibble(Variable = var, .indent = 2)
       for (g_lvl in group_levels) {
         val <- stats %>% filter(.data[[group_var]] == g_lvl)
         result[[group_labels[g_lvl]]] <- if (nrow(val) == 1) {
@@ -405,11 +414,11 @@ ternG <- function(data,
     }
 
     # ----- Normally distributed numeric -----
+    result <- tibble(Variable = var, .indent = 2)
     stats <- g %>% group_by(.data[[group_var]]) %>% summarise(
       mean = mean(.data[[var]], na.rm = TRUE),
       sd = sd(.data[[var]], na.rm = TRUE), .groups = "drop")
 
-    result <- tibble(Variable = paste0("  ", var))
     for (g_lvl in group_levels) {
       val <- stats %>% filter(.data[[group_var]] == g_lvl)
       result[[group_labels[g_lvl]]] <- if (nrow(val) == 1) {
@@ -504,10 +513,19 @@ ternG <- function(data,
 
   # Reorder: put desired first (when they exist), then everything else
   out_tbl <- dplyr::select(out_tbl, dplyr::any_of(desired), dplyr::everything())
+  
+  # Rename Total column to include N with uppercase N and line break
+  if ("Total" %in% names(out_tbl)) {
+    names(out_tbl)[names(out_tbl) == "Total"] <- paste0("Total\n(N = ", total_n, ")")
+  }
                         
 
   if (!is.null(output_xlsx)) export_to_excel(out_tbl, output_xlsx)
-  if (!is.null(output_docx)) export_to_word(out_tbl, output_docx)
+  
+  # Write methods document if requested
+  if (methods_doc && !descriptive) {
+    write_methods_doc(out_tbl, methods_filename, n_levels = n_levels, OR_col = OR_col)
+  }
 
   # -- Report normality test results -----------------------------------------
   if (numeric_vars_tested > 0 && (isTRUE(consider_normality) || consider_normality == "FORCE")) {
@@ -532,6 +550,56 @@ ternG <- function(data,
       }
     }
   }
+
+  # Insert category header rows if specified
+  if (!is.null(category_start) && length(category_start) > 0) {
+    
+    for (var_name in names(category_start)) {
+      # Find the row with this variable name (using trimmed names)
+      # For multi-category variables, find the header row (which has empty data in column 2)
+      trimmed_vars <- sapply(out_tbl[[1]], function(x) trimws(x, which = "both"))
+      var_matches <- which(trimmed_vars == var_name)
+      
+      # If multiple matches, prefer the one with empty data (the header row)
+      if (length(var_matches) > 1) {
+        header_match <- var_matches[which(out_tbl[[2]][var_matches] == "" | is.na(out_tbl[[2]][var_matches]))]
+        var_idx <- if(length(header_match) > 0) header_match[1] else var_matches[1]
+      } else if (length(var_matches) == 1) {
+        var_idx <- var_matches[1]
+      } else {
+        next  # Variable not found, skip
+      }
+      
+      # insert_at is just var_idx - we search the current table each time
+      insert_at <- var_idx
+      
+      # Create category header row with no indentation
+      cat_row <- out_tbl[1, ]
+      cat_row[[1]][1] <- category_start[var_name]
+      # Set all other columns to empty/NA
+      for (j in 2:ncol(cat_row)) {
+        if (is.numeric(cat_row[[j]])) {
+          cat_row[[j]][1] <- NA_real_
+        } else {
+          cat_row[[j]][1] <- ""
+        }
+      }
+      
+      # Insert the category row
+      if (insert_at == 1) {
+        out_tbl <- rbind(cat_row, out_tbl)
+      } else {
+        out_tbl <- rbind(
+          out_tbl[1:(insert_at - 1), ],
+          cat_row,
+          out_tbl[insert_at:nrow(out_tbl), ]
+        )
+      }
+    }
+  }
+
+  # Export to Word AFTER category headers are inserted
+  if (!is.null(output_docx)) export_to_word(out_tbl, output_docx, round_intg = round_intg, font_size = table_font_size, category_start = category_start, manual_italic_indent = manual_italic_indent, manual_underline = manual_underline)
 
   # Apply smart variable name cleaning if requested
   if (smart_rename) {
