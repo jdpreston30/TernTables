@@ -16,7 +16,8 @@ ternD(
   round_intg = FALSE,
   smart_rename = FALSE,
   insert_subheads = TRUE,
-  factor_order = "frequency"
+  factor_order = "frequency",
+  category_start = NULL
 )
 }
 \arguments{

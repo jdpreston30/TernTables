@@ -23,7 +23,13 @@ ternG(
   round_intg = FALSE,
   smart_rename = FALSE,
   insert_subheads = TRUE,
-  factor_order = "frequency"
+  factor_order = "frequency",
+  table_font_size = 9,
+  methods_doc = TRUE,
+  methods_filename = "methods.docx",
+  category_start = NULL,
+  manual_italic_indent = NULL,
+  manual_underline = NULL
 )
 }
 \arguments{
