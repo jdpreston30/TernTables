@@ -26,7 +26,7 @@
 #' @param table_font_size Numeric; font size for Word document output tables. Default is 9.
 #' @param methods_doc Logical; if \code{TRUE} (default), generates a methods document describing the statistical tests used.
 #' @param methods_filename Character; filename for the methods document. Default is \code{"methods.docx"}.
-#' @param category_start Integer; optional parameter for internal use to control starting category numbering in formatted outputs. Typically left as \code{NULL} for automatic handling.
+#' @param category_start Named character vector specifying where to insert category headers. Names should be variable names, and values are the category header labels to insert before those variables. For example, \code{c("age" = "Demographics", "bmi" = "Clinical Measures")}. Default is \code{NULL} (no category headers).
 #' @param manual_italic_indent Character vector; optional parameter for specifying which variable names should be italicized and indented in formatted outputs. Used for advanced formatting control.
 #' @param manual_underline Character vector; optional parameter for specifying which variable names should be underlined in formatted outputs. Used for advanced formatting control.
 #'

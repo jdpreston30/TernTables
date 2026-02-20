@@ -58,8 +58,10 @@ uses simple flat format. Default is \code{TRUE}.}
 \code{"frequency"} (default), orders levels by decreasing frequency (most common first). 
 If \code{"levels"}, respects the original factor level ordering as defined in the data.}
 
-\item{category_start}{Integer; optional parameter for internal use to control starting 
-category numbering in formatted outputs. Typically left as \code{NULL} for automatic handling.}
+\item{category_start}{Named character vector specifying where to insert category headers. 
+Names should be variable names, and values are the category header labels to insert before 
+those variables. For example, \code{c("age" = "Demographics", "bmi" = "Clinical Measures")}. 
+Default is \code{NULL} (no category headers).}
 }
 \value{
 A tibble with one row per variable (multi-row for factors), containing:
