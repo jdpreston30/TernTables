@@ -23,6 +23,12 @@
 #' @param smart_rename Logical; if \code{TRUE}, automatically cleans variable names and subheadings for publication-ready output using hybrid AI+rules cleaning. Uses rule-based cleaning for known medical terms, falls back to AI for complex cases. Default is \code{FALSE}.
 #' @param insert_subheads Logical; if \code{TRUE}, creates hierarchical structure with headers and indented sub-categories for multi-level categorical variables (except Y/N). If \code{FALSE}, uses simple flat format. Default is \code{TRUE}.
 #' @param factor_order Character; controls the ordering of factor levels in the output. If \code{"frequency"} (default), orders levels by decreasing frequency (most common first). If \code{"levels"}, respects the original factor level ordering as defined in the data.
+#' @param table_font_size Numeric; font size for Word document output tables. Default is 9.
+#' @param methods_doc Logical; if \code{TRUE} (default), generates a methods document describing the statistical tests used.
+#' @param methods_filename Character; filename for the methods document. Default is \code{"methods.docx"}.
+#' @param category_start Integer; optional parameter for internal use to control starting category numbering in formatted outputs. Typically left as \code{NULL} for automatic handling.
+#' @param manual_italic_indent Character vector; optional parameter for specifying which variable names should be italicized and indented in formatted outputs. Used for advanced formatting control.
+#' @param manual_underline Character vector; optional parameter for specifying which variable names should be underlined in formatted outputs. Used for advanced formatting control.
 #'
 #' @return A tibble with one row per variable (multi-row for multi-level factors), showing summary statistics by group,
 #' p-values, test type, and optionally odds ratios and total summary column.
