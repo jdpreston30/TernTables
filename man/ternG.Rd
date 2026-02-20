@@ -77,7 +77,7 @@ ternG(
 
 \item{methods_filename}{Character; filename for the methods document. Default is \code{"methods.docx"}.}
 
-\item{category_start}{Integer; optional parameter for internal use to control starting category numbering in formatted outputs. Typically left as \code{NULL} for automatic handling.}
+\item{category_start}{Named character vector specifying where to insert category headers. Names should be variable names, and values are the category header labels to insert before those variables. For example, \code{c("age" = "Demographics", "bmi" = "Clinical Measures")}. Default is \code{NULL} (no category headers).}
 
 \item{manual_italic_indent}{Character vector; optional parameter for specifying which variable names should be italicized and indented in formatted outputs. Used for advanced formatting control.}
 
