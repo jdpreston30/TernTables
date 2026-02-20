@@ -70,6 +70,18 @@ ternG(
 \item{insert_subheads}{Logical; if \code{TRUE}, creates hierarchical structure with headers and indented sub-categories for multi-level categorical variables (except Y/N). If \code{FALSE}, uses simple flat format. Default is \code{TRUE}.}
 
 \item{factor_order}{Character; controls the ordering of factor levels in the output. If \code{"frequency"} (default), orders levels by decreasing frequency (most common first). If \code{"levels"}, respects the original factor level ordering as defined in the data.}
+
+\item{table_font_size}{Numeric; font size for Word document output tables. Default is 9.}
+
+\item{methods_doc}{Logical; if \code{TRUE} (default), generates a methods document describing the statistical tests used.}
+
+\item{methods_filename}{Character; filename for the methods document. Default is \code{"methods.docx"}.}
+
+\item{category_start}{Integer; optional parameter for internal use to control starting category numbering in formatted outputs. Typically left as \code{NULL} for automatic handling.}
+
+\item{manual_italic_indent}{Character vector; optional parameter for specifying which variable names should be italicized and indented in formatted outputs. Used for advanced formatting control.}
+
+\item{manual_underline}{Character vector; optional parameter for specifying which variable names should be underlined in formatted outputs. Used for advanced formatting control.}
 }
 \value{
 A tibble with one row per variable (multi-row for multi-level factors), showing summary statistics by group,

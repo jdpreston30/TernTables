@@ -29,6 +29,8 @@
 #' @param factor_order Character; controls the ordering of factor levels in the output. If 
 #'   \code{"frequency"} (default), orders levels by decreasing frequency (most common first). 
 #'   If \code{"levels"}, respects the original factor level ordering as defined in the data.
+#' @param category_start Integer; optional parameter for internal use to control starting 
+#'   category numbering in formatted outputs. Typically left as \code{NULL} for automatic handling.
 #'
 #' @details
 #' The function always returns a tibble with a single "Summary" column format, regardless of the
