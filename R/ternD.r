@@ -305,6 +305,11 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
     }
   }
 
+  # Replace "0 (NaN%)" with "-" for structurally impossible cells
+  # (e.g. a subgroup that cannot logically have any observations in a given column)
+  out_tbl <- out_tbl %>%
+    dplyr::mutate(dplyr::across(dplyr::where(is.character), ~ gsub("0 \\(NaN%\\)", "-", .x)))
+
   if (!is.null(output_xlsx)) export_to_excel(out_tbl, output_xlsx)
   if (!is.null(output_docx)) export_to_word(out_tbl, output_docx, category_start = category_start)
 
