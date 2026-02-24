@@ -604,6 +604,11 @@ ternG <- function(data,
     }
   }
 
+  # Replace "0 (NaN%)" with "-" for structurally impossible cells
+  # (e.g. a subgroup that cannot logically have any observations in a given column)
+  out_tbl <- out_tbl %>%
+    dplyr::mutate(dplyr::across(dplyr::where(is.character), ~ gsub("0 \\(NaN%\\)", "-", .x)))
+
   # Export to Word AFTER category headers are inserted
   if (!is.null(output_docx)) export_to_word(out_tbl, output_docx, round_intg = round_intg, font_size = table_font_size, category_start = category_start, manual_italic_indent = manual_italic_indent, manual_underline = manual_underline)
 
