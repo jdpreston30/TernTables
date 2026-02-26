@@ -1,11 +1,25 @@
 Package: TernTablesR
 Type: Package
-Title: Generate Descriptive, Two-, or Three-Level Grouped Summary Tables
-Version: 0.1.1
-Author: 
-    Josh Preston [aut, cre],
-    Helen Abadiotakis [aut]
-Maintainer: Josh Preston <jdpreston30@gmail.com>
+Title: Automated statistics and table generation for clinical research in R.
+Version: 1.2.2.9000
+Authors@R: c(
+    person("Joshua D.", "Preston",
+           email = "joshua.preston@emory.edu",
+           role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0001-9834-3017")),
+    person("Helen", "Abadiotakis",
+           role = "aut",
+           comment = c(ORCID = "0009-0002-8268-927X")),
+    person("Ailin", "Tang",
+           role = "aut",
+           comment = c(ORCID = "0009-0007-8715-1678")),
+    person("Clayton J.", "Rust",
+           role = "aut",
+           comment = c(ORCID = "0000-0001-5929-0733")),
+    person("Joshua L.", "Chan",
+           role = "aut",
+           comment = c(ORCID = "0000-0001-7220-561X"))
+  )
 Description: Automatically generates publication-ready summary tables for descriptive statistics and for comparing binary 
     or three-level groups. Detects variable types (categorical, ordinal, or continuous), 
     applies the appropriate statistical test (Fisher's exact, Chi-squared, Wilcoxon, or Welch t-test), 
@@ -15,16 +29,16 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.3.3
 Imports: 
-    dplyr,
+    dplyr (>= 1.0.0),
     tibble,
-    flextable,
+    flextable (>= 0.9.0),
     officer,
     writexl,
-    readr,
     stringr,
     stats,
     magrittr
 Suggests:
     testthat,
     knitr,
-    rmarkdown
+    rmarkdown,
+    CardioDataSets

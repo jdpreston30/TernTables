@@ -20,9 +20,9 @@
 #'   additional column in the output.
 #' @param round_intg Logical; if \code{TRUE}, rounds all means, medians, IQRs, and standard 
 #'   deviations to nearest integer (0.5 rounds up). Default is \code{FALSE}.
-#' @param smart_rename Logical; if \code{TRUE}, automatically cleans variable names and 
-#'   subheadings for publication-ready output using hybrid AI+rules cleaning. Uses rule-based 
-#'   cleaning for known medical terms, falls back to AI for complex cases. Default is \code{FALSE}.
+#' @param smart_rename Logical; if \code{TRUE}, automatically cleans variable names and
+#'   subheadings for publication-ready output using built-in rule-based pattern matching for
+#'   common medical abbreviations and prefixes. Default is \code{FALSE}.
 #' @param insert_subheads Logical; if \code{TRUE}, creates hierarchical structure with headers 
 #'   and indented sub-categories for multi-level categorical variables (except Y/N). If \code{FALSE}, 
 #'   uses simple flat format. Default is \code{TRUE}.
