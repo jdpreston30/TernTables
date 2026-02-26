@@ -17,6 +17,12 @@
 #' @param OR_col Logical; whether odds ratios were calculated. Default \code{FALSE}.
 #' @param source Character; \code{"ternG"} or \code{"ternD"}. Controls which
 #'   section is populated with dynamic test information. Default \code{"ternG"}.
+#' @examples
+#' \dontrun{
+#' data(colon_recurrence)
+#' tbl <- ternG(colon_recurrence, exclude_vars = c("ID"), group_var = "Recurrence")
+#' write_methods_doc(tbl, filename = file.path(tempdir(), "methods.docx"))
+#' }
 #' @export
 write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
                               source = "ternG") {
@@ -130,6 +136,7 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
     body_add_par("", style = "Normal") |>
     body_add_fpar(make_body(sec3_body))
 
+  dir.create(dirname(filename), recursive = TRUE, showWarnings = FALSE)
   print(doc, target = filename)
   cli::cli_alert_success("Methods document written to: {filename}")
 }

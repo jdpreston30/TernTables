@@ -42,15 +42,18 @@
 #' p-values, test type, and optionally odds ratios and total summary column.
 #'
 #' @examples
-#' # Basic usage with built-in mtcars dataset
+#' # Basic 2-group comparison with built-in dataset
 #' ternG(mtcars, group_var = "am")
 #'
-#' # With survival::colon (ships with base R)
-#' colon1 <- subset(survival::colon, etype == 1)
-#' ternG(colon1, group_var = "sex",
-#'       exclude_vars = c("id", "study", "etype", "time", "status"))  # 2-group
-#' ternG(colon1, group_var = "rx",
-#'       exclude_vars = c("id", "study", "etype", "time", "status"))  # 3-group
+#' # 2-group comparison using the bundled clinical dataset
+#' data(colon_recurrence)
+#' ternG(colon_recurrence, exclude_vars = c("ID"), group_var = "Recurrence",
+#'       consider_normality = TRUE, OR_col = TRUE)
+#'
+#' # 3-group comparison
+#' ternG(colon_recurrence, exclude_vars = c("ID"), group_var = "Treatment_Arm",
+#'       group_order = c("Observation", "Levamisole", "Levamisole + 5FU"),
+#'       consider_normality = TRUE)
 #'
 #' @export
 ternG <- function(data,

@@ -65,18 +65,24 @@
 #' }
 #'
 #' @examples
-#' # Basic usage with default mean ± SD for numeric variables
+#' # Basic descriptive summary
 #' ternD(mtcars)
-#' 
-#' # Use normality testing to choose summary format
+#'
+#' # Use normality testing to choose mean +/- SD vs median [IQR]
 #' ternD(mtcars, consider_normality = TRUE)
-#' 
-#' # Force specific variables to use median [IQR]
+#'
+#' # Force specific variables to ordinal display
 #' ternD(mtcars, force_ordinal = c("hp", "qsec"), consider_normality = TRUE)
-#' 
-#' # Export to Word document
-#' ternD(mtcars, output_docx = "descriptive_table.docx", consider_normality = TRUE)
-#' 
+#'
+#' # Using the bundled clinical dataset
+#' data(colon_recurrence)
+#' ternD(colon_recurrence, exclude_vars = c("ID"), consider_normality = TRUE)
+#'
+#' # Export to Word (writes a file — not run during automated checks)
+#' \dontrun{
+#' ternD(colon_recurrence, exclude_vars = c("ID"),
+#'       output_docx = file.path(tempdir(), "descriptive.docx"))
+#' }
 #' @export
 ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
                   output_xlsx = NULL, output_docx = NULL,

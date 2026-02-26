@@ -1,96 +1,139 @@
 # TernTables
-**TernTables** is a lightweight R package for generating clean summary tables with appropriate statistical tests. It supports two-level and three-level group comparisons for binary, continuous, and ordinal variables, and includes options for exporting tables to Word and Excel.
 
-## 🚀 Installation
+**TernTables** is an R package for generating publication-ready clinical summary
+tables with automatic statistical testing. It supports descriptive-only tables,
+two-group comparisons, and three-group comparisons for binary, continuous, and
+ordinal variables, with direct export to Word and Excel.
 
-You can install the development version of TernTables from GitHub:
+## Installation
+
+Install the development version from GitHub:
 
 ```r
 # install.packages("devtools")
-devtools::install_github("jdpreston30/TernTables")
+devtools::install_github("jdpreston30/TernTablesR")
 ```
 
-### 🏥 Example Data
+## Example Data
 
-Examples and the vignette use the `colon` dataset from the `survival` package, which ships with every R installation. No additional packages are required to run the examples. The dataset contains 929 patients from a colon cancer adjuvant chemotherapy trial (Moertel et al., 1990).
-
-## 📦 Functions
-
-### `ternG()`
-
-Generates summary tables for either **binary** or **3-level categorical** grouping variables. Automatically applies appropriate statistical tests based on variable type and number of groups:
-
-- **Continuous variables**:
-  - **2 groups**: Welch’s *t*-test or Wilcoxon rank-sum (based on Shapiro-Wilk test for normality)
-  - **3+ groups**: ANOVA or Kruskal-Wallis, based on both normality (Shapiro-Wilk) and homogeneity of variance (Levene’s test)
-
-- **Categorical variables**:
-  - Chi-squared test or Fisher’s exact test (based on expected cell counts)
-
-- **Ordinal variables** (defined via `force_ordinal`):
-  - Wilcoxon rank-sum (2 groups) or Kruskal-Wallis (3+ groups)
-
-## 📝 Examples
-
-### Two-level comparison
+A pre-processed dataset `colon_recurrence` is bundled with the package. It
+contains 929 patients from the colon cancer adjuvant chemotherapy trial
+(Moertel et al., 1990), filtered to the recurrence endpoint with clinically
+labelled factors and renamed columns. Load it with:
 
 ```r
 library(TernTables)
+data(colon_recurrence)
 ```
 
-### Three-level comparison
+## Functions
+
+### `ternD()` — Descriptive summary table
+
+Generates a single-column summary of all variables without group comparisons.
 
 ```r
-library(TernTables)
-ternG(
-  data = your_data,
-  group_var = "grade",  # 3-level variable (e.g., 3, 4, 5)
-  exclude_vars = c("ID"),
-  force_ordinal = c("ISS", "GCS"),
-  group_order = c(3, 4, 5),
-  output_xlsx = "summary_3v.xlsx",
-  output_docx = "summary_3v.docx"
-)
-```
-
----
-
-### `ternD()`
-
-Generates **descriptive-only** summary tables without group comparisons. Uses a single "Summary" column format for clean, publication-ready output. Useful for baseline cohort description or single-group studies.
-
-**Summary format behavior**:
-- **Default behavior** (`consider_normality = FALSE`): Mean ± SD for numeric variables
-- **Normality-aware** (`consider_normality = TRUE`): Shapiro-Wilk test determines mean ± SD vs median [IQR]
-- **Force ordinal** (`force_ordinal`): Always shows median [IQR] for specified variables, regardless of other settings
-- **Categorical variables**: Counts (%) with optional hierarchical formatting
-
-## 📝 Example
-
-```r
-ternD(
-  data = your_data,
-  exclude_vars = c("ID"),
-  force_ordinal = c("severity_score", "stage"),
+TernDesc <- ternD(
+  data               = colon_recurrence,
+  exclude_vars       = c("ID"),
   consider_normality = TRUE,
-  output_xlsx = "summary_descriptive.xlsx",
-  output_docx = "summary_descriptive.docx"
+  output_docx        = "descriptive.docx"
 )
 ```
 
----
+- Continuous variables: mean ± SD or median [IQR] based on Shapiro-Wilk test
+- Binary / categorical: n (%) with optional hierarchical sub-rows
+- Use `force_ordinal` to treat specific numeric variables as ordinal
 
-## 📤 Output
+### `ternG()` — Grouped comparison table
 
-- Returns a tibble with:
-  - Variable name with appropriate indentation
-  - Summary statistics in a single "Summary" column (per group if using `ternG()`, single overall summary if using `ternD()`)  
-  - p-value and test name (`ternG()` only)
-  - Odds ratios with 95% confidence intervals (for Chi squared and Fisher's) (Optional via OR_col argument)
-- Optionally exports to `.xlsx` and `.docx` files.
+Generates a comparison table for 2- or 3-level grouping variables. Handles
+the same variable types as `ternD()` and automatically selects the appropriate
+statistical test.
 
+**Two-group comparison:**
 
-## 📄 License
+```r
+Tern2v <- ternG(
+  data               = colon_recurrence,
+  exclude_vars       = c("ID"),
+  group_var          = "Recurrence",
+  consider_normality = TRUE,
+  OR_col             = TRUE,
+  output_docx        = "two_group.docx"
+)
+```
+
+**Three-group comparison:**
+
+```r
+Tern3v <- ternG(
+  data               = colon_recurrence,
+  exclude_vars       = c("ID"),
+  group_var          = "Treatment_Arm",
+  group_order        = c("Observation", "Levamisole", "Levamisole + 5FU"),
+  consider_normality = TRUE,
+  output_docx        = "three_group.docx"
+)
+```
+
+Statistical tests applied automatically:
+
+| Variable type | 2 groups | 3+ groups |
+|---|---|---|
+| Continuous, normal | Welch's *t*-test | ANOVA |
+| Continuous, non-normal | Wilcoxon rank-sum | Kruskal-Wallis |
+| Binary / Categorical | Fisher's exact or Chi-squared | Fisher's exact or Chi-squared |
+| Ordinal (`force_ordinal`) | Wilcoxon rank-sum | Kruskal-Wallis |
+
+Fisher's exact is used when any expected cell count is < 5.
+
+### `export_to_word()` — Format and export to Word
+
+Formats any TernTables result tibble as a flextable and writes to `.docx`.
+Use `category_start` to insert bold section-header rows between variable groups.
+
+```r
+export_to_word(
+  tbl      = Tern2v,
+  filename = "two_group.docx",
+  category_start = c(
+    "Patient Demographics"  = "Age (yr)",
+    "Surgical Findings"     = "Colonic Obstruction",
+    "Tumor Characteristics" = "Positive Lymph Nodes (n)"
+  )
+)
+```
+
+### `write_methods_doc()` — Methods boilerplate
+
+Generates a Word document with a methods paragraph describing all statistical
+tests used, ready to copy into a manuscript.
+
+```r
+write_methods_doc(
+  tbl      = Tern2v,
+  filename = "methods.docx"
+)
+```
+
+### `fmt_p()` / `format_val()` — Formatting utilities
+
+```r
+fmt_p(0.0432)       # "0.043"
+fmt_p(0.000012)     # "1E-5"
+format_val(72.4, 8.1)  # "72.4 ± 8.1"
+```
+
+## Output
+
+Every `ternD()` and `ternG()` call returns a tibble that can be:
+
+- Passed directly to `export_to_word()` for a formatted `.docx`
+- Written to Excel with `writexl::write_xlsx()`
+- Inspected or further manipulated in R
+
+## License
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
@@ -107,4 +150,5 @@ This project is licensed under the MIT License.
 - [Clayton J. Rust](https://orcid.org/0000-0001-5929-0733) [![ORCID](https://img.shields.io/badge/ORCID-0000--0001--5929--0733-brightgreen?logo=orcid)](https://orcid.org/0000-0001-5929-0733)
 - [Joshua L. Chan](https://orcid.org/0000-0001-7220-561X) [![ORCID](https://img.shields.io/badge/ORCID-0000--0001--7220--561X-brightgreen?logo=orcid)](https://orcid.org/0000-0001-7220-561X)
 
-Feedback and contributions are welcome!
+Feedback and contributions are welcome.
+

@@ -36,7 +36,7 @@ statistical tests, and formats results for direct export to Word or Excel.
 \section{Getting started}{
 
 See \code{vignette("getting-started", package = "TernTables")} for a
-walkthrough using the \code{colon} dataset from the \pkg{survival} package.
+walkthrough using the bundled \code{\link{colon_recurrence}} dataset.
 }
 
 \author{

@@ -36,3 +36,10 @@ with the statistical tests that were actually used; all other sections use
 generic boilerplate. When called from \code{ternD}, all comparison sections
 use generic boilerplate.
 }
+\examples{
+\dontrun{
+data(colon_recurrence)
+tbl <- ternG(colon_recurrence, exclude_vars = c("ID"), group_var = "Recurrence")
+write_methods_doc(tbl, filename = file.path(tempdir(), "methods.docx"))
+}
+}
