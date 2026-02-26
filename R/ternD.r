@@ -22,7 +22,7 @@
 #'   deviations to nearest integer (0.5 rounds up). Default is \code{FALSE}.
 #' @param smart_rename Logical; if \code{TRUE}, automatically cleans variable names and
 #'   subheadings for publication-ready output using built-in rule-based pattern matching for
-#'   common medical abbreviations and prefixes. Default is \code{FALSE}.
+#'   common medical abbreviations and prefixes. Default is \code{TRUE}.
 #' @param insert_subheads Logical; if \code{TRUE}, creates hierarchical structure with headers 
 #'   and indented sub-categories for multi-level categorical variables (except Y/N). If \code{FALSE}, 
 #'   uses simple flat format. Default is \code{TRUE}.
@@ -30,6 +30,12 @@
 #'   \code{"frequency"} (default), orders levels by decreasing frequency (most common first).
 #'   If \code{"levels"}, respects the original factor level ordering as defined in the data;
 #'   if the variable is not a factor, falls back to \code{"frequency"}.
+#' @param methods_doc Logical; if \code{TRUE} (default), generates a methods document
+#'   describing the statistical presentation used. The document contains boilerplate
+#'   text for all three table types so the relevant section can be copied directly
+#'   into a manuscript.
+#' @param methods_filename Character; filename for the methods document.
+#'   Default is \code{"TernTables_methods.docx"}.
 #' @param category_start Named character vector specifying where to insert category headers. 
 #'   Names should be variable names, and values are the category header labels to insert before 
 #'   those variables. For example, \code{c("age" = "Demographics", "bmi" = "Clinical Measures")}. 
@@ -73,8 +79,9 @@
 ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
                   output_xlsx = NULL, output_docx = NULL,
                   consider_normality = TRUE, print_normality = FALSE, 
-                  round_intg = FALSE, smart_rename = FALSE, insert_subheads = TRUE,
-                  factor_order = "frequency", category_start = NULL) {
+                  round_intg = FALSE, smart_rename = TRUE, insert_subheads = TRUE,
+                  factor_order = "frequency", methods_doc = TRUE,
+                  methods_filename = "TernTables_methods.docx", category_start = NULL) {
   stopifnot(is.data.frame(data))
   
   # Store total N for column header
@@ -304,6 +311,7 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
 
   if (!is.null(output_xlsx)) export_to_excel(out_tbl, output_xlsx)
   if (!is.null(output_docx)) export_to_word(out_tbl, output_docx, category_start = category_start)
+  if (methods_doc) write_methods_doc(out_tbl, methods_filename, source = "ternD")
 
   out_tbl
 }

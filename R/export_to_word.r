@@ -61,7 +61,6 @@ export_to_word <- function(tbl, filename, round_intg = FALSE, font_size = 9, cat
   
   # Create flextable
   ft <- flextable(modified_tbl) %>%
-    set_table_properties(width = 1, layout = "autofit") %>%
     font(fontname = "Arial", part = "all") %>%
     fontsize(size = font_size, part = "all") %>%
     bg(bg = "#cdcdcd", part = "header") %>%
@@ -193,6 +192,21 @@ export_to_word <- function(tbl, filename, round_intg = FALSE, font_size = 9, cat
     if (length(sig_or_rows) > 0) {
       ft <- bold(ft, i = sig_or_rows, j = or_col_index, part = "body")
     }
+  }
+
+  # ── Smart column width: content-fit all columns, equalise group/summary cols ──
+  ft <- autofit(ft)
+  non_data_cols <- c("Category\n   Variable", "P value", "OR", "OR_method", "test")
+  col_names_display <- colnames(modified_tbl)
+  is_group_col <- vapply(col_names_display, function(cn) {
+    !any(cn == non_data_cols) && !grepl("^SW_p_", cn)
+  }, logical(1))
+  is_group_col[1] <- FALSE  # always exclude Variable column
+  group_col_indices <- which(is_group_col)
+  if (length(group_col_indices) >= 1) {
+    current_widths <- dim(ft)$widths
+    max_group_width <- max(current_widths[group_col_indices])
+    ft <- width(ft, j = group_col_indices, width = max_group_width)
   }
 
   # Create Word document

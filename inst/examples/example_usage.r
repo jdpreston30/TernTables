@@ -46,32 +46,26 @@ devtools::load_all(".")
 # --- ternD: descriptive summary ---
 TernDesc <- ternD(
   data = colon1,
-  exclude_vars = c("ID", "Time_to_Event_days"),
-  consider_normality = TRUE
+  output_docx = "TernDesc.docx",
+  exclude_vars = c("ID", "Time_to_Event_days")
 )
-print(TernDesc)
 
 # --- ternG: 2-group comparison (recurrence) ---
-cat("\nRunning ternG (2-group: recurrence)...\n")
 Tern2v <- ternG(
   data = colon1,
   group_var = "Recurrence",
-  exclude_vars = exclude,
-  consider_normality = TRUE,
-  show_test = TRUE,
+  exclude_vars = c("ID", "Time_to_Event_days"),
+  output_docx = "Tern_2group.docx",
   insert_subheads = TRUE
 )
-print(Tern2v)
 
 # --- ternG: 3-group comparison (treatment arm) ---
-cat("\nRunning ternG (3-group: treatment arm)...\n")
 Tern3v <- ternG(
   data = colon1,
   group_var = "Treatment_Arm",
-  exclude_vars = exclude,
+  exclude_vars = c("ID", "Time_to_Event_days"),
   consider_normality = TRUE,
-  show_test = TRUE,
-  insert_subheads = TRUE
+  show_test = TRUE
 )
 print(Tern3v)
 

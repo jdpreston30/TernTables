@@ -2,19 +2,37 @@
 % Please edit documentation in R/write_methods_doc.r
 \name{write_methods_doc}
 \alias{write_methods_doc}
-\title{Write methods section document for ternG output}
+\title{Write a methods section document for use with TernTables output}
 \usage{
-write_methods_doc(tbl, filename, n_levels = 2, OR_col = FALSE)
+write_methods_doc(
+  tbl,
+  filename,
+  n_levels = 2,
+  OR_col = FALSE,
+  source = "ternG"
+)
 }
 \arguments{
-\item{tbl}{A tibble created by ternG}
+\item{tbl}{A tibble created by \code{ternG} or \code{ternD}, or \code{NULL}
+when generating a generic document.}
 
-\item{filename}{Output file path ending in .docx}
+\item{filename}{Output file path ending in \code{.docx}.}
 
-\item{n_levels}{Number of group levels (2 for two-group, 3+ for multi-group)}
+\item{n_levels}{Number of group levels used in \code{ternG} (2 for two-group,
+3+ for multi-group). Ignored when called from \code{ternD}.}
 
-\item{OR_col}{Logical; whether odds ratios were calculated}
+\item{OR_col}{Logical; whether odds ratios were calculated. Default \code{FALSE}.}
+
+\item{source}{Character; \code{"ternG"} or \code{"ternD"}. Controls which
+section is populated with dynamic test information. Default \code{"ternG"}.}
 }
 \description{
-Write methods section document for ternG output
+Generates a Word document containing boilerplate methods text for all three
+table types produced by TernTables (descriptive, two-group comparison, and
+three-or-more-group comparison). Each section is headed by a clear label so
+the user can copy the relevant paragraph directly into a manuscript. When
+called from \code{ternG}, the two-group or multi-group section is populated
+with the statistical tests that were actually used; all other sections use
+generic boilerplate. When called from \code{ternD}, all comparison sections
+use generic boilerplate.
 }
