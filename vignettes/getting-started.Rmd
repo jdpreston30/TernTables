@@ -101,7 +101,7 @@ automatically detected as categorical and shown as n (%). Multi-level
 categorical variables show all levels as indented sub-rows beneath the variable
 name.
 
-```{r ternD-figure, echo=FALSE, fig.align="center", out.width="75%"}
+```{r ternD-figure, echo=FALSE, fig.align="center", out.width="45%"}
 knitr::include_graphics("figures/tern_descriptive.png")
 ```
 
