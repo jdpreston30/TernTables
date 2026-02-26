@@ -64,7 +64,8 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
   }
 
   or_sentence  <- if (OR_col) paste0(
-    "For binary categorical variables, odds ratios (OR) with 95% confidence intervals (CI) were calculated. ",
+    "For binary categorical variables, unadjusted odds ratios (OR) with 95% confidence intervals (CI) were calculated, ",
+    "with the first group serving as the reference category. ",
     "Where all expected cell counts were five or greater, OR and 95% CI were derived using the Wald method. ",
     "Where any expected cell count was less than five (Cochran criterion), OR and 95% CI were derived from Fisher's exact test. "
   ) else ""

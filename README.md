@@ -1,9 +1,15 @@
 # TernTables
 
-**TernTables** is an R package for generating publication-ready clinical summary
-tables with automatic statistical testing. It supports descriptive-only tables,
-two-group comparisons, and three-group comparisons for binary, continuous, and
-ordinal variables, with direct export to Word and Excel.
+**TernTables** is designed for clinical researchers who need publication-ready
+summary statistics tables without manual formatting. Given a data frame and an
+optional grouping variable, a single function call handles variable type
+detection, statistical test selection, p-value formatting, Word export, and
+auto-generated methods text — producing output that is ready to paste directly
+into a manuscript.
+
+Descriptive summaries (Table 1), two-group comparisons (with optional odds
+ratios), and three-group comparisons are all supported, for continuous,
+binary, categorical, and ordinal variables.
 
 ## Installation
 
@@ -49,9 +55,7 @@ TernDesc <- ternD(
 
 ### `ternG()` — Grouped comparison table
 
-Generates a comparison table for 2- or 3-level grouping variables. Handles
-the same variable types as `ternD()` and automatically selects the appropriate
-statistical test.
+Use `ternG()` to compare variables between two or more groups. Set `OR_col = TRUE` to add\nunadjusted odds ratios with 95% CI for binary variables in two-group comparisons\n(Fisher's exact or Wald method, chosen automatically based on expected cell counts —\nCochran criterion).
 
 **Two-group comparison:**
 
@@ -79,6 +83,9 @@ Tern3v <- ternG(
 )
 ```
 
+Omnibus p-values are reported for 3+ group comparisons; pairwise post-hoc
+comparisons are not performed. Odds ratios are not available for 3+ groups.
+
 Statistical tests applied automatically:
 
 | Variable type | 2 groups | 3+ groups |
@@ -88,7 +95,12 @@ Statistical tests applied automatically:
 | Binary / Categorical | Fisher's exact or Chi-squared | Fisher's exact or Chi-squared |
 | Ordinal (`force_ordinal`) | Wilcoxon rank-sum | Kruskal-Wallis |
 
-Fisher's exact is used when any expected cell count is < 5.
+Fisher's exact is used when any expected cell count is < 5 (Cochran criterion).
+Normality is assessed with the Shapiro-Wilk test per group; a variable is treated
+as normally distributed only if all groups pass (p > 0.05). If any group has fewer
+than 3 observations, normality cannot be evaluated and the nonparametric test is
+used (conservative fail-safe). For 3+ group comparisons, omnibus p-values are
+reported; pairwise post-hoc comparisons are not performed.
 
 ### `word_export()` — Format and export to Word
 
@@ -107,10 +119,14 @@ word_export(
 )
 ```
 
-### `write_methods_doc()` — Methods boilerplate
+### `write_methods_doc()` — Auto-generated methods paragraph
 
-Generates a Word document with a methods paragraph describing all statistical
-tests used, ready to copy into a manuscript.
+Inspects the results tibble and writes a Word document containing a complete
+statistical methods paragraph — listing every test that was actually applied,
+the normality assessment approach used, the significance threshold, and (when
+odds ratios are reported) the estimation method and reference group. The output
+is ready to copy directly into a manuscript methods section with little or no
+editing.
 
 ```r
 write_methods_doc(
@@ -129,9 +145,15 @@ val_format(72.4, 8.1)  # "72.4 ± 8.1"
 
 ## Output
 
-Every `ternD()` and `ternG()` call returns a tibble that can be:
+Every `ternD()` and `ternG()` call returns a tibble and — when `output_docx`
+is specified — writes a publication-ready `.docx` file directly. The Word
+output uses Arial, consistent padding, bold significant p-values, and optional
+bold category-section headers. No post-processing is required before pasting
+into a manuscript.
 
-- Passed directly to `word_export()` for a formatted `.docx`
+The tibble can also be:
+
+- Passed to `word_export()` for additional formatting control (e.g. `category_start`)
 - Written to Excel with `writexl::write_xlsx()`
 - Inspected or further manipulated in R
 
