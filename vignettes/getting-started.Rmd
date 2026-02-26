@@ -29,30 +29,29 @@ Given a data frame and an optional grouping variable, it automatically:
 ## Example Dataset
 
 ```{r load-data}
-# colon ships with the survival package (part of base R)
-colon1 <- subset(survival::colon, etype == 1)
-
-# Drop survival/administrative columns not needed for a baseline table
-exclude_cols <- c("id", "study", "etype", "time", "status")
+data(colon_recurrence)
 ```
 
-The `colon` dataset contains 929 patients from a landmark colon cancer adjuvant
-chemotherapy trial (Moertel et al., 1990). Filtering to `etype == 1` gives one
-row per patient (recurrence endpoint). Key variables used in these examples:
+`colon_recurrence` is bundled with TernTables. It contains 929 patients from a
+landmark colon cancer adjuvant chemotherapy trial (Moertel et al., 1990),
+filtered to the recurrence endpoint — one row per patient. See
+`?colon_recurrence` for full details.
 
-| Variable | Description |
+Key variables used in these examples:
+
+| Column | Description |
 |---|---|
-| `rx` | Treatment arm: Obs / Lev / Lev+5FU — **3-group comparison** |
-| `sex` | Sex: 0 = female, 1 = male — **2-group comparison** |
-| `age` | Age at registration (years) |
-| `obstruct` | Colonic obstruction (0/1) |
-| `perfor` | Bowel perforation (0/1) |
-| `adhere` | Tumor adherence to nearby organs (0/1) |
-| `nodes` | Number of positive lymph nodes |
-| `differ` | Tumor differentiation (1 = well, 2 = moderate, 3 = poor) |
-| `extent` | Extent of local spread (1–4) |
-| `surg` | Time from surgery to registration (0 = short, 1 = long) |
-| `node4` | More than 4 positive lymph nodes (0/1) |
+| `Age_Years` | Age at registration (years) |
+| `Sex` | Female / Male |
+| `Colonic_Obstruction` | Colonic obstruction present (N / Y) |
+| `Bowel_Perforation` | Bowel perforation present (N / Y) |
+| `Positive_Lymph_Nodes_n` | Number of positive lymph nodes |
+| `` >_4_Positive_Nodes `` | More than 4 positive lymph nodes (N / Y) |
+| `Tumor_Adherence` | Tumour adherence to nearby organs (N / Y) |
+| `Tumor_Differentiation` | Well / Moderate / Poor |
+| `Extent_of_Local_Spread` | Depth of tumour penetration (4 levels) |
+| `Recurrence` | No Recurrence / Recurrence — **2-group** |
+| `Treatment_Arm` | Levamisole + 5FU / Levamisole / Observation — **3-group** |
 
 ---
 
@@ -62,42 +61,39 @@ Use `ternD()` when you have a single cohort and want a summary of all variables
 without group comparisons.
 
 ```{r ternD-example}
-# TODO: run once package is loaded
 TernDesc <- ternD(
-  data              = colon1,
-  exclude_vars      = exclude_cols,
+  data               = colon_recurrence,
+  exclude_vars       = c("ID"),
   consider_normality = TRUE
 )
 TernDesc
 ```
 
-**What to look for:** Continuous variables show mean ± SD or median [IQR]
-depending on normality. Binary (0/1) columns are automatically detected as
-categorical and shown as n (%).
+Continuous variables show mean ± SD or median \[IQR\] depending on normality
+(Shapiro-Wilk, p > 0.05 = normal). Binary columns are automatically detected
+as categorical and shown as n (%).
 
 ---
 
 ## Two-Group Comparison (`ternG` — 2 levels)
 
-Compare baseline characteristics between males and females using `sex` as the
-grouping variable.
+Compare baseline characteristics between patients with and without recurrence.
 
 ```{r ternG-2group}
-# TODO: run once package is loaded
 Tern2v <- ternG(
-  data               = colon1,
-  group_var          = "sex",
-  exclude_vars       = exclude_cols,
+  data               = colon_recurrence,
+  exclude_vars       = c("ID"),
+  group_var          = "Recurrence",
   consider_normality = TRUE,
+  OR_col             = TRUE,
   show_test          = TRUE,
   insert_subheads    = TRUE
 )
 Tern2v
 ```
 
-**Interpretation:** The `p` column shows the test p-value; `test` shows which
-test was applied. Binary columns (e.g. `obstruct`, `perfor`) are automatically
-routed to Fisher's exact or Chi-squared.
+The `p` column shows the test p-value; `test` shows which test was applied;
+`OR` shows the odds ratio with 95% CI where applicable.
 
 ---
 
@@ -107,11 +103,11 @@ The same `ternG()` function handles 3-level groups automatically, switching to
 ANOVA or Kruskal-Wallis for continuous variables.
 
 ```{r ternG-3group}
-# TODO: run once package is loaded
 Tern3v <- ternG(
-  data               = colon1,
-  group_var          = "rx",
-  exclude_vars       = exclude_cols,
+  data               = colon_recurrence,
+  exclude_vars       = c("ID"),
+  group_var          = "Treatment_Arm",
+  group_order        = c("Observation", "Levamisole", "Levamisole + 5FU"),
   consider_normality = TRUE,
   show_test          = TRUE,
   insert_subheads    = TRUE
@@ -125,12 +121,19 @@ Tern3v
 
 ### Word document
 
+`export_to_word()` formats any TernTables tibble as a publication-ready
+flextable and writes it to a `.docx` file.
+
 ```{r export-word, eval = FALSE}
 export_to_word(
-  table_data  = Tern3v,
-  output_path = "colon_treatment_table.docx",
-  group_var   = "rx",
-  title       = "Table 1. Baseline Characteristics by Treatment Arm"
+  tbl      = Tern3v,
+  filename = "colon_treatment_table.docx",
+  category_start = c(
+    "Patient Demographics"  = "Age (yr)",
+    "Surgical Findings"     = "Colonic Obstruction",
+    "Tumor Characteristics" = "Positive Lymph Nodes (n)",
+    "Outcomes"              = "Recurrence"
+  )
 )
 ```
 
@@ -142,12 +145,40 @@ writexl::write_xlsx(Tern3v, "colon_treatment_table.xlsx")
 
 ### Methods document
 
+`write_methods_doc()` generates a boilerplate methods paragraph describing the
+statistical tests used, ready to paste into a manuscript.
+
 ```{r methods-doc, eval = FALSE}
 write_methods_doc(
-  table_data  = Tern3v,
-  output_path = "methods.docx"
+  tbl      = Tern3v,
+  filename = "methods.docx"
 )
 ```
+
+---
+
+## Category Headers
+
+Use `category_start` in `ternD()` or `ternG()` to insert bold section
+headers grouping related variables:
+
+```{r category-headers, eval = FALSE}
+ternD(
+  data           = colon_recurrence,
+  exclude_vars   = c("ID"),
+  output_docx    = "descriptive.docx",
+  category_start = c(
+    "Patient Demographics"  = "Age (yr)",
+    "Surgical Findings"     = "Colonic Obstruction",
+    "Tumor Characteristics" = "Positive Lymph Nodes (n)",
+    "Outcomes"              = "Recurrence"
+  )
+)
+```
+
+The named character vector maps section titles to the display name of the first
+variable in each section (either the raw column name or the cleaned display
+label both work as anchors).
 
 ---
 
@@ -163,6 +194,10 @@ TernTables selects tests automatically:
 | Ordinal (`force_ordinal`) | Wilcoxon rank-sum | Kruskal-Wallis |
 
 \*Fisher's exact is used when any expected cell count is < 5.
+
+Normality is assessed with the Shapiro-Wilk test (p > 0.05 = normal). For
+3-group continuous comparisons, Levene's test additionally checks homogeneity
+of variance; if violated, Kruskal-Wallis is used regardless of normality.
 
 ---
 

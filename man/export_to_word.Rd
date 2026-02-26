@@ -34,3 +34,17 @@ cleaned display name (both forms accepted).}
 \description{
 Export TernTables output to a formatted Word document
 }
+\examples{
+\dontrun{
+data(colon_recurrence)
+tbl <- ternD(colon_recurrence, exclude_vars = c("ID"))
+export_to_word(
+  tbl      = tbl,
+  filename = file.path(tempdir(), "descriptive.docx"),
+  category_start = c(
+    "Patient Demographics"  = "Age (yr)",
+    "Tumor Characteristics" = "Positive Lymph Nodes (n)"
+  )
+)
+}
+}

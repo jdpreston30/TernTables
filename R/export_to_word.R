@@ -9,6 +9,19 @@
 #'   cleaned display name (both forms accepted).
 #' @param manual_italic_indent Character vector of variable names to manually format as indented and italicized (like level 6).
 #' @param manual_underline Character vector of variable names to manually format as underlined (like multi-category headers).
+#' @examples
+#' \dontrun{
+#' data(colon_recurrence)
+#' tbl <- ternD(colon_recurrence, exclude_vars = c("ID"))
+#' export_to_word(
+#'   tbl      = tbl,
+#'   filename = file.path(tempdir(), "descriptive.docx"),
+#'   category_start = c(
+#'     "Patient Demographics"  = "Age (yr)",
+#'     "Tumor Characteristics" = "Positive Lymph Nodes (n)"
+#'   )
+#' )
+#' }
 #' @export
 export_to_word <- function(tbl, filename, round_intg = FALSE, font_size = 9, category_start = NULL, manual_italic_indent = NULL, manual_underline = NULL) {
   # Keep the table as-is
@@ -243,5 +256,6 @@ export_to_word <- function(tbl, filename, round_intg = FALSE, font_size = 9, cat
 
   # Create Word document
   doc <- read_docx() %>% body_add_flextable(ft)
+  dir.create(dirname(filename), recursive = TRUE, showWarnings = FALSE)
   print(doc, target = filename)
 }

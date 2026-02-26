@@ -2,8 +2,13 @@
 ^\.Rproj\.user$
 ^blood_storage_raw\.xlsx$
 ^\~\$blood_storage_raw\.xlsx$
-^inst/scripts$
 ^data-raw$
+^Outputs$
+^TernTables_methods\.docx$
+^cran-comments\.md$
+^\.\.\Rcheck$
 ^vignettes/.*\.html$
 ^vignettes/.*_cache$
 ^vignettes/.*_files$
+^doc$
+^Meta$
