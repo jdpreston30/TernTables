@@ -13,5 +13,5 @@ bibentry(
   ),
   year     = "2026",
   note     = "R package version 1.3.0",
-  url      = "https://github.com/jdpreston30/TernTablesR"
+  url      = "https://github.com/jdpreston30/TernTables"
 )
