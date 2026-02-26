@@ -52,9 +52,11 @@ deviations to nearest integer (0.5 rounds up). Default is \code{FALSE}.}
 subheadings for publication-ready output using built-in rule-based pattern matching for
 common medical abbreviations and prefixes. Default is \code{TRUE}.}
 
-\item{insert_subheads}{Logical; if \code{TRUE}, creates hierarchical structure with headers 
-and indented sub-categories for multi-level categorical variables (except Y/N). If \code{FALSE}, 
-uses simple flat format. Default is \code{TRUE}.}
+\item{insert_subheads}{Logical; if \code{TRUE}, creates a hierarchical structure with a header row and
+indented sub-category rows for categorical variables with 3 or more levels. Binary variables
+(Y/N, YES/NO, or numeric 0/1 — which are auto-detected and treated as Y/N) are always displayed
+as a single row showing the positive/yes count regardless of this setting.
+If \code{FALSE}, all categorical variables use a single-row flat format. Default is \code{TRUE}.}
 
 \item{factor_order}{Character; controls the ordering of factor levels in the output. If
 \code{"levels"} (default), respects the original factor level ordering as defined in the data;
@@ -98,10 +100,11 @@ The function always returns a tibble with a single \code{Total (N = n)} column f
   \item When \code{consider_normality = FALSE}: Default to mean ± SD
 }
 
-For categorical variables, the function shows frequencies and percentages. When 
-\code{insert_subheads = TRUE}, multi-level categorical variables are displayed with 
-hierarchical formatting (main variable as header, levels as indented sub-rows), except 
-for binary Y/N variables which use simple formatting.
+For categorical variables, the function shows frequencies and percentages. When
+\code{insert_subheads = TRUE}, categorical variables with 3 or more levels are displayed with
+hierarchical formatting (main variable as header, levels as indented sub-rows). Binary variables
+(Y/N, YES/NO, or numeric 0/1 auto-detected as Y/N) always use a single-row format showing
+only the positive/yes count, regardless of this setting.
 }
 \examples{
 # Basic descriptive summary

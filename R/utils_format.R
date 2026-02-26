@@ -1,8 +1,13 @@
 #' Format a p-value for reporting
 #'
-#' @param p Numeric p-value
-#' @param digits Number of decimal places to round to (default 3)
-#' @return Formatted string with specified decimals, scientific if < 0.001
+#' @param p Numeric p-value in the range [0, 1]. \code{NA} values are returned as \code{NA_character_}.
+#'   Values >= 1 (or rounding to >= 1) are returned as e.g. \code{">0.999"}.
+#' @param digits Integer; number of decimal places for reported p-values. Default is 3.
+#'   Note: for p < 0.001, the value is reported in scientific notation with 1 significant figure
+#'   regardless of \code{digits} (e.g., \code{8E-4}).
+#' @return A character string. Values < 0.001 are formatted in scientific notation with 1 significant
+#'   figure (e.g., \code{"8E-4"}). All other values use fixed-point notation rounded to \code{digits}
+#'   decimal places.
 #' @export
 val_p_format <- function(p, digits = 3) {
   if (is.na(p)) {
@@ -39,11 +44,12 @@ val_p_format <- function(p, digits = 3) {
   return(sprintf(paste0("%.", digits, "f"), p_rounded))
 }
 
-#' Format a mean  +-  SD string
+#' Format a mean \u00b1 SD string
 #'
-#' @param mean Mean value
-#' @param sd Standard deviation
-#' @return Formatted string "mean  +-  sd"
+#' @param mean Numeric mean value. Formatted to 1 decimal place.
+#' @param sd Numeric standard deviation. Formatted to 1 decimal place.
+#' @return A character string of the form \code{"X.X  +-  Y.Y"} where both values are
+#'   rendered to 1 decimal place using fixed-point notation.
 #' @export
 val_format <- function(mean, sd) {
   paste0(

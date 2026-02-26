@@ -7,8 +7,13 @@
 #' @param category_start Named character vector specifying category headers. Names are header
 #'   label text; values are anchor variable names — either the original column name or the
 #'   cleaned display name (both forms accepted).
-#' @param manual_italic_indent Character vector of variable names to manually format as indented and italicized (like level 6).
-#' @param manual_underline Character vector of variable names to manually format as underlined (like multi-category headers).
+#' @param manual_italic_indent Character vector of display variable names (post-cleaning) to force into
+#'   italicized and indented formatting, matching the appearance of factor sub-category rows (e.g., levels
+#'   of a multi-category variable). Use this for rows that should visually appear as sub-items but are not
+#'   automatically detected as such.
+#' @param manual_underline Character vector of display variable names (post-cleaning) to force into
+#'   underlined formatting, matching the appearance of multi-category variable header rows. Use this for
+#'   rows that should visually appear as section headers but are not automatically detected as such.
 #' @return Invisibly returns the path to the written Word file.
 #' @examples
 #' \dontrun{

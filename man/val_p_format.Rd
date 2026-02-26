@@ -7,12 +7,17 @@
 val_p_format(p, digits = 3)
 }
 \arguments{
-\item{p}{Numeric p-value}
+\item{p}{Numeric p-value in the range [0, 1]. \code{NA} values are returned as \code{NA_character_}.
+Values >= 1 (or rounding to >= 1) are returned as e.g. \code{">0.999"}.}
 
-\item{digits}{Number of decimal places to round to (default 3)}
+\item{digits}{Integer; number of decimal places for reported p-values. Default is 3.
+Note: for p < 0.001, the value is reported in scientific notation with 1 significant figure
+regardless of \code{digits} (e.g., \code{8E-4}).}
 }
 \value{
-Formatted string with specified decimals, scientific if < 0.001
+A character string. Values < 0.001 are formatted in scientific notation with 1 significant
+  figure (e.g., \code{"8E-4"}). All other values use fixed-point notation rounded to \code{digits}
+  decimal places.
 }
 \description{
 Format a p-value for reporting
