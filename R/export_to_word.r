@@ -11,23 +11,57 @@
 export_to_word <- function(tbl, filename, round_intg = FALSE, font_size = 9, category_start = NULL, manual_italic_indent = NULL, manual_underline = NULL) {
   # Keep the table as-is
   modified_tbl <- tbl
-  
+
+  # Insert category header rows before extracting .indent
+  if (!is.null(category_start) && length(category_start) > 0) {
+    for (header_label in names(category_start)) {
+      var_name <- category_start[[header_label]]
+      trimmed_vars <- sapply(modified_tbl[[1]], function(x) trimws(x, which = "both"))
+      var_matches <- which(trimmed_vars == var_name)
+
+      if (length(var_matches) > 1) {
+        second_col <- modified_tbl[[2]]
+        header_match <- var_matches[which(second_col[var_matches] == "" | is.na(second_col[var_matches]))]
+        var_idx <- if (length(header_match) > 0) header_match[1] else var_matches[1]
+      } else if (length(var_matches) == 1) {
+        var_idx <- var_matches[1]
+      } else {
+        next
+      }
+
+      cat_row <- modified_tbl[1, ]
+      cat_row[[1]][1] <- header_label
+      for (j in 2:ncol(cat_row)) {
+        if (is.numeric(cat_row[[j]])) cat_row[[j]][1] <- NA_real_
+        else cat_row[[j]][1] <- ""
+      }
+      if (".indent" %in% colnames(cat_row)) cat_row[[".indent"]][1] <- 0L
+
+      if (var_idx == 1) {
+        modified_tbl <- rbind(cat_row, modified_tbl)
+      } else {
+        modified_tbl <- rbind(
+          modified_tbl[1:(var_idx - 1), ],
+          cat_row,
+          modified_tbl[var_idx:nrow(modified_tbl), ]
+        )
+      }
+    }
+  }
+
   # Store .indent column for later use, then remove it from display
   indent_col <- if (".indent" %in% colnames(modified_tbl)) modified_tbl[[".indent"]] else NULL
   if (!is.null(indent_col)) {
     modified_tbl <- modified_tbl %>% select(-.indent)
   }
-  
-  # Track which rows are category headers for formatting (don't insert, ternG already did)
+
+  # Track which rows are category headers for formatting
   category_rows <- NULL
   if (!is.null(category_start) && length(category_start) > 0) {
-    # Find rows that match the category header labels (now stored as names)
     for (category_label in names(category_start)) {
       trimmed_vars <- sapply(modified_tbl[[1]], function(x) trimws(x, which = "both"))
       cat_idx <- which(trimmed_vars == category_label)
-      if (length(cat_idx) > 0) {
-        category_rows <- c(category_rows, cat_idx)
-      }
+      if (length(cat_idx) > 0) category_rows <- c(category_rows, cat_idx)
     }
   }
   
@@ -194,20 +228,8 @@ export_to_word <- function(tbl, filename, round_intg = FALSE, font_size = 9, cat
     }
   }
 
-  # ── Smart column width: content-fit all columns, equalise group/summary cols ──
+  # Shrink all columns to fit their content
   ft <- autofit(ft)
-  non_data_cols <- c("Category\n   Variable", "P value", "OR", "OR_method", "test")
-  col_names_display <- colnames(modified_tbl)
-  is_group_col <- vapply(col_names_display, function(cn) {
-    !any(cn == non_data_cols) && !grepl("^SW_p_", cn)
-  }, logical(1))
-  is_group_col[1] <- FALSE  # always exclude Variable column
-  group_col_indices <- which(is_group_col)
-  if (length(group_col_indices) >= 1) {
-    current_widths <- dim(ft)$widths
-    max_group_width <- max(current_widths[group_col_indices])
-    ft <- width(ft, j = group_col_indices, width = max_group_width)
-  }
 
   # Create Word document
   doc <- read_docx() %>% body_add_flextable(ft)

@@ -18,7 +18,10 @@
 
   # Detect and extract time-unit suffix before underscores are removed
   unit_suffix <- ""
-  if (grepl("_(yr|year|years)$", clean_name, ignore.case = TRUE)) {
+  if (grepl("_[nN]$", clean_name)) {
+    clean_name <- sub("_[nN]$", "", clean_name)
+    unit_suffix <- " (n)"
+  } else if (grepl("_(yr|year|years)$", clean_name, ignore.case = TRUE)) {
     clean_name <- sub("_(yr|year|years)$", "", clean_name, ignore.case = TRUE)
     unit_suffix <- " (yr)"
   } else if (grepl("_(d|day|days)$", clean_name, ignore.case = TRUE)) {

@@ -13,7 +13,8 @@
 #' @param group_order Optional character vector to specify a custom group level order.
 #' @param output_xlsx Optional filename to export the table as an Excel file.
 #' @param output_docx Optional filename to export the table as a Word document.
-#' @param OR_col Logical; if \code{TRUE}, adds odds ratios for 2-level categorical variables.
+#' @param OR_col Logical; if \code{TRUE}, adds odds ratios with 95\% CI for binary categorical variables.
+#'   Only valid when \code{group_var} has exactly 2 levels; an error is raised for 3+ group comparisons.
 #' @param OR_method Character; if \code{"dynamic"}, uses Fisher/Wald based on test type. If \code{"wald"}, forces Wald method.
 #' @param consider_normality Logical or character; if \code{TRUE}, uses Shapiro-Wilk to choose t-test vs. Wilcoxon for numeric vars. If \code{FALSE}, uses variable type and force_ordinal. If \code{"FORCE"}, treats all numeric variables as ordinal (median/IQR, nonparametric tests).
 #' @param print_normality Logical; if \code{TRUE}, includes Shapiro-Wilk p-values in the output.
@@ -97,6 +98,11 @@ ternG <- function(data,
 
   data <- data %>% filter(!is.na(.data[[group_var]]))
   n_levels <- length(unique(data[[group_var]]))
+
+  if (isTRUE(OR_col) && n_levels != 2) {
+    stop("`OR_col = TRUE` is only valid for 2-group comparisons. ",
+         group_var, " has ", n_levels, " levels. Set `OR_col = FALSE` or use a binary group variable.")
+  }
 
   group_counts <- data %>% count(.data[[group_var]]) %>% deframe()
   group_levels <- names(group_counts)
@@ -503,7 +509,7 @@ ternG <- function(data,
 
   out_tbl <- suppressWarnings({
     result <- bind_rows(lapply(vars, function(v) .summarize_var_internal(data, v, force_ordinal, show_test, round_intg, show_total)))
-    message("Note: Categorical variables with >2 levels return multiple rows.")
+    cli::cli_alert_info("Multi-level categorical variables occupy more than one row in the output table.")
     result
   })
                         
@@ -553,84 +559,23 @@ ternG <- function(data,
     param_test    <- if (n_levels == 2) "independent samples t-test" else "one-way ANOVA"
     nonparam_test <- if (n_levels == 2) "Wilcoxon rank-sum" else "Kruskal-Wallis"
 
+    cli::cli_rule(left = "Normality Assessment (Shapiro-Wilk) \u2014 ternG")
     if (consider_normality == "FORCE") {
-      message(sprintf(
-        "Normality (Shapiro-Wilk): %d of %d continuous variables were normally distributed (%.1f%%).",
-        numeric_vars_passed, numeric_vars_tested, passed_pct
-      ))
-      message(sprintf(
-        "consider_normality = 'FORCE': All continuous variables displayed as median [IQR] and tested with nonparametric methods (%s).",
-        nonparam_test
-      ))
+      cli::cli_alert_info("{numeric_vars_passed} of {numeric_vars_tested} continuous variable{?s} normally distributed ({passed_pct}%)")
+      cli::cli_alert_warning("consider_normality = 'FORCE': all continuous variables \u2192 median [IQR], tested with {nonparam_test}")
     } else if (isTRUE(consider_normality)) {
-      message(sprintf(
-        "Normality (Shapiro-Wilk): %d of %d continuous variables were normally distributed (%.1f%%).",
-        numeric_vars_passed, numeric_vars_tested, passed_pct
-      ))
-      message(sprintf(
-        "Normally distributed variables: displayed as mean \u00b1 SD, tested with %s. Non-normal variables: displayed as median [IQR], tested with %s.",
-        param_test, nonparam_test
+      cli::cli_alert_info("{numeric_vars_passed} of {numeric_vars_tested} continuous variable{?s} normally distributed ({passed_pct}%)")
+      cli::cli_bullets(c(
+        ">" = "Normally distributed \u2192 mean \u00b1 SD, tested with {param_test}",
+        ">" = "Non-normal           \u2192 median [IQR], tested with {nonparam_test}"
       ))
     } else {
-      message(sprintf(
-        "Normality (Shapiro-Wilk): %d of %d continuous variables were normally distributed (%.1f%%).",
-        numeric_vars_passed, numeric_vars_tested, passed_pct
-      ))
-      message(sprintf(
-        "consider_normality = FALSE: All continuous variables displayed as mean \u00b1 SD and tested with %s regardless of distribution.",
-        param_test
-      ))
+      cli::cli_alert_info("{numeric_vars_passed} of {numeric_vars_tested} continuous variable{?s} normally distributed ({passed_pct}%)")
+      cli::cli_alert_warning("consider_normality = FALSE: all continuous variables \u2192 mean \u00b1 SD, tested with {param_test}")
     }
   }
 
   # Insert category header rows if specified
-  if (!is.null(category_start) && length(category_start) > 0) {
-    
-    for (header_label in names(category_start)) {
-      var_name <- category_start[[header_label]]
-      # Find the row with this variable name (using trimmed names)
-      # For multi-category variables, find the header row (which has empty data in column 2)
-      trimmed_vars <- sapply(out_tbl[[1]], function(x) trimws(x, which = "both"))
-      var_matches <- which(trimmed_vars == var_name)
-      
-      # If multiple matches, prefer the one with empty data (the header row)
-      if (length(var_matches) > 1) {
-        header_match <- var_matches[which(out_tbl[[2]][var_matches] == "" | is.na(out_tbl[[2]][var_matches]))]
-        var_idx <- if(length(header_match) > 0) header_match[1] else var_matches[1]
-      } else if (length(var_matches) == 1) {
-        var_idx <- var_matches[1]
-      } else {
-        next  # Variable not found, skip
-      }
-      
-      # insert_at is just var_idx - we search the current table each time
-      insert_at <- var_idx
-      
-      # Create category header row with no indentation
-      cat_row <- out_tbl[1, ]
-      cat_row[[1]][1] <- header_label
-      # Set all other columns to empty/NA
-      for (j in 2:ncol(cat_row)) {
-        if (is.numeric(cat_row[[j]])) {
-          cat_row[[j]][1] <- NA_real_
-        } else {
-          cat_row[[j]][1] <- ""
-        }
-      }
-      
-      # Insert the category row
-      if (insert_at == 1) {
-        out_tbl <- rbind(cat_row, out_tbl)
-      } else {
-        out_tbl <- rbind(
-          out_tbl[1:(insert_at - 1), ],
-          cat_row,
-          out_tbl[insert_at:nrow(out_tbl), ]
-        )
-      }
-    }
-  }
-
   # Replace "0 (NaN%)" with "-" for structurally impossible cells
   # (e.g. a subgroup that cannot logically have any observations in a given column)
   out_tbl <- out_tbl %>%

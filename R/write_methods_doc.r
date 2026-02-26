@@ -39,7 +39,8 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
     "Continuous variables are presented as mean \u00b1 SD for normally distributed ",
     "variables or median [IQR] for non-normally distributed or ordinal variables. ",
     "Categorical variables are presented as n (%). ",
-    "Normality of continuous variables was assessed using the Shapiro-Wilk test."
+    "Normality of continuous variables was assessed using the Shapiro-Wilk test; ",
+    "variables with a Shapiro-Wilk p > 0.05 were considered normally distributed."
   )
 
   # ── Helper: categorical comparison sentence ──────────────────────────────────
@@ -56,7 +57,7 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
   }
 
   or_sentence  <- if (OR_col) "For binary categorical variables, odds ratios with 95% confidence intervals were computed. " else ""
-  sig_sentence <- "Statistical significance was defined as p \u2264 0.05."
+  sig_sentence <- "Statistical significance was defined as p < 0.05."
 
   # ── Section 1: Descriptive ───────────────────────────────────────────────────
   sec1_body <- paste0(desc_sentence, " ", sig_sentence)
@@ -126,5 +127,5 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
     body_add_fpar(make_body(sec3_body))
 
   print(doc, target = filename)
-  message(paste0("Methods document written to: ", filename))
+  cli::cli_alert_success("Methods document written to: {filename}")
 }
