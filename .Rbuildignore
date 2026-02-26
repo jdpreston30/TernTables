@@ -1,2 +1,8 @@
 ^TernTables\.Rproj$
 ^\.Rproj\.user$
+^blood_storage_raw\.xlsx$
+^\~\$blood_storage_raw\.xlsx$
+^inst/scripts$
+^vignettes/.*\.html$
+^vignettes/.*_cache$
+^vignettes/.*_files$

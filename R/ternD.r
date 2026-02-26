@@ -26,9 +26,10 @@
 #' @param insert_subheads Logical; if \code{TRUE}, creates hierarchical structure with headers 
 #'   and indented sub-categories for multi-level categorical variables (except Y/N). If \code{FALSE}, 
 #'   uses simple flat format. Default is \code{TRUE}.
-#' @param factor_order Character; controls the ordering of factor levels in the output. If 
-#'   \code{"frequency"} (default), orders levels by decreasing frequency (most common first). 
-#'   If \code{"levels"}, respects the original factor level ordering as defined in the data.
+#' @param factor_order Character; controls the ordering of factor levels in the output. If
+#'   \code{"frequency"} (default), orders levels by decreasing frequency (most common first).
+#'   If \code{"levels"}, respects the original factor level ordering as defined in the data;
+#'   if the variable is not a factor, falls back to \code{"frequency"}.
 #' @param category_start Named character vector specifying where to insert category headers. 
 #'   Names should be variable names, and values are the category header labels to insert before 
 #'   those variables. For example, \code{c("age" = "Demographics", "bmi" = "Clinical Measures")}. 
@@ -71,7 +72,7 @@
 #' @export
 ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
                   output_xlsx = NULL, output_docx = NULL,
-                  consider_normality = FALSE, print_normality = FALSE, 
+                  consider_normality = TRUE, print_normality = FALSE, 
                   round_intg = FALSE, smart_rename = FALSE, insert_subheads = TRUE,
                   factor_order = "frequency", category_start = NULL) {
   stopifnot(is.data.frame(data))
@@ -124,25 +125,10 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
 
   summarize_variable <- function(df, var) {
     v <- df[[var]]
-    
-    # Helper function to clean variable names for headers
-    .clean_variable_name_for_header <- function(var_name) {
-      # Remove common suffixes and clean up for display
-      clean_name <- var_name
-      clean_name <- gsub("_simplified$", "", clean_name)
-      clean_name <- gsub("_calc$", "", clean_name)
-      clean_name <- gsub("_tpx$", "", clean_name)
-      clean_name <- gsub("_", " ", clean_name)
-      clean_name <- tools::toTitleCase(clean_name)
-      
-      # Handle common abbreviations
-      clean_name <- gsub("\\bCod\\b", "Cause of Death", clean_name)
-      clean_name <- gsub("\\bDbd Dcd\\b", "Mode of Organ Donation", clean_name)
-      clean_name <- gsub("\\bPhm\\b", "Predicted Heart Mass", clean_name)
-      clean_name <- gsub("\\bPhs\\b", "PHS", clean_name)
-      clean_name <- gsub("\\bLvef\\b", "LVEF", clean_name)
-      
-      return(clean_name)
+
+    # Auto-detect binary numeric (0/1) as categorical Y/N
+    if (is.numeric(v) && length(unique(na.omit(v))) == 2 && all(na.omit(v) %in% c(0, 1))) {
+      v <- factor(v, levels = c(0, 1), labels = c("N", "Y"))
     }
 
     # ---------- CATEGORICAL ----------
@@ -171,8 +157,9 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
       # Determine if this should use simple format or hierarchical subheads
       # Always use simple format for Y/N variables or when insert_subheads is FALSE
       # Otherwise use hierarchical format for multi-level categorical variables
-      is_yes_no <- all(c("Y", "N") %in% sorted_levels)
-      is_yes_no_full <- all(c("Yes", "No") %in% sorted_levels)
+      upper_levels   <- toupper(sorted_levels)
+      is_yes_no      <- all(c("Y", "N")   %in% upper_levels)
+      is_yes_no_full <- all(c("YES", "NO") %in% upper_levels)
       is_binary <- is_yes_no || is_yes_no_full
       use_hierarchical <- !is_binary && insert_subheads && length(sorted_levels) > 1
       
@@ -202,11 +189,11 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
         # For Y/N variables or when insert_subheads=FALSE, use simple format with 2-space indentation
         # For Y/N, show only the "Y" level; for Yes/No, show only "Yes"; for others, show most common level
         if (is_yes_no) {
-          # Y/N variables: show only Y
-          ref_level <- "Y"
+          # Y/N variables (any case): show only the positive level
+          ref_level <- sorted_levels[toupper(sorted_levels) == "Y"]
         } else if (is_yes_no_full) {
-          # Yes/No variables: show only Yes
-          ref_level <- "Yes"
+          # Yes/No variables (any case): show only the positive level
+          ref_level <- sorted_levels[toupper(sorted_levels) == "YES"]
         } else {
           # Other variables: show most common level or first level based on factor_order
           if (factor_order == "levels" && is.factor(v)) {
@@ -232,8 +219,10 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
 
     # ---------- NUMERIC ----------
     x <- suppressWarnings(as.numeric(v))
-    # compute normality p (even if consider_normality = FALSE, we may print it)
-    sw <- if (print_normality || consider_normality) shapiro_p(x) else NA_real_
+    # Always run Shapiro-Wilk for informational reporting regardless of consider_normality
+    sw <- shapiro_p(x)
+    norm_tested <<- norm_tested + 1
+    if (is.na(sw) || sw < 0.05) norm_failed <<- norm_failed + 1
 
     # Check if variable is forced to be ordinal
     if (!is.null(force_ordinal) && var %in% force_ordinal) {
@@ -259,8 +248,29 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
     return(out)
   }
 
+  norm_tested <- 0
+  norm_failed <- 0
   out_tbl <- dplyr::bind_rows(lapply(vars, function(v) summarize_variable(data, v)))
-  
+
+  # -- Report normality results -----------------------------------------------
+  if (norm_tested > 0) {
+    norm_passed <- norm_tested - norm_failed
+    passed_pct  <- round((norm_passed / norm_tested) * 100, 1)
+    if (isTRUE(consider_normality)) {
+      message(sprintf(
+        "Normality (Shapiro-Wilk): %d of %d continuous variables were normally distributed (%.1f%%).",
+        norm_passed, norm_tested, passed_pct
+      ))
+      message("Normally distributed variables: displayed as mean \u00b1 SD. Non-normal variables: displayed as median [IQR].")
+    } else {
+      message(sprintf(
+        "Normality (Shapiro-Wilk): %d of %d continuous variables were normally distributed (%.1f%%).",
+        norm_passed, norm_tested, passed_pct
+      ))
+      message("consider_normality = FALSE: All continuous variables displayed as mean \u00b1 SD regardless of distribution.")
+    }
+  }
+
   # Rename Summary column to include total N
   names(out_tbl)[names(out_tbl) == "Summary"] <- paste0("Summary (N = ", total_n, ")")
   

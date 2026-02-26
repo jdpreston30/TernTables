@@ -12,11 +12,7 @@ devtools::install_github("jdpreston30/TernTables")
 
 ### 🏥 Example Data
 
-Examples in this package use the `heart_transplant_df` dataset from the [CardioDataSets](https://cran.r-project.org/package=CardioDataSets) package. Install it to run the full examples:
-
-```r
-install.packages("CardioDataSets")
-```
+Examples and the vignette use the `colon` dataset from the `survival` package, which ships with every R installation. No additional packages are required to run the examples. The dataset contains 929 patients from a colon cancer adjuvant chemotherapy trial (Moertel et al., 1990).
 
 ## 📦 Functions
 
@@ -107,6 +103,7 @@ This project is licensed under the MIT License.
 - [Joshua D. Preston](https://orcid.org/0000-0001-9834-3017) [![ORCID](https://img.shields.io/badge/ORCID-0000--0001--9834--3017-brightgreen?logo=orcid)](https://orcid.org/0000-0001-9834-3017)
 - [Helen Abadiotakis](https://orcid.org/0009-0002-8268-927X) [![ORCID](https://img.shields.io/badge/ORCID-0009--0002--8268--927X-brightgreen?logo=orcid)](https://orcid.org/0009-0002-8268-927X)
 - [Ailin Tang](https://orcid.org/0009-0007-8715-1678) [![ORCID](https://img.shields.io/badge/ORCID-0009--0007--8715--1678-brightgreen?logo=orcid)](https://orcid.org/0009-0007-8715-1678)
+- [Maria V. Aslam](https://orcid.org/0000-0002-0036-3851) [![ORCID](https://img.shields.io/badge/ORCID-0000--0002--0036--3851-brightgreen?logo=orcid)](https://orcid.org/0000-0002-0036-3851)
 - [Clayton J. Rust](https://orcid.org/0000-0001-5929-0733) [![ORCID](https://img.shields.io/badge/ORCID-0000--0001--5929--0733-brightgreen?logo=orcid)](https://orcid.org/0000-0001-5929-0733)
 - [Joshua L. Chan](https://orcid.org/0000-0001-7220-561X) [![ORCID](https://img.shields.io/badge/ORCID-0000--0001--7220--561X-brightgreen?logo=orcid)](https://orcid.org/0000-0001-7220-561X)
 

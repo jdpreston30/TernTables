@@ -1,7 +1,7 @@
 Package: TernTables
 Type: Package
-Title: Automated statistics and table generation for clinical research in R.
-Version: 1.2.2.9000
+Title: Automated Statistics and Table Generation for Clinical Research in R
+Version: 1.2.2.9001
 Authors@R: c(
     person("Joshua D.", "Preston",
            email = "joshua.preston@emory.edu",
@@ -13,6 +13,9 @@ Authors@R: c(
     person("Ailin", "Tang",
            role = "aut",
            comment = c(ORCID = "0009-0007-8715-1678")),
+    person("Maria V.", "Aslam",
+           role = "aut",
+           comment = c(ORCID = "0000-0002-0036-3851")),
     person("Clayton J.", "Rust",
            role = "aut",
            comment = c(ORCID = "0000-0001-5929-0733")),
@@ -26,7 +29,6 @@ Description: Automatically generates publication-ready summary tables for descri
     and formats results for export to Word or Excel. Designed for efficient clinical data reporting.
 License: MIT + file LICENSE
 Encoding: UTF-8
-LazyData: true
 RoxygenNote: 7.3.3
 Imports: 
     dplyr (>= 1.0.0),
@@ -41,4 +43,5 @@ Suggests:
     testthat,
     knitr,
     rmarkdown,
-    CardioDataSets
+    survival
+VignetteBuilder: knitr

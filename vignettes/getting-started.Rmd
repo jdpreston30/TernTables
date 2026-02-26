@@ -1,0 +1,173 @@
+---
+title: "Getting Started with TernTables"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started with TernTables}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse  = TRUE,
+  comment   = "#>",
+  warning   = FALSE,
+  message   = FALSE
+)
+library(TernTables)
+```
+
+## Overview
+
+**TernTables** generates publication-ready summary tables for clinical research.
+Given a data frame and an optional grouping variable, it automatically:
+
+- Detects each variable's type (continuous, binary/categorical, or ordinal)
+- Selects the appropriate statistical test
+- Formats p-values and summary statistics for publication
+
+## Example Dataset
+
+```{r load-data}
+# colon ships with the survival package (part of base R)
+colon1 <- subset(survival::colon, etype == 1)
+
+# Drop survival/administrative columns not needed for a baseline table
+exclude_cols <- c("id", "study", "etype", "time", "status")
+```
+
+The `colon` dataset contains 929 patients from a landmark colon cancer adjuvant
+chemotherapy trial (Moertel et al., 1990). Filtering to `etype == 1` gives one
+row per patient (recurrence endpoint). Key variables used in these examples:
+
+| Variable | Description |
+|---|---|
+| `rx` | Treatment arm: Obs / Lev / Lev+5FU — **3-group comparison** |
+| `sex` | Sex: 0 = female, 1 = male — **2-group comparison** |
+| `age` | Age at registration (years) |
+| `obstruct` | Colonic obstruction (0/1) |
+| `perfor` | Bowel perforation (0/1) |
+| `adhere` | Tumour adherence to nearby organs (0/1) |
+| `nodes` | Number of positive lymph nodes |
+| `differ` | Tumour differentiation (1 = well, 2 = moderate, 3 = poor) |
+| `extent` | Extent of local spread (1–4) |
+| `surg` | Time from surgery to registration (0 = short, 1 = long) |
+| `node4` | More than 4 positive lymph nodes (0/1) |
+
+---
+
+## Descriptive Table (`ternD`)
+
+Use `ternD()` when you have a single cohort and want a summary of all variables
+without group comparisons.
+
+```{r ternD-example}
+# TODO: run once package is loaded
+TernDesc <- ternD(
+  data              = colon1,
+  exclude_vars      = exclude_cols,
+  consider_normality = TRUE
+)
+TernDesc
+```
+
+**What to look for:** Continuous variables show mean ± SD or median [IQR]
+depending on normality. Binary (0/1) columns are automatically detected as
+categorical and shown as n (%).
+
+---
+
+## Two-Group Comparison (`ternG` — 2 levels)
+
+Compare baseline characteristics between males and females using `sex` as the
+grouping variable.
+
+```{r ternG-2group}
+# TODO: run once package is loaded
+Tern2v <- ternG(
+  data               = colon1,
+  group_var          = "sex",
+  exclude_vars       = exclude_cols,
+  consider_normality = TRUE,
+  show_test          = TRUE,
+  insert_subheads    = TRUE
+)
+Tern2v
+```
+
+**Interpretation:** The `p` column shows the test p-value; `test` shows which
+test was applied. Binary columns (e.g. `obstruct`, `perfor`) are automatically
+routed to Fisher's exact or Chi-squared.
+
+---
+
+## Three-Group Comparison (`ternG` — 3 levels)
+
+The same `ternG()` function handles 3-level groups automatically, switching to
+ANOVA or Kruskal-Wallis for continuous variables.
+
+```{r ternG-3group}
+# TODO: run once package is loaded
+Tern3v <- ternG(
+  data               = colon1,
+  group_var          = "rx",
+  exclude_vars       = exclude_cols,
+  consider_normality = TRUE,
+  show_test          = TRUE,
+  insert_subheads    = TRUE
+)
+Tern3v
+```
+
+---
+
+## Exporting Results
+
+### Word document
+
+```{r export-word, eval = FALSE}
+export_to_word(
+  table_data  = Tern3v,
+  output_path = "colon_treatment_table.docx",
+  group_var   = "rx",
+  title       = "Table 1. Baseline Characteristics by Treatment Arm"
+)
+```
+
+### Excel
+
+```{r export-excel, eval = FALSE}
+writexl::write_xlsx(Tern3v, "colon_treatment_table.xlsx")
+```
+
+### Methods document
+
+```{r methods-doc, eval = FALSE}
+write_methods_doc(
+  table_data  = Tern3v,
+  output_path = "methods.docx"
+)
+```
+
+---
+
+## Statistical Test Logic
+
+TernTables selects tests automatically:
+
+| Variable type | Test (2 groups) | Test (3+ groups) |
+|---|---|---|
+| Continuous, normal | Welch's *t*-test | ANOVA |
+| Continuous, non-normal | Wilcoxon rank-sum | Kruskal-Wallis |
+| Binary / Categorical | Fisher's exact or Chi-squared* | Fisher's exact or Chi-squared* |
+| Ordinal (`force_ordinal`) | Wilcoxon rank-sum | Kruskal-Wallis |
+
+\*Fisher's exact is used when any expected cell count is < 5.
+
+---
+
+## References
+
+Moertel CG, Fleming TR, Macdonald JS, et al. (1990). Levamisole and fluorouracil
+for adjuvant therapy of resected colon carcinoma. *New England Journal of Medicine*,
+**322**(6), 352–358. <https://doi.org/10.1056/NEJM199002083220602>

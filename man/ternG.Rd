@@ -99,9 +99,10 @@ includes options to calculate p-values and odds ratios.
 # Basic usage with built-in mtcars dataset
 ternG(mtcars, group_var = "am")
 
-# With CardioDataSets (if installed)
-if (requireNamespace("CardioDataSets", quietly = TRUE)) {
-  data("heart_transplant_df", package = "CardioDataSets")
-  ternG(heart_transplant_df, group_var = "transplant")
-}
+# With survival::colon (ships with base R)
+colon1 <- subset(survival::colon, etype == 1)
+ternG(colon1, group_var = "sex",
+      exclude_vars = c("id", "study", "etype", "time", "status"))  # 2-group
+ternG(colon1, group_var = "rx",
+      exclude_vars = c("id", "study", "etype", "time", "status"))  # 3-group
 }
