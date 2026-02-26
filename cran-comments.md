@@ -14,10 +14,10 @@
 
 * This is the first CRAN submission of TernTables.
 
-* The `colon_recurrence` dataset is derived from `survival::colon`, which
+* The `tern_colon` dataset is derived from `survival::colon`, which
   ships with every R installation. `survival` is listed in `Suggests` only;
   it is not required at runtime. The pre-processed dataset is bundled in
-  `data/colon_recurrence.rda` so users do not need `survival` installed.
+  `data/tern_colon.rda` so users do not need `survival` installed.
 
 * The `Outputs/` directory and `TernTables_methods.docx` at the repository
   root are developer artefacts excluded from the package tarball via

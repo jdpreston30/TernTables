@@ -4,7 +4,7 @@
 #' @param digits Number of decimal places to round to (default 3)
 #' @return Formatted string with specified decimals, scientific if < 0.001
 #' @export
-fmt_p <- function(p, digits = 3) {
+val_p_format <- function(p, digits = 3) {
   if (is.na(p)) {
     return(NA_character_)
   }
@@ -45,7 +45,7 @@ fmt_p <- function(p, digits = 3) {
 #' @param sd Standard deviation
 #' @return Formatted string "mean  +-  sd"
 #' @export
-format_val <- function(mean, sd) {
+val_format <- function(mean, sd) {
   paste0(
     formatC(mean, format = "f", digits = 1),
     "  +-  ",

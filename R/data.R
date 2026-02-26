@@ -1,9 +1,11 @@
-#' Colon cancer recurrence data (clinical display format)
+#' Colon Cancer Recurrence Data (Example Dataset)
 #'
 #' A processed subset of the \code{survival::colon} dataset restricted to the
 #' recurrence endpoint (\code{etype == 1}), providing one row per patient.
 #' Variables have been relabelled with clinically descriptive names and
-#' factor levels suitable for direct use in TernTables functions.
+#' factor levels suitable for direct use in TernTables functions. This dataset
+#' is provided as a ready-to-use example for demonstrating \code{ternD()} and
+#' \code{ternG()} functionality.
 #'
 #' @format A tibble with 929 rows and 12 variables:
 #' \describe{
@@ -25,8 +27,8 @@
 #' }
 #' @source Derived from \code{survival::colon} (Laurie et al., 1989).
 #'   See \code{?survival::colon} for full provenance.
-#'   Pre-processing script: \code{data-raw/colon_recurrence.R}.
+#'   Pre-processing script: \code{data-raw/tern_colon.R}.
 #' @examples
-#' data(colon_recurrence)
-#' head(colon_recurrence)
-"colon_recurrence"
+#' data(tern_colon)
+#' head(tern_colon)
+"tern_colon"

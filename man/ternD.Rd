@@ -114,12 +114,12 @@ ternD(mtcars, consider_normality = TRUE)
 ternD(mtcars, force_ordinal = c("hp", "qsec"), consider_normality = TRUE)
 
 # Using the bundled clinical dataset
-data(colon_recurrence)
-ternD(colon_recurrence, exclude_vars = c("ID"), consider_normality = TRUE)
+data(tern_colon)
+ternD(tern_colon, exclude_vars = c("ID"), consider_normality = TRUE)
 
 # Export to Word (writes a file — not run during automated checks)
 \dontrun{
-ternD(colon_recurrence, exclude_vars = c("ID"),
+ternD(tern_colon, exclude_vars = c("ID"),
       output_docx = file.path(tempdir(), "descriptive.docx"))
 }
 }

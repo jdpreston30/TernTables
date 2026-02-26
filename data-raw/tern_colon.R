@@ -1,9 +1,9 @@
-## code to prepare the `colon_recurrence` dataset
+## code to prepare the `tern_colon` dataset
 
 library(dplyr)
 library(tibble)
 
-colon_recurrence <- as_tibble(survival::colon) |>
+tern_colon <- as_tibble(survival::colon) |>
   dplyr::filter(etype == 1) |>
   dplyr::mutate(
     rx       = factor(rx, levels = c("Lev+5FU", "Lev", "Obs"),
@@ -49,4 +49,4 @@ colon_recurrence <- as_tibble(survival::colon) |>
     Recurrence, Treatment_Arm
   )
 
-usethis::use_data(colon_recurrence, overwrite = TRUE)
+usethis::use_data(tern_colon, overwrite = TRUE)

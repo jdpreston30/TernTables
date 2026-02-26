@@ -20,8 +20,8 @@
 #' @return Invisibly returns the path to the written Word file.
 #' @examples
 #' \dontrun{
-#' data(colon_recurrence)
-#' tbl <- ternG(colon_recurrence, exclude_vars = c("ID"), group_var = "Recurrence")
+#' data(tern_colon)
+#' tbl <- ternG(tern_colon, exclude_vars = c("ID"), group_var = "Recurrence")
 #' write_methods_doc(tbl, filename = file.path(tempdir(), "methods.docx"))
 #' }
 #' @export

@@ -75,12 +75,12 @@
 #' ternD(mtcars, force_ordinal = c("hp", "qsec"), consider_normality = TRUE)
 #'
 #' # Using the bundled clinical dataset
-#' data(colon_recurrence)
-#' ternD(colon_recurrence, exclude_vars = c("ID"), consider_normality = TRUE)
+#' data(tern_colon)
+#' ternD(tern_colon, exclude_vars = c("ID"), consider_normality = TRUE)
 #'
 #' # Export to Word (writes a file — not run during automated checks)
 #' \dontrun{
-#' ternD(colon_recurrence, exclude_vars = c("ID"),
+#' ternD(tern_colon, exclude_vars = c("ID"),
 #'       output_docx = file.path(tempdir(), "descriptive.docx"))
 #' }
 #' @export
@@ -319,7 +319,7 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
     dplyr::mutate(dplyr::across(dplyr::where(is.character), ~ gsub("0 \\(NaN%\\)", "-", .x)))
 
   if (!is.null(output_xlsx)) export_to_excel(out_tbl, output_xlsx)
-  if (!is.null(output_docx)) export_to_word(out_tbl, output_docx, category_start = category_start)
+  if (!is.null(output_docx)) word_export(out_tbl, output_docx, category_start = category_start)
   if (methods_doc) write_methods_doc(out_tbl, methods_filename, source = "ternD")
 
   out_tbl <- dplyr::select(out_tbl, -dplyr::any_of(".indent"))
