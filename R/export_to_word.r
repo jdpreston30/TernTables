@@ -4,7 +4,7 @@
 #' @param filename Output file path ending in .docx
 #' @param round_intg Logical; if TRUE, adds note about integer rounding. Default is FALSE.
 #' @param font_size Numeric; font size for table body. Default is 9.
-#' @param category_start Named character vector specifying category headers. Names are variable names, values are category labels.
+#' @param category_start Named character vector specifying category headers. Names are header label text, values are the anchor variable names.
 #' @param manual_italic_indent Character vector of variable names to manually format as indented and italicized (like level 6).
 #' @param manual_underline Character vector of variable names to manually format as underlined (like multi-category headers).
 #' @export
@@ -21,8 +21,8 @@ export_to_word <- function(tbl, filename, round_intg = FALSE, font_size = 9, cat
   # Track which rows are category headers for formatting (don't insert, ternG already did)
   category_rows <- NULL
   if (!is.null(category_start) && length(category_start) > 0) {
-    # Find rows that match the category header labels
-    for (category_label in category_start) {
+    # Find rows that match the category header labels (now stored as names)
+    for (category_label in names(category_start)) {
       trimmed_vars <- sapply(modified_tbl[[1]], function(x) trimws(x, which = "both"))
       cat_idx <- which(trimmed_vars == category_label)
       if (length(cat_idx) > 0) {

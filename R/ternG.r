@@ -26,7 +26,7 @@
 #' @param table_font_size Numeric; font size for Word document output tables. Default is 9.
 #' @param methods_doc Logical; if \code{TRUE} (default), generates a methods document describing the statistical tests used.
 #' @param methods_filename Character; filename for the methods document. Default is \code{"TernTables_methods.docx"}.
-#' @param category_start Named character vector specifying where to insert category headers. Names should be variable names, and values are the category header labels to insert before those variables. For example, \code{c("age" = "Demographics", "bmi" = "Clinical Measures")}. Default is \code{NULL} (no category headers).
+#' @param category_start Named character vector specifying where to insert category headers. Names are the header label text to display, and values are the variable name the header should appear before. For example, \code{c("Demographics" = "age", "Clinical Measures" = "bmi")}. Default is \code{NULL} (no category headers).
 #' @param manual_italic_indent Character vector; optional parameter for specifying which variable names should be italicized and indented in formatted outputs. Used for advanced formatting control.
 #' @param manual_underline Character vector; optional parameter for specifying which variable names should be underlined in formatted outputs. Used for advanced formatting control.
 #' @param show_total Logical; if \code{TRUE}, adds a "Total" column showing the aggregate summary statistic across all groups (e.g., for a publication Table 1 that includes both per-group and overall columns). Default is \code{TRUE}.
@@ -183,7 +183,7 @@ ternG <- function(data,
             ref_level <- names(sort(colSums(tab), decreasing = TRUE))[1]
           }
         }
-        result <- tibble(Variable = var, .indent = 2)
+        result <- tibble(Variable = .clean_variable_name_for_header(var), .indent = 2)
         for (g_lvl in group_levels) {
           result[[group_labels[g_lvl]]] <- paste0(
             tab_n[g_lvl, ref_level], " (", tab_pct[g_lvl, ref_level], "%)"
@@ -309,7 +309,7 @@ ternG <- function(data,
         Q1 = if (round_intg) round_up_half(quantile(.data[[var]], 0.25, na.rm = TRUE), 0) else round(quantile(.data[[var]], 0.25, na.rm = TRUE), 1),
         med = if (round_intg) round_up_half(median(.data[[var]], na.rm = TRUE), 0) else round(median(.data[[var]], na.rm = TRUE), 1),
         Q3 = if (round_intg) round_up_half(quantile(.data[[var]], 0.75, na.rm = TRUE), 0) else round(quantile(.data[[var]], 0.75, na.rm = TRUE), 1), .groups = "drop")
-      result <- tibble(Variable = var, .indent = 2)
+      result <- tibble(Variable = .clean_variable_name_for_header(var), .indent = 2)
       for (g_lvl in group_levels) {
         val <- stats %>% filter(.data[[group_var]] == g_lvl)
         result[[group_labels[g_lvl]]] <- if (nrow(val) == 1) {
@@ -432,7 +432,7 @@ ternG <- function(data,
     }
 
     # ----- Normally distributed numeric -----
-    result <- tibble(Variable = var, .indent = 2)
+    result <- tibble(Variable = .clean_variable_name_for_header(var), .indent = 2)
     stats <- g %>% group_by(.data[[group_var]]) %>% summarise(
       mean = mean(.data[[var]], na.rm = TRUE),
       sd = sd(.data[[var]], na.rm = TRUE), .groups = "drop")
@@ -586,7 +586,8 @@ ternG <- function(data,
   # Insert category header rows if specified
   if (!is.null(category_start) && length(category_start) > 0) {
     
-    for (var_name in names(category_start)) {
+    for (header_label in names(category_start)) {
+      var_name <- category_start[[header_label]]
       # Find the row with this variable name (using trimmed names)
       # For multi-category variables, find the header row (which has empty data in column 2)
       trimmed_vars <- sapply(out_tbl[[1]], function(x) trimws(x, which = "both"))
@@ -607,7 +608,7 @@ ternG <- function(data,
       
       # Create category header row with no indentation
       cat_row <- out_tbl[1, ]
-      cat_row[[1]][1] <- category_start[var_name]
+      cat_row[[1]][1] <- header_label
       # Set all other columns to empty/NA
       for (j in 2:ncol(cat_row)) {
         if (is.numeric(cat_row[[j]])) {
@@ -635,31 +636,28 @@ ternG <- function(data,
   out_tbl <- out_tbl %>%
     dplyr::mutate(dplyr::across(dplyr::where(is.character), ~ gsub("0 \\(NaN%\\)", "-", .x)))
 
-  # Export to Word AFTER category headers are inserted
-  if (!is.null(output_docx)) export_to_word(out_tbl, output_docx, round_intg = round_intg, font_size = table_font_size, category_start = category_start, manual_italic_indent = manual_italic_indent, manual_underline = manual_underline)
-
   # Apply smart variable name cleaning if requested
   if (smart_rename) {
     for (i in seq_len(nrow(out_tbl))) {
       current_var <- out_tbl$Variable[i]
-
       if (grepl("^\\s+", current_var)) {
         padding <- stringr::str_extract(current_var, "^\\s+")
         trimmed_var <- trimws(current_var)
-
         if (grepl(": [A-Za-z0-9]+$", trimmed_var)) {
           parts <- strsplit(trimmed_var, ": ")[[1]]
           cleaned_var <- paste0(.apply_cleaning_rules(parts[1]), ": ", parts[2])
         } else {
           cleaned_var <- .apply_cleaning_rules(trimmed_var)
         }
-
         out_tbl$Variable[i] <- paste0(padding, cleaned_var)
       } else {
         out_tbl$Variable[i] <- .apply_cleaning_rules(current_var)
       }
     }
   }
+
+  # Export to Word AFTER smart_rename so docx gets clean names
+  if (!is.null(output_docx)) export_to_word(out_tbl, output_docx, round_intg = round_intg, font_size = table_font_size, category_start = category_start, manual_italic_indent = manual_italic_indent, manual_underline = manual_underline)
 
   if (!indent_info_column) out_tbl <- dplyr::select(out_tbl, -dplyr::any_of(".indent"))
 

@@ -76,7 +76,7 @@ ternG(
 
 \item{methods_filename}{Character; filename for the methods document. Default is \code{"TernTables_methods.docx"}.}
 
-\item{category_start}{Named character vector specifying where to insert category headers. Names should be variable names, and values are the category header labels to insert before those variables. For example, \code{c("age" = "Demographics", "bmi" = "Clinical Measures")}. Default is \code{NULL} (no category headers).}
+\item{category_start}{Named character vector specifying where to insert category headers. Names are the header label text to display, and values are the variable name the header should appear before. For example, \code{c("Demographics" = "age", "Clinical Measures" = "bmi")}. Default is \code{NULL} (no category headers).}
 
 \item{manual_italic_indent}{Character vector; optional parameter for specifying which variable names should be italicized and indented in formatted outputs. Used for advanced formatting control.}
 

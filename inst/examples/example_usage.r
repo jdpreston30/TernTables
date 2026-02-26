@@ -29,10 +29,10 @@ colon1 <- as_tibble(survival::colon) |>
     "Tumour_Adherence"            = adhere,
     "Positive_Lymph_Nodes"        = nodes,
     "Recurrence"                  = status,
-    "Tumour_Differentiation"      = differ,
+    "Tumor_Differentiation"      = differ,
     "Extent_of_Local_Spread"      = extent,
     "Time_to_Registration_days"    = surg,
-    "More_Than_4_Positive_Nodes"  = node4,
+    ">_4_Positive_Nodes"  = node4,
     "Time_to_Event_days"          = time,
     "Event_Type"                  = etype
   ) |>
@@ -46,7 +46,7 @@ devtools::load_all(".")
 # --- ternD: descriptive summary ---
 TernDesc <- ternD(
   data = colon1,
-  output_docx = "TernDesc.docx",
+  output_docx = "Outputs/TernDesc.docx",
   exclude_vars = c("ID", "Time_to_Event_days")
 )
 
@@ -55,10 +55,10 @@ Tern2v <- ternG(
   data = colon1,
   group_var = "Recurrence",
   exclude_vars = c("ID", "Time_to_Event_days"),
-  output_docx = "Tern_2group.docx",
+  output_docx = "Outputs/Tern_2group.docx",
   insert_subheads = TRUE
 )
-
+Positive_Lymph_Nodes
 # --- ternG: 3-group comparison (treatment arm) ---
 Tern3v <- ternG(
   data = colon1,
