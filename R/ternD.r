@@ -27,9 +27,9 @@
 #'   and indented sub-categories for multi-level categorical variables (except Y/N). If \code{FALSE}, 
 #'   uses simple flat format. Default is \code{TRUE}.
 #' @param factor_order Character; controls the ordering of factor levels in the output. If
-#'   \code{"frequency"} (default), orders levels by decreasing frequency (most common first).
-#'   If \code{"levels"}, respects the original factor level ordering as defined in the data;
-#'   if the variable is not a factor, falls back to \code{"frequency"}.
+#'   \code{"levels"} (default), respects the original factor level ordering as defined in the data;
+#'   if the variable is not a factor, falls back to frequency ordering. If \code{"frequency"},
+#'   orders levels by decreasing frequency (most common first).
 #' @param methods_doc Logical; if \code{TRUE} (default), generates a methods document
 #'   describing the statistical presentation used. The document contains boilerplate
 #'   text for all three table types so the relevant section can be copied directly
@@ -37,8 +37,10 @@
 #' @param methods_filename Character; filename for the methods document.
 #'   Default is \code{"TernTables_methods.docx"}.
 #' @param category_start Named character vector specifying where to insert category headers.
-#'   Names are the header label text to display, and values are the variable name the header
-#'   should appear before. For example, \code{c("Demographics" = "age", "Clinical Measures" = "bmi")}.
+#'   Names are the header label text to display; values are the anchor variable — either the
+#'   original column name (e.g. \code{"Age_Years"}) or the cleaned display name
+#'   (e.g. \code{"Age (yr)"}). Both forms are accepted.
+#'   Example: \code{c("Demographics" = "Age_Years", "Clinical Measures" = "bmi")}.
 #'   Default is \code{NULL} (no category headers).
 #'
 #' @details
@@ -80,7 +82,7 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
                   output_xlsx = NULL, output_docx = NULL,
                   consider_normality = TRUE, print_normality = FALSE, 
                   round_intg = FALSE, smart_rename = TRUE, insert_subheads = TRUE,
-                  factor_order = "frequency", methods_doc = TRUE,
+                  factor_order = "levels", methods_doc = TRUE,
                   methods_filename = "TernTables_methods.docx", category_start = NULL) {
   stopifnot(is.data.frame(data))
   

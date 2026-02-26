@@ -3,6 +3,7 @@
 ^blood_storage_raw\.xlsx$
 ^\~\$blood_storage_raw\.xlsx$
 ^inst/scripts$
+^data-raw$
 ^vignettes/.*\.html$
 ^vignettes/.*_cache$
 ^vignettes/.*_files$

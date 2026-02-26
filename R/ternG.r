@@ -23,11 +23,16 @@
 #' @param round_intg Logical; if \code{TRUE}, rounds all means, medians, IQRs, and standard deviations to nearest integer (0.5 rounds up). Default is \code{FALSE}.
 #' @param smart_rename Logical; if \code{TRUE}, automatically cleans variable names and subheadings for publication-ready output using built-in rule-based pattern matching for common medical abbreviations and prefixes. Default is \code{TRUE}.
 #' @param insert_subheads Logical; if \code{TRUE}, creates hierarchical structure with headers and indented sub-categories for multi-level categorical variables (except Y/N). If \code{FALSE}, uses simple flat format. Default is \code{TRUE}.
-#' @param factor_order Character; controls the ordering of factor levels in the output. If \code{"frequency"} (default), orders levels by decreasing frequency (most common first). If \code{"levels"}, respects the original factor level ordering as defined in the data; if the variable is not a factor, falls back to \code{"frequency"}.
+#' @param factor_order Character; controls the ordering of factor levels in the output. If \code{"levels"} (default), respects the original factor level ordering as defined in the data; if the variable is not a factor, falls back to frequency ordering. If \code{"frequency"}, orders levels by decreasing frequency (most common first).
 #' @param table_font_size Numeric; font size for Word document output tables. Default is 9.
 #' @param methods_doc Logical; if \code{TRUE} (default), generates a methods document describing the statistical tests used.
 #' @param methods_filename Character; filename for the methods document. Default is \code{"TernTables_methods.docx"}.
-#' @param category_start Named character vector specifying where to insert category headers. Names are the header label text to display, and values are the variable name the header should appear before. For example, \code{c("Demographics" = "age", "Clinical Measures" = "bmi")}. Default is \code{NULL} (no category headers).
+#' @param category_start Named character vector specifying where to insert category headers.
+#'   Names are the header label text to display; values are the anchor variable — either the
+#'   original column name (e.g. \code{"Age_Years"}) or the cleaned display name
+#'   (e.g. \code{"Age (yr)"}). Both forms are accepted.
+#'   Example: \code{c("Demographics" = "Age_Years", "Clinical" = "bmi")}.
+#'   Default is \code{NULL} (no category headers).
 #' @param manual_italic_indent Character vector; optional parameter for specifying which variable names should be italicized and indented in formatted outputs. Used for advanced formatting control.
 #' @param manual_underline Character vector; optional parameter for specifying which variable names should be underlined in formatted outputs. Used for advanced formatting control.
 #' @param show_total Logical; if \code{TRUE}, adds a "Total" column showing the aggregate summary statistic across all groups (e.g., for a publication Table 1 that includes both per-group and overall columns). Default is \code{TRUE}.
@@ -65,7 +70,7 @@ ternG <- function(data,
                   round_intg = FALSE,
                   smart_rename = TRUE,
                   insert_subheads = TRUE,
-                  factor_order = "frequency",
+                  factor_order = "levels",
                   table_font_size = 9,
                   methods_doc = TRUE,
                   methods_filename = "TernTables_methods.docx",
@@ -227,8 +232,8 @@ ternG <- function(data,
             if (show_test) result$OR_method <- "Wald"
           }
         } else if (OR_col) {
-          result$OR <- NA_character_
-          if (show_test) result$OR_method <- NA_character_
+          result$OR <- "-"
+          if (show_test) result$OR_method <- "-"
         }
         if (show_total) {
           result$Total <- paste0(tab_total_n[ref_level], " (", tab_total_pct[ref_level], "%)")
@@ -356,7 +361,7 @@ ternG <- function(data,
         result$test <- test_result$test_name
       }
       
-      if (OR_col) result$OR <- NA_character_
+      if (OR_col) result$OR <- "-"
       if (show_total) {
         val_total <- g %>% dplyr::summarise(
           Q1  = if (round_intg) round_up_half(quantile(.data[[var]], 0.25, na.rm = TRUE), 0) else round(quantile(.data[[var]], 0.25, na.rm = TRUE), 1),
@@ -489,7 +494,7 @@ ternG <- function(data,
       result$test <- test_result$test_name
     }
     
-    if (OR_col) result$OR <- NA_character_
+    if (OR_col) result$OR <- "-"
     if (show_total) {
       val_total <- g %>% dplyr::summarise(mean = mean(.data[[var]], na.rm = TRUE), sd = sd(.data[[var]], na.rm = TRUE))
       if (round_intg) {
@@ -524,9 +529,9 @@ ternG <- function(data,
 
   # Desired column order (keeping group columns with n = x format)
   if (show_test) {
-    desired <- c("Variable", existing_group_cols, "Total", "p", "OR", "test", "OR_method", normality_cols)
+    desired <- c("Variable", existing_group_cols, "Total", "OR", "p", "test", "OR_method", normality_cols)
   } else {
-    desired <- c("Variable", existing_group_cols, "Total", "p", "OR", normality_cols)
+    desired <- c("Variable", existing_group_cols, "Total", "OR", "p", normality_cols)
     # Remove test and OR_method columns if they exist
     if ("test" %in% names(out_tbl)) {
       out_tbl <- dplyr::select(out_tbl, -test)

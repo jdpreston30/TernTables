@@ -22,7 +22,7 @@ ternG(
   round_intg = FALSE,
   smart_rename = TRUE,
   insert_subheads = TRUE,
-  factor_order = "frequency",
+  factor_order = "levels",
   table_font_size = 9,
   methods_doc = TRUE,
   methods_filename = "TernTables_methods.docx",
@@ -69,7 +69,7 @@ Only valid when \code{group_var} has exactly 2 levels; an error is raised for 3+
 
 \item{insert_subheads}{Logical; if \code{TRUE}, creates hierarchical structure with headers and indented sub-categories for multi-level categorical variables (except Y/N). If \code{FALSE}, uses simple flat format. Default is \code{TRUE}.}
 
-\item{factor_order}{Character; controls the ordering of factor levels in the output. If \code{"frequency"} (default), orders levels by decreasing frequency (most common first). If \code{"levels"}, respects the original factor level ordering as defined in the data; if the variable is not a factor, falls back to \code{"frequency"}.}
+\item{factor_order}{Character; controls the ordering of factor levels in the output. If \code{"levels"} (default), respects the original factor level ordering as defined in the data; if the variable is not a factor, falls back to frequency ordering. If \code{"frequency"}, orders levels by decreasing frequency (most common first).}
 
 \item{table_font_size}{Numeric; font size for Word document output tables. Default is 9.}
 
@@ -77,7 +77,12 @@ Only valid when \code{group_var} has exactly 2 levels; an error is raised for 3+
 
 \item{methods_filename}{Character; filename for the methods document. Default is \code{"TernTables_methods.docx"}.}
 
-\item{category_start}{Named character vector specifying where to insert category headers. Names are the header label text to display, and values are the variable name the header should appear before. For example, \code{c("Demographics" = "age", "Clinical Measures" = "bmi")}. Default is \code{NULL} (no category headers).}
+\item{category_start}{Named character vector specifying where to insert category headers.
+Names are the header label text to display; values are the anchor variable — either the
+original column name (e.g. \code{"Age_Years"}) or the cleaned display name
+(e.g. \code{"Age (yr)"}). Both forms are accepted.
+Example: \code{c("Demographics" = "Age_Years", "Clinical" = "bmi")}.
+Default is \code{NULL} (no category headers).}
 
 \item{manual_italic_indent}{Character vector; optional parameter for specifying which variable names should be italicized and indented in formatted outputs. Used for advanced formatting control.}
 
