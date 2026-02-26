@@ -4,7 +4,9 @@
 #' @param filename Output file path ending in .docx
 #' @param round_intg Logical; if TRUE, adds note about integer rounding. Default is FALSE.
 #' @param font_size Numeric; font size for table body. Default is 9.
-#' @param category_start Named character vector specifying category headers. Names are header label text, values are the anchor variable names.
+#' @param category_start Named character vector specifying category headers. Names are header
+#'   label text; values are anchor variable names — either the original column name or the
+#'   cleaned display name (both forms accepted).
 #' @param manual_italic_indent Character vector of variable names to manually format as indented and italicized (like level 6).
 #' @param manual_underline Character vector of variable names to manually format as underlined (like multi-category headers).
 #' @export
@@ -18,6 +20,14 @@ export_to_word <- function(tbl, filename, round_intg = FALSE, font_size = 9, cat
       var_name <- category_start[[header_label]]
       trimmed_vars <- sapply(modified_tbl[[1]], function(x) trimws(x, which = "both"))
       var_matches <- which(trimmed_vars == var_name)
+
+      # Fallback: if raw name not found, try matching the cleaned display form
+      # This allows anchors to be either the original column name (e.g. "Age_Years")
+      # or the cleaned display name (e.g. "Age (yr)")
+      if (length(var_matches) == 0) {
+        cleaned_anchor <- .clean_variable_name_for_header(var_name)
+        var_matches <- which(trimmed_vars == cleaned_anchor)
+      }
 
       if (length(var_matches) > 1) {
         second_col <- modified_tbl[[2]]

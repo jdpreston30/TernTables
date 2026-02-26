@@ -23,7 +23,9 @@ export_to_word(
 
 \item{font_size}{Numeric; font size for table body. Default is 9.}
 
-\item{category_start}{Named character vector specifying category headers. Names are header label text, values are the anchor variable names.}
+\item{category_start}{Named character vector specifying category headers. Names are header
+label text; values are anchor variable names — either the original column name or the
+cleaned display name (both forms accepted).}
 
 \item{manual_italic_indent}{Character vector of variable names to manually format as indented and italicized (like level 6).}
 

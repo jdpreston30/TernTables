@@ -56,7 +56,11 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
     }
   }
 
-  or_sentence  <- if (OR_col) "For binary categorical variables, odds ratios with 95% confidence intervals were computed. " else ""
+  or_sentence  <- if (OR_col) paste0(
+    "For binary categorical variables, odds ratios (OR) with 95% confidence intervals (CI) were calculated. ",
+    "Where expected cell counts were five or greater, OR and 95% CI were derived using the Wald method. ",
+    "Where expected cell counts were less than five, OR and 95% CI were derived from Fisher's exact test. "
+  ) else ""
   sig_sentence <- "Statistical significance was defined as p < 0.05."
 
   # ── Section 1: Descriptive ───────────────────────────────────────────────────
