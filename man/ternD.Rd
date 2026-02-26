@@ -78,17 +78,17 @@ Default is \code{NULL} (no category headers).}
 A tibble with one row per variable (multi-row for factors), containing:
 \describe{
   \item{Variable}{Variable names with appropriate indentation}
-  \item{Summary}{Summary statistics (mean ± SD, median [IQR], or n (\%) as appropriate)}
+  \item{Total (N = n)}{Summary statistics (mean ± SD, median [IQR], or n (\%) as appropriate)}
   \item{SW_p}{Shapiro-Wilk p-values (only if \code{print_normality = TRUE})}
 }
 }
 \description{
-Creates a descriptive summary table with a single "Summary" column format.
+Creates a descriptive summary table with a single “Total” column format.
 For numeric variables, the default behavior is to show mean ± SD, but this
 can be modified using the \code{consider_normality} and \code{force_ordinal} parameters.
 }
 \details{
-The function always returns a tibble with a single "Summary" column format, regardless of the
+The function always returns a tibble with a single \code{Total (N = n)} column format, regardless of the
 \code{consider_normality} setting. The behavior for numeric variables follows this priority:
 \enumerate{
   \item Variables in \code{force_ordinal}: Always use median [IQR]

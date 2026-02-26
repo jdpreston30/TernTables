@@ -47,9 +47,9 @@ row per patient (recurrence endpoint). Key variables used in these examples:
 | `age` | Age at registration (years) |
 | `obstruct` | Colonic obstruction (0/1) |
 | `perfor` | Bowel perforation (0/1) |
-| `adhere` | Tumour adherence to nearby organs (0/1) |
+| `adhere` | Tumor adherence to nearby organs (0/1) |
 | `nodes` | Number of positive lymph nodes |
-| `differ` | Tumour differentiation (1 = well, 2 = moderate, 3 = poor) |
+| `differ` | Tumor differentiation (1 = well, 2 = moderate, 3 = poor) |
 | `extent` | Extent of local spread (1–4) |
 | `surg` | Time from surgery to registration (0 = short, 1 = long) |
 | `node4` | More than 4 positive lymph nodes (0/1) |

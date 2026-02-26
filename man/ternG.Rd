@@ -50,7 +50,8 @@ ternG(
 
 \item{output_docx}{Optional filename to export the table as a Word document.}
 
-\item{OR_col}{Logical; if \code{TRUE}, adds odds ratios for 2-level categorical variables.}
+\item{OR_col}{Logical; if \code{TRUE}, adds odds ratios with 95\% CI for binary categorical variables.
+Only valid when \code{group_var} has exactly 2 levels; an error is raised for 3+ group comparisons.}
 
 \item{OR_method}{Character; if \code{"dynamic"}, uses Fisher/Wald based on test type. If \code{"wald"}, forces Wald method.}
 

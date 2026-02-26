@@ -1,6 +1,6 @@
 #' Generate descriptive summary table (optionally normality-aware)
 #'
-#' Creates a descriptive summary table with a single "Summary" column format.
+#' Creates a descriptive summary table with a single “Total” column format.
 #' For numeric variables, the default behavior is to show mean ± SD, but this
 #' can be modified using the \code{consider_normality} and \code{force_ordinal} parameters.
 #'
@@ -42,7 +42,7 @@
 #'   Default is \code{NULL} (no category headers).
 #'
 #' @details
-#' The function always returns a tibble with a single "Summary" column format, regardless of the
+#' The function always returns a tibble with a single \code{Total (N = n)} column format, regardless of the
 #' \code{consider_normality} setting. The behavior for numeric variables follows this priority:
 #' \enumerate{
 #'   \item Variables in \code{force_ordinal}: Always use median [IQR]
@@ -58,7 +58,7 @@
 #' @return A tibble with one row per variable (multi-row for factors), containing:
 #' \describe{
 #'   \item{Variable}{Variable names with appropriate indentation}
-#'   \item{Summary}{Summary statistics (mean ± SD, median [IQR], or n (\%) as appropriate)}
+#'   \item{Total (N = n)}{Summary statistics (mean ± SD, median [IQR], or n (\%) as appropriate)}
 #'   \item{SW_p}{Shapiro-Wilk p-values (only if \code{print_normality = TRUE})}
 #' }
 #'
@@ -239,7 +239,7 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
       summary_str <- fmt_median_iqr(x)
     } else if (isTRUE(consider_normality)) {
       # choose mean +- SD if normal; else median [IQR]
-      if (!is.na(sw) && sw >= 0.05) {
+      if (!is.na(sw) && sw > 0.05) {
         summary_str <- fmt_mean_sd(x)
       } else {
         summary_str <- fmt_median_iqr(x)
@@ -266,23 +266,21 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
   if (norm_tested > 0) {
     norm_passed <- norm_tested - norm_failed
     passed_pct  <- round((norm_passed / norm_tested) * 100, 1)
+    cli::cli_rule(left = "Normality Assessment (Shapiro-Wilk) — ternD")
     if (isTRUE(consider_normality)) {
-      message(sprintf(
-        "Normality (Shapiro-Wilk): %d of %d continuous variables were normally distributed (%.1f%%).",
-        norm_passed, norm_tested, passed_pct
+      cli::cli_alert_info("{norm_passed} of {norm_tested} continuous variable{?s} normally distributed ({passed_pct}%)")
+      cli::cli_bullets(c(
+        ">" = "Normally distributed \u2192 mean \u00b1 SD",
+        ">" = "Non-normal           \u2192 median [IQR]"
       ))
-      message("Normally distributed variables: displayed as mean \u00b1 SD. Non-normal variables: displayed as median [IQR].")
     } else {
-      message(sprintf(
-        "Normality (Shapiro-Wilk): %d of %d continuous variables were normally distributed (%.1f%%).",
-        norm_passed, norm_tested, passed_pct
-      ))
-      message("consider_normality = FALSE: All continuous variables displayed as mean \u00b1 SD regardless of distribution.")
+      cli::cli_alert_info("{norm_passed} of {norm_tested} continuous variable{?s} normally distributed ({passed_pct}%)")
+      cli::cli_alert_warning("consider_normality = FALSE: all continuous variables displayed as mean \u00b1 SD")
     }
   }
 
-  # Rename Summary column to include total N
-  names(out_tbl)[names(out_tbl) == "Summary"] <- paste0("Summary (N = ", total_n, ")")
+  # Rename Summary column to match ternG Total column format
+  names(out_tbl)[names(out_tbl) == "Summary"] <- paste0("Total\n(N = ", total_n, ")")
   
   # Apply smart variable name cleaning if requested
   if (smart_rename) {
