@@ -1,13 +1,13 @@
-# TernTablesR
-**TernTablesR** is a lightweight R package for generating clean summary tables with appropriate statistical tests. It supports two-level and three-level group comparisons for binary, continuous, and ordinal variables, and includes options for exporting tables to Word and Excel.
+# TernTables
+**TernTables** is a lightweight R package for generating clean summary tables with appropriate statistical tests. It supports two-level and three-level group comparisons for binary, continuous, and ordinal variables, and includes options for exporting tables to Word and Excel.
 
 ## 🚀 Installation
 
-You can install the development version of TernTablesR from GitHub:
+You can install the development version of TernTables from GitHub:
 
 ```r
 # install.packages("devtools")
-devtools::install_github("jdpreston30/TernTablesR")
+devtools::install_github("jdpreston30/TernTables")
 ```
 
 ### 🏥 Example Data
@@ -39,24 +39,13 @@ Generates summary tables for either **binary** or **3-level categorical** groupi
 ### Two-level comparison
 
 ```r
-library(TernTablesR)
-ternG(
-  data = your_data,
-  group_var = "treatment_group",  # binary variable
-  exclude_vars = c("ID"),
-  force_ordinal = c("severity_score", "stage"),
-  group_order = c("Control", "Treatment"),  # Optional custom order
-  output_xlsx = "summary_2v.xlsx",
-  output_docx = "summary_2v.docx",
-  OR_col = TRUE,  # Adds odds ratios for 2x2 categorical comparisons
-  consider_normality = TRUE # Runs normality test to choose test to compare means (default)
-)
+library(TernTables)
 ```
 
 ### Three-level comparison
 
 ```r
-library(TernTablesR)
+library(TernTables)
 ternG(
   data = your_data,
   group_var = "grade",  # 3-level variable (e.g., 3, 4, 5)
