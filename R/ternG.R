@@ -479,7 +479,7 @@ ternG <- function(data,
         reason <- "insufficient group sizes"
       } else if (all(is.na(g[[var]]))) {
         reason <- "all values missing"
-      } else if (var(g[[var]], na.rm = TRUE) == 0) {
+      } else if (stats::var(g[[var]], na.rm = TRUE) == 0) {
         reason <- "no variation in values"
       } else {
         reason <- "test failure"

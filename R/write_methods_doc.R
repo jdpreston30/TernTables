@@ -17,6 +17,7 @@
 #' @param OR_col Logical; whether odds ratios were calculated. Default \code{FALSE}.
 #' @param source Character; \code{"ternG"} or \code{"ternD"}. Controls which
 #'   section is populated with dynamic test information. Default \code{"ternG"}.
+#' @return Invisibly returns the path to the written Word file.
 #' @examples
 #' \dontrun{
 #' data(colon_recurrence)
@@ -139,4 +140,5 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
   dir.create(dirname(filename), recursive = TRUE, showWarnings = FALSE)
   print(doc, target = filename)
   cli::cli_alert_success("Methods document written to: {filename}")
+  invisible(filename)
 }

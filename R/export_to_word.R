@@ -9,6 +9,7 @@
 #'   cleaned display name (both forms accepted).
 #' @param manual_italic_indent Character vector of variable names to manually format as indented and italicized (like level 6).
 #' @param manual_underline Character vector of variable names to manually format as underlined (like multi-category headers).
+#' @return Invisibly returns the path to the written Word file.
 #' @examples
 #' \dontrun{
 #' data(colon_recurrence)
@@ -75,7 +76,7 @@ export_to_word <- function(tbl, filename, round_intg = FALSE, font_size = 9, cat
   # Store .indent column for later use, then remove it from display
   indent_col <- if (".indent" %in% colnames(modified_tbl)) modified_tbl[[".indent"]] else NULL
   if (!is.null(indent_col)) {
-    modified_tbl <- modified_tbl %>% select(-.indent)
+    modified_tbl <- modified_tbl %>% select(-dplyr::any_of(".indent"))
   }
 
   # Track which rows are category headers for formatting
@@ -258,4 +259,5 @@ export_to_word <- function(tbl, filename, round_intg = FALSE, font_size = 9, cat
   doc <- read_docx() %>% body_add_flextable(ft)
   dir.create(dirname(filename), recursive = TRUE, showWarnings = FALSE)
   print(doc, target = filename)
+  invisible(filename)
 }
