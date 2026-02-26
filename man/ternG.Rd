@@ -69,11 +69,11 @@ parametric tests) regardless of distribution, unless listed in \code{force_ordin
 If \code{"FORCE"}, all numeric variables are treated as non-normal (median [IQR], nonparametric tests)
 regardless of Shapiro-Wilk results.}
 
-\item{print_normality}{Logical; if \code{TRUE}, includes Shapiro-Wilk p-values in the output.}
+\item{print_normality}{Logical; if \code{TRUE}, includes Shapiro-Wilk P values in the output.}
 
 \item{show_test}{Logical; if \code{TRUE}, includes the statistical test name as a column in the output. Default is \code{FALSE}.}
 
-\item{p_digits}{Integer; number of decimal places for p-values (default 3).}
+\item{p_digits}{Integer; number of decimal places for P values (default 3).}
 
 \item{round_intg}{Logical; if \code{TRUE}, rounds all means, medians, IQRs, and standard deviations to nearest integer (0.5 rounds up). Default is \code{FALSE}.}
 
@@ -120,12 +120,13 @@ in the Word table.}
 }
 \value{
 A tibble with one row per variable (multi-row for multi-level factors), showing summary statistics by group,
-p-values, test type, and optionally odds ratios and total summary column.
+P values, test type, and optionally odds ratios and total summary column.
 }
 \description{
 Creates a grouped summary table with optional statistical testing for group
-comparisons. Supports numeric, ordinal, and categorical variables, and
-includes options to calculate p-values and odds ratios. For descriptive
+comparisons. Supports numeric and categorical variables; numeric variables
+can be treated as ordinal via \code{force_ordinal}. Includes options to
+calculate P values and odds ratios. For descriptive
 (ungrouped) tables, use \code{ternD}.
 }
 \examples{

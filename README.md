@@ -1,15 +1,27 @@
 # TernTables
 
-**TernTables** is designed for clinical researchers who need publication-ready
-summary statistics tables without manual formatting. Given a data frame and an
-optional grouping variable, a single function call handles variable type
-detection, statistical test selection, p-value formatting, Word export, and
-auto-generated methods text — producing output that is ready to paste directly
-into a manuscript.
+**TernTables** is built for clinical researchers who need to go from raw data
+to a publication-ready manuscript table in a single function call. Variable
+type detection, statistical test selection, *P* value formatting, Word export,
+and methods text generation are all handled automatically — the output is
+ready to paste directly into a submission.
+
+The time savings come entirely from automating the administrative work —
+formatting, test selection bookkeeping, and methods writing — not from
+bypassing statistical rigour. Every decision follows established criteria:
+normality is assessed with the Shapiro-Wilk test applied per group; the
+Fisher's exact / Chi-squared switch follows the Cochran (1954) expected-cell
+criterion; odds ratios are unadjusted, with the first factor level of the
+grouping variable as the reference; and the auto-generated methods paragraph
+covers the statistical approach used, ready to serve as a starting draft for
+a manuscript methods section. The output is appropriate for submission to
+peer-reviewed clinical journals.
 
 Descriptive summaries (Table 1), two-group comparisons (with optional odds
 ratios), and three-group comparisons are all supported, for continuous,
-binary, categorical, and ordinal variables.
+binary, and categorical variables. Numeric variables can be designated as
+ordinal via `force_ordinal`, bypassing normality testing in favour of
+median/IQR and nonparametric tests.
 
 ## Installation
 
@@ -41,10 +53,9 @@ data(tern_colon)
 Generates a single-column summary of all variables without group comparisons.
 
 ```r
-TernDesc <- ternD(
+tbl_descriptive <- ternD(
   data               = tern_colon,
   exclude_vars       = c("ID"),
-  consider_normality = TRUE,
   output_docx        = "descriptive.docx"
 )
 ```
@@ -60,7 +71,7 @@ Use `ternG()` to compare variables between two or more groups. Set `OR_col = TRU
 **Two-group comparison:**
 
 ```r
-Tern2v <- ternG(
+tbl_2group <- ternG(
   data               = tern_colon,
   exclude_vars       = c("ID"),
   group_var          = "Recurrence",
@@ -73,7 +84,7 @@ Tern2v <- ternG(
 **Three-group comparison:**
 
 ```r
-Tern3v <- ternG(
+tbl_3group <- ternG(
   data               = tern_colon,
   exclude_vars       = c("ID"),
   group_var          = "Treatment_Arm",
@@ -83,7 +94,7 @@ Tern3v <- ternG(
 )
 ```
 
-Omnibus p-values are reported for 3+ group comparisons; pairwise post-hoc
+Omnibus *P* values are reported for 3+ group comparisons; pairwise post-hoc
 comparisons are not performed. Odds ratios are not available for 3+ groups.
 
 Statistical tests applied automatically:
@@ -99,7 +110,7 @@ Fisher's exact is used when any expected cell count is < 5 (Cochran criterion).
 Normality is assessed with the Shapiro-Wilk test per group; a variable is treated
 as normally distributed only if all groups pass (p > 0.05). If any group has fewer
 than 3 observations, normality cannot be evaluated and the nonparametric test is
-used (conservative fail-safe). For 3+ group comparisons, omnibus p-values are
+used (conservative fail-safe). For 3+ group comparisons, omnibus *P* values are
 reported; pairwise post-hoc comparisons are not performed.
 
 ### `word_export()` — Format and export to Word
@@ -109,8 +120,7 @@ Use `category_start` to insert bold section-header rows between variable groups.
 
 ```r
 word_export(
-  tbl      = Tern2v,
-  filename = "two_group.docx",
+  tbl      = tbl_2group,,
   category_start = c(
     "Patient Demographics"  = "Age (yr)",
     "Surgical Findings"     = "Colonic Obstruction",
@@ -121,17 +131,15 @@ word_export(
 
 ### `write_methods_doc()` — Auto-generated methods paragraph
 
-Inspects the results tibble and writes a Word document containing a complete
-statistical methods paragraph — listing every test that was actually applied,
-the normality assessment approach used, the significance threshold, and (when
-odds ratios are reported) the estimation method and reference group. The output
-is ready to copy directly into a manuscript methods section with little or no
-editing.
+Inspects the results tibble and writes a Word document containing a standard
+statistical methods paragraph covering the normality assessment approach,
+test types used, significance threshold, and (when odds ratios are reported)
+the estimation method and reference group. Suitable as a starting draft for
+a manuscript methods section.
 
 ```r
 write_methods_doc(
-  tbl      = Tern2v,
-  filename = "methods.docx"
+  tbl      = tbl_2group,
 )
 ```
 
@@ -140,14 +148,14 @@ write_methods_doc(
 ```r
 val_p_format(0.0432)       # "0.043"
 val_p_format(0.000012)     # "1E-5"
-val_format(72.4, 8.1)  # "72.4 ± 8.1"
+val_format(72.4, 8.1)  # "72.4  +-  8.1"
 ```
 
 ## Output
 
 Every `ternD()` and `ternG()` call returns a tibble and — when `output_docx`
 is specified — writes a publication-ready `.docx` file directly. The Word
-output uses Arial, consistent padding, bold significant p-values, and optional
+output uses Arial, consistent padding, bold significant *P* values, and optional
 bold category-section headers. No post-processing is required before pasting
 into a manuscript.
 

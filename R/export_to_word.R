@@ -103,9 +103,9 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
   
   # Add line breaks for sample sizes (no asterisks)
   for (i in 2:length(new_colnames)) {
-    if (!new_colnames[i] %in% c("p", "test", "OR", "OR_method") && !grepl("^Total", new_colnames[i])) {
+    if (!new_colnames[i] %in% c("P", "test", "OR", "OR_method") && !grepl("^Total", new_colnames[i])) {
       new_colnames[i] <- gsub(" \\(n = ", "\n(n = ", new_colnames[i])
-    } else if (new_colnames[i] == "p") {
+    } else if (new_colnames[i] == "P") {
       new_colnames[i] <- "P value"
     } else if (grepl("^Total", new_colnames[i])) {
       # Total column already has line break from ternG, no change needed

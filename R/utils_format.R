@@ -1,8 +1,8 @@
-#' Format a p-value for reporting
+#' Format a P value for reporting
 #'
-#' @param p Numeric p-value in the range [0, 1]. \code{NA} values are returned as \code{NA_character_}.
+#' @param p Numeric P value in the range [0, 1]. \code{NA} values are returned as \code{NA_character_}.
 #'   Values >= 1 (or rounding to >= 1) are returned as e.g. \code{">0.999"}.
-#' @param digits Integer; number of decimal places for reported p-values. Default is 3.
+#' @param digits Integer; number of decimal places for reported P values. Default is 3.
 #'   Note: for p < 0.001, the value is reported in scientific notation with 1 significant figure
 #'   regardless of \code{digits} (e.g., \code{8E-4}).
 #' @return A character string. Values < 0.001 are formatted in scientific notation with 1 significant

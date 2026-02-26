@@ -107,14 +107,14 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
     } else {
       "Normally distributed continuous variables were compared using one-way ANOVA; non-normally distributed variables were compared using the Kruskal-Wallis test. "
     }
-    omnibus_note <- "Omnibus p-values are reported; pairwise post-hoc comparisons were not performed. "
+    omnibus_note <- "Omnibus P values are reported; pairwise post-hoc comparisons were not performed. "
     sec3_body <- paste0(desc_sentence, " ", s3_cont, omnibus_note, cat_sentence(has_fisher, has_chisq), sig_sentence)
   } else {
     sec3_body <- paste0(
       desc_sentence, " ",
       "Normally distributed continuous variables were compared across groups using one-way ANOVA; ",
       "non-normally distributed or ordinal continuous variables were compared using the Kruskal-Wallis test. ",
-      "Omnibus p-values are reported; pairwise post-hoc comparisons were not performed. ",
+      "Omnibus P values are reported; pairwise post-hoc comparisons were not performed. ",
       "Categorical variables were compared using Chi-squared tests, or Fisher's exact tests when any expected cell count was less than 5 (Cochran criterion). ",
       sig_sentence
     )
