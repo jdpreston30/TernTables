@@ -2,18 +2,19 @@
 % Please edit documentation in R/utils_format.R
 \name{val_format}
 \alias{val_format}
-\title{Format a mean  +-  SD string}
+\title{Format a mean \u00b1 SD string}
 \usage{
 val_format(mean, sd)
 }
 \arguments{
-\item{mean}{Mean value}
+\item{mean}{Numeric mean value. Formatted to 1 decimal place.}
 
-\item{sd}{Standard deviation}
+\item{sd}{Numeric standard deviation. Formatted to 1 decimal place.}
 }
 \value{
-Formatted string "mean  +-  sd"
+A character string of the form \code{"X.X  +-  Y.Y"} where both values are
+  rendered to 1 decimal place using fixed-point notation.
 }
 \description{
-Format a mean  +-  SD string
+Format a mean \u00b1 SD string
 }

@@ -34,7 +34,7 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
     tests_used <- unique(tbl[["test"]])
     tests_used <- tests_used[!is.na(tests_used) & tests_used != "" & tests_used != "-"]
   }
-  has_ttest    <- any(grepl("t-test",       tests_used, ignore.case = TRUE))
+  has_ttest    <- any(grepl("Welch t-test", tests_used, ignore.case = TRUE))
   has_anova    <- any(grepl("ANOVA",        tests_used, ignore.case = TRUE))
   has_wilcoxon <- any(grepl("Wilcoxon",    tests_used, ignore.case = TRUE))
   has_kruskal  <- any(grepl("Kruskal",     tests_used, ignore.case = TRUE))
@@ -46,27 +46,27 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
     "Continuous variables are presented as mean \u00b1 SD for normally distributed ",
     "variables or median [IQR] for non-normally distributed or ordinal variables. ",
     "Categorical variables are presented as n (%). ",
-    "Normality of continuous variables was assessed using the Shapiro-Wilk test; ",
-    "variables with a Shapiro-Wilk p > 0.05 were considered normally distributed."
+    "Normality of continuous variables was assessed using the Shapiro-Wilk test applied per group; ",
+    "a variable was considered normally distributed only if all groups had a Shapiro-Wilk p > 0.05."
   )
 
   # ── Helper: categorical comparison sentence ──────────────────────────────────
   cat_sentence <- function(f, c) {
     if (f && c) {
-      "Categorical variables were compared using Chi-squared tests, or Fisher's exact tests when expected cell counts were less than 5. "
+      "Categorical variables were compared using Chi-squared tests, or Fisher's exact tests when any expected cell count was less than 5 (Cochran criterion). "
     } else if (f) {
       "Categorical variables were compared using Fisher's exact tests. "
     } else if (c) {
       "Categorical variables were compared using Chi-squared tests. "
     } else {
-      "Categorical variables were compared using Chi-squared tests, or Fisher's exact tests when expected cell counts were less than 5. "
+      "Categorical variables were compared using Chi-squared tests, or Fisher's exact tests when any expected cell count was less than 5 (Cochran criterion). "
     }
   }
 
   or_sentence  <- if (OR_col) paste0(
     "For binary categorical variables, odds ratios (OR) with 95% confidence intervals (CI) were calculated. ",
-    "Where expected cell counts were five or greater, OR and 95% CI were derived using the Wald method. ",
-    "Where expected cell counts were less than five, OR and 95% CI were derived from Fisher's exact test. "
+    "Where all expected cell counts were five or greater, OR and 95% CI were derived using the Wald method. ",
+    "Where any expected cell count was less than five (Cochran criterion), OR and 95% CI were derived from Fisher's exact test. "
   ) else ""
   sig_sentence <- "Statistical significance was defined as p < 0.05."
 
@@ -90,7 +90,7 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
       desc_sentence, " ",
       "Normally distributed continuous variables were compared between groups using Welch's independent samples t-test; ",
       "non-normally distributed or ordinal continuous variables were compared using the Wilcoxon rank-sum test. ",
-      "Categorical variables were compared using Chi-squared tests, or Fisher's exact tests when expected cell counts were less than 5. ",
+      "Categorical variables were compared using Chi-squared tests, or Fisher's exact tests when any expected cell count was less than 5 (Cochran criterion). ",
       sig_sentence
     )
   }
@@ -106,13 +106,15 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
     } else {
       "Normally distributed continuous variables were compared using one-way ANOVA; non-normally distributed variables were compared using the Kruskal-Wallis test. "
     }
-    sec3_body <- paste0(desc_sentence, " ", s3_cont, cat_sentence(has_fisher, has_chisq), or_sentence, sig_sentence)
+    omnibus_note <- "Omnibus p-values are reported; pairwise post-hoc comparisons were not performed. "
+    sec3_body <- paste0(desc_sentence, " ", s3_cont, omnibus_note, cat_sentence(has_fisher, has_chisq), sig_sentence)
   } else {
     sec3_body <- paste0(
       desc_sentence, " ",
       "Normally distributed continuous variables were compared across groups using one-way ANOVA; ",
       "non-normally distributed or ordinal continuous variables were compared using the Kruskal-Wallis test. ",
-      "Categorical variables were compared using Chi-squared tests, or Fisher's exact tests when expected cell counts were less than 5. ",
+      "Omnibus p-values are reported; pairwise post-hoc comparisons were not performed. ",
+      "Categorical variables were compared using Chi-squared tests, or Fisher's exact tests when any expected cell count was less than 5 (Cochran criterion). ",
       sig_sentence
     )
   }

@@ -53,9 +53,21 @@ ternG(
 \item{OR_col}{Logical; if \code{TRUE}, adds odds ratios with 95\% CI for binary categorical variables.
 Only valid when \code{group_var} has exactly 2 levels; an error is raised for 3+ group comparisons.}
 
-\item{OR_method}{Character; if \code{"dynamic"}, uses Fisher/Wald based on test type. If \code{"wald"}, forces Wald method.}
+\item{OR_method}{Character; controls how odds ratios are calculated when \code{OR_col = TRUE}.
+If \code{"dynamic"} (default), uses Fisher's exact method when any expected cell count is < 5
+(Cochran criterion), otherwise uses the Wald method. If \code{"wald"}, forces the Wald method
+regardless of expected cell counts.}
 
-\item{consider_normality}{Logical or character; if \code{TRUE}, uses Shapiro-Wilk to choose t-test vs. Wilcoxon for numeric vars. If \code{FALSE}, uses variable type and force_ordinal. If \code{"FORCE"}, treats all numeric variables as ordinal (median/IQR, nonparametric tests).}
+\item{consider_normality}{Logical or character; controls how continuous variables are tested and displayed.
+If \code{TRUE}, runs the Shapiro-Wilk test per group for each numeric variable; a variable is treated
+as normally distributed only if all groups pass (p > 0.05). Normal variables use mean \eqn{\pm} SD
+and Welch t-test (2 groups) or ANOVA (3+ groups); non-normal variables use median [IQR] and Wilcoxon
+rank-sum (2 groups) or Kruskal-Wallis (3+ groups). When Shapiro-Wilk cannot be computed (n < 3 in
+any group), that variable is treated as non-normal (conservative fail-safe).
+If \code{FALSE}, all numeric variables are treated as normally distributed (mean \eqn{\pm} SD,
+parametric tests) regardless of distribution, unless listed in \code{force_ordinal}.
+If \code{"FORCE"}, all numeric variables are treated as non-normal (median [IQR], nonparametric tests)
+regardless of Shapiro-Wilk results.}
 
 \item{print_normality}{Logical; if \code{TRUE}, includes Shapiro-Wilk p-values in the output.}
 
@@ -67,7 +79,11 @@ Only valid when \code{group_var} has exactly 2 levels; an error is raised for 3+
 
 \item{smart_rename}{Logical; if \code{TRUE}, automatically cleans variable names and subheadings for publication-ready output using built-in rule-based pattern matching for common medical abbreviations and prefixes. Default is \code{TRUE}.}
 
-\item{insert_subheads}{Logical; if \code{TRUE}, creates hierarchical structure with headers and indented sub-categories for multi-level categorical variables (except Y/N). If \code{FALSE}, uses simple flat format. Default is \code{TRUE}.}
+\item{insert_subheads}{Logical; if \code{TRUE}, creates a hierarchical structure with a header row and
+indented sub-category rows for categorical variables with 3 or more levels. Binary variables
+(Y/N, YES/NO, or numeric 0/1 — which are auto-detected and treated as Y/N) are always displayed
+as a single row showing the positive/yes count regardless of this setting.
+If \code{FALSE}, all categorical variables use a single-row flat format. Default is \code{TRUE}.}
 
 \item{factor_order}{Character; controls the ordering of factor levels in the output. If \code{"levels"} (default), respects the original factor level ordering as defined in the data; if the variable is not a factor, falls back to frequency ordering. If \code{"frequency"}, orders levels by decreasing frequency (most common first).}
 
@@ -84,11 +100,21 @@ original column name (e.g. \code{"Age_Years"}) or the cleaned display name
 Example: \code{c("Demographics" = "Age_Years", "Clinical" = "bmi")}.
 Default is \code{NULL} (no category headers).}
 
-\item{manual_italic_indent}{Character vector; optional parameter for specifying which variable names should be italicized and indented in formatted outputs. Used for advanced formatting control.}
+\item{manual_italic_indent}{Character vector of display variable names (post-cleaning) that should be
+formatted as italicized and indented in Word output — matching the appearance of factor sub-category
+rows. Has no effect on the returned tibble; only applies when \code{output_docx} is specified or when
+the tibble is passed to \code{word_export}.}
 
-\item{manual_underline}{Character vector; optional parameter for specifying which variable names should be underlined in formatted outputs. Used for advanced formatting control.}
+\item{manual_underline}{Character vector of display variable names (post-cleaning) that should be
+formatted as underlined in Word output — matching the appearance of multi-category variable headers.
+Has no effect on the returned tibble; only applies when \code{output_docx} is specified or when
+the tibble is passed to \code{word_export}.}
 
-\item{indent_info_column}{Logical; if \code{FALSE} (default), the internal \code{.indent} helper column is dropped from the returned tibble. Set to \code{TRUE} to retain it.}
+\item{indent_info_column}{Logical; if \code{FALSE} (default), the internal \code{.indent} helper column
+is dropped from the returned tibble. Set to \code{TRUE} to retain it — this is necessary when you
+intend to post-process the tibble and later pass it to \code{word_export} directly, as
+\code{word_export} uses the \code{.indent} column to apply correct indentation and italic formatting
+in the Word table.}
 
 \item{show_total}{Logical; if \code{TRUE}, adds a "Total" column showing the aggregate summary statistic across all groups (e.g., for a publication Table 1 that includes both per-group and overall columns). Default is \code{TRUE}.}
 }

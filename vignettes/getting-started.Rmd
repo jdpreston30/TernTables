@@ -15,16 +15,28 @@ knitr::opts_chunk$set(
   message   = FALSE
 )
 library(TernTables)
+# Output directory for exported .docx files.
+# Override by setting options(TernTables.vignette_outdir = "/your/path") before rendering.
+out_dir <- getOption("TernTables.vignette_outdir", tempdir())
 ```
 
 ## Overview
 
-**TernTables** generates publication-ready summary tables for clinical research.
+**TernTables** generates publication-ready summary tables for clinical research —
+and takes them all the way from raw data to a formatted Word document table ready
+to paste into a manuscript, without any manual formatting steps.
+
 Given a data frame and an optional grouping variable, it automatically:
 
 - Detects each variable's type (continuous, binary/categorical, or ordinal)
 - Selects the appropriate statistical test
 - Formats p-values and summary statistics for publication
+- Exports directly to a styled `.docx` Word file and generates a boilerplate
+  statistical methods paragraph
+
+Three table types are supported: **descriptive summaries** (single cohort, no
+comparisons), **two-group comparisons** (with optional odds ratios), and
+**comparisons across three or more groups**.
 
 ## Example Dataset
 
@@ -57,50 +69,95 @@ Key variables used in these examples:
 
 ## Descriptive Table (`ternD`)
 
-Use `ternD()` when you have a single cohort and want a summary of all variables
-without group comparisons.
+Use `ternD()` for a single cohort with no group comparisons — the standard
+"Table 1" in a cohort description. Pass `output_docx` to write a
+publication-ready Word file in the same call. Use `category_start` to insert
+bold section headers grouping related variables; anchors can be either the raw
+column name or the cleaned display label.
 
 ```{r ternD-example}
 TernDesc <- ternD(
-  data               = tern_colon,
-  exclude_vars       = c("ID"),
-  consider_normality = TRUE
+  data             = tern_colon,
+  exclude_vars     = c("ID"),
+  output_docx      = file.path(out_dir, "Tern_descriptive.docx"),
+  methods_filename = file.path(out_dir, "TernTables_methods.docx"),
+  category_start = c(
+    "Patient Demographics"  = "Age (yr)",
+    "Surgical Findings"     = "Colonic Obstruction",
+    "Tumor Characteristics" = "Positive Lymph Nodes (n)",
+    "Outcomes"              = "Recurrence"
+  )
 )
 TernDesc
 ```
 
-Continuous variables show mean ± SD or median \[IQR\] depending on normality
-(Shapiro-Wilk, p > 0.05 = normal). Binary columns are automatically detected
-as categorical and shown as n (%).
+Continuous variables show mean ± SD or median [IQR] depending on normality
+(Shapiro-Wilk, p > 0.05 = normal). Binary columns (including numeric 0/1) are
+automatically detected as categorical and shown as n (%). Multi-level
+categorical variables show all levels as indented sub-rows beneath the variable
+name.
+
+![Descriptive table exported to Word with category section headers.](figures/tern_descriptive.png){width=100%}
+
+### Export to Excel
+
+```{r ternD-excel, eval = FALSE}
+writexl::write_xlsx(TernDesc, "Tern_descriptive.xlsx")
+```
 
 ---
 
 ## Two-Group Comparison (`ternG` — 2 levels)
 
-Compare baseline characteristics between patients with and without recurrence.
+Use `ternG()` to compare variables between two groups. Set `OR_col = TRUE` to
+add odds ratios with 95% CI for binary variables (Fisher's exact or Wald,
+chosen automatically based on expected cell counts). The Word file is written
+directly via `output_docx`.
 
 ```{r ternG-2group}
 Tern2v <- ternG(
-  data               = tern_colon,
-  exclude_vars       = c("ID"),
-  group_var          = "Recurrence",
-  consider_normality = TRUE,
-  OR_col             = TRUE,
-  show_test          = TRUE,
-  insert_subheads    = TRUE
+  data             = tern_colon,
+  exclude_vars     = c("ID"),
+  group_var        = "Recurrence",
+  output_docx      = file.path(out_dir, "Tern_2_group.docx"),
+  methods_filename = file.path(out_dir, "TernTables_methods.docx"),
+  OR_col           = TRUE,
+  insert_subheads  = TRUE,
+  category_start   = c(
+    "Patient Demographics"  = "Age (yr)",
+    "Surgical Findings"     = "Colonic Obstruction",
+    "Tumor Characteristics" = "Positive Lymph Nodes (n)",
+    "Treatment Details"     = "Treatment Arm"
+  )
 )
 Tern2v
 ```
 
-The `p` column shows the test p-value; `test` shows which test was applied;
-`OR` shows the odds ratio with 95% CI where applicable.
+The `p` column shows the test p-value; `OR` shows the odds ratio with 95% CI
+where applicable.
+
+![Two-group comparison table exported to Word, with odds ratios and category section headers.](figures/tern_2_group.png){width=100%}
+
+### Methods document
+
+`write_methods_doc()` generates a boilerplate methods paragraph listing every
+statistical test that was actually used — ready to copy directly into a
+manuscript methods section.
+
+```{r methods-doc, eval = FALSE}
+write_methods_doc(
+  tbl      = Tern2v,
+  filename = "Tern_methods.docx"
+)
+```
 
 ---
 
 ## Three-Group Comparison (`ternG` — 3 levels)
 
-The same `ternG()` function handles 3-level groups automatically, switching to
-ANOVA or Kruskal-Wallis for continuous variables.
+The same `ternG()` function handles three or more groups automatically,
+switching from t-test/Wilcoxon to ANOVA/Kruskal-Wallis as appropriate.
+Odds ratios are not available for 3+ group comparisons.
 
 ```{r ternG-3group}
 Tern3v <- ternG(
@@ -108,96 +165,42 @@ Tern3v <- ternG(
   exclude_vars       = c("ID"),
   group_var          = "Treatment_Arm",
   group_order        = c("Observation", "Levamisole", "Levamisole + 5FU"),
+  output_docx        = file.path(out_dir, "Tern_3_group.docx"),
+  methods_filename   = file.path(out_dir, "TernTables_methods.docx"),
   consider_normality = TRUE,
-  show_test          = TRUE,
-  insert_subheads    = TRUE
+  category_start     = c(
+    "Patient Demographics"  = "Age (yr)",
+    "Surgical Findings"     = "Colonic Obstruction",
+    "Tumor Characteristics" = "Positive Lymph Nodes (n)",
+    "Outcomes"              = "Recurrence"
+  )
 )
 Tern3v
 ```
 
----
-
-## Exporting Results
-
-### Word document
-
-`word_export()` formats any TernTables tibble as a publication-ready
-flextable and writes it to a `.docx` file.
-
-```{r export-word, eval = FALSE}
-word_export(
-  tbl      = Tern3v,
-  filename = "colon_treatment_table.docx",
-  category_start = c(
-    "Patient Demographics"  = "Age (yr)",
-    "Surgical Findings"     = "Colonic Obstruction",
-    "Tumor Characteristics" = "Positive Lymph Nodes (n)",
-    "Outcomes"              = "Recurrence"
-  )
-)
-```
-
-### Excel
-
-```{r export-excel, eval = FALSE}
-writexl::write_xlsx(Tern3v, "colon_treatment_table.xlsx")
-```
-
-### Methods document
-
-`write_methods_doc()` generates a boilerplate methods paragraph describing the
-statistical tests used, ready to paste into a manuscript.
-
-```{r methods-doc, eval = FALSE}
-write_methods_doc(
-  tbl      = Tern3v,
-  filename = "methods.docx"
-)
-```
-
----
-
-## Category Headers
-
-Use `category_start` in `ternD()` or `ternG()` to insert bold section
-headers grouping related variables:
-
-```{r category-headers, eval = FALSE}
-ternD(
-  data           = tern_colon,
-  exclude_vars   = c("ID"),
-  output_docx    = "descriptive.docx",
-  category_start = c(
-    "Patient Demographics"  = "Age (yr)",
-    "Surgical Findings"     = "Colonic Obstruction",
-    "Tumor Characteristics" = "Positive Lymph Nodes (n)",
-    "Outcomes"              = "Recurrence"
-  )
-)
-```
-
-The named character vector maps section titles to the display name of the first
-variable in each section (either the raw column name or the cleaned display
-label both work as anchors).
+![Three-group comparison table exported to Word with category section headers.](figures/tern_3_group.png){width=100%}
 
 ---
 
 ## Statistical Test Logic
 
-TernTables selects tests automatically:
+TernTables selects tests automatically based on variable type and normality:
 
 | Variable type | Test (2 groups) | Test (3+ groups) |
 |---|---|---|
 | Continuous, normal | Welch's *t*-test | ANOVA |
 | Continuous, non-normal | Wilcoxon rank-sum | Kruskal-Wallis |
-| Binary / Categorical | Fisher's exact or Chi-squared* | Fisher's exact or Chi-squared* |
+| Binary / Categorical | Fisher's exact or Chi-squared\* | Fisher's exact or Chi-squared\* |
 | Ordinal (`force_ordinal`) | Wilcoxon rank-sum | Kruskal-Wallis |
 
-\*Fisher's exact is used when any expected cell count is < 5.
+\*Fisher's exact is used when any expected cell count is < 5 (Cochran criterion).
 
-Normality is assessed with the Shapiro-Wilk test (p > 0.05 = normal). For
-3-group continuous comparisons, Levene's test additionally checks homogeneity
-of variance; if violated, Kruskal-Wallis is used regardless of normality.
+Normality is assessed with the Shapiro-Wilk test (p > 0.05 = normal) applied
+per group; a variable is treated as normally distributed only if all groups
+pass. If any group fails — or if a group has fewer than 3 observations and
+normality cannot be evaluated — the nonparametric test is used (conservative
+fail-safe). For 3+ group comparisons, omnibus p-values are reported; pairwise
+post-hoc comparisons are not performed.
 
 ---
 
