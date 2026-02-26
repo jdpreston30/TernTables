@@ -77,9 +77,10 @@ Key variables used in these examples:
 
 Use `ternD()` for a single cohort with no group comparisons — the standard
 "Table 1" in a cohort description. Pass `output_docx` to write a
-publication-ready Word file in the same call. Use `category_start` to insert
-bold section headers grouping related variables; anchors can be either the raw
-column name or the cleaned display label.
+publication-ready Word file in the same call; pass `output_xlsx` to also save
+the tibble as an Excel file. Use `category_start` to insert bold section headers
+grouping related variables; anchors can be either the raw column name or the
+cleaned display label.
 
 ```{r ternD-example, results = "hide"}
 tbl_descriptive <- ternD(
@@ -101,7 +102,7 @@ Continuous variables show mean ± SD or median [IQR] depending on normality
 (Shapiro-Wilk, p > 0.05 = normal). Columns whose values are exactly Y/N,
 YES/NO, or numeric 0/1 are detected as binary and shown as a single n (%) row
 (the positive/yes count). All other categorical variables — including two-level
-columns like Male/Female — are shown with each level as an indented sub-row.
+variables like Male/Female — are shown with each level as an indented sub-row.
 
 Variable names are automatically cleaned for display (`smart_rename = TRUE` by
 default) — underscores replaced with spaces, capitalisation normalised, and
@@ -115,20 +116,14 @@ Descriptive summary table exported to Word:
 knitr::include_graphics("figures/tern_descriptive.png")
 ```
 
-### Export to Excel
-
-```{r ternD-excel, eval = FALSE}
-writexl::write_xlsx(tbl_descriptive, "Tern_descriptive.xlsx")
-```
-
 ---
 
 ## Two-Group Comparison (`ternG` — 2 levels)
 
 Use `ternG()` to compare variables between two groups. Set `OR_col = TRUE` to
 add odds ratios with 95% CI for binary variables (Fisher's exact or Wald,
-chosen automatically based on expected cell counts). The Word file is written
-directly via `output_docx`.
+chosen automatically based on expected cell counts). Pass `output_docx` to
+write the Word table directly; `output_xlsx` exports the tibble to Excel.
 
 ```{r ternG-2group, results = "hide"}
 tbl_2group <- ternG(
@@ -149,8 +144,8 @@ tbl_2group <- ternG(
 tbl_2group
 ```
 
-The Word table includes an `OR` column (odds ratio with 95% CI for binary
-variables) and a `P` column (test *P* value for each variable).
+The Word table includes an OR column (odds ratio with 95% CI for binary
+variables) and a *P* value column (test *P* value for each variable).
 
 Two-group comparison table exported to Word, with odds ratios and category section headers:
 

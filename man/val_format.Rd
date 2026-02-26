@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils_format.R
 \name{val_format}
 \alias{val_format}
-\title{Format a mean \u00b1 SD string}
+\title{Format a mean +/- SD string}
 \usage{
 val_format(mean, sd)
 }
@@ -16,5 +16,5 @@ A character string of the form \code{"X.X  +-  Y.Y"} where both values are
   rendered to 1 decimal place using fixed-point notation.
 }
 \description{
-Format a mean \u00b1 SD string
+Format a mean +/- SD string
 }

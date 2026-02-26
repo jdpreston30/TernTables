@@ -19,7 +19,10 @@ ternD(
   factor_order = "levels",
   methods_doc = TRUE,
   methods_filename = "TernTables_methods.docx",
-  category_start = NULL
+  category_start = NULL,
+  table_font_size = 9,
+  manual_italic_indent = NULL,
+  manual_underline = NULL
 )
 }
 \arguments{
@@ -37,13 +40,13 @@ normality testing when \code{consider_normality = TRUE}.}
 
 \item{output_docx}{Optional Word filename to export the table.}
 
-\item{consider_normality}{Logical; if \code{TRUE}, uses Shapiro-Wilk test to choose between 
-mean ± SD (for normal data) vs median [IQR] (for non-normal data) for numeric variables. 
-If \code{FALSE}, defaults to mean ± SD for all numeric variables unless specified in 
+\item{consider_normality}{Logical; if \code{TRUE} (default), uses Shapiro-Wilk test to choose between
+mean +/- SD (for normal data) vs median [IQR] (for non-normal data) for numeric variables.
+If \code{FALSE}, defaults to mean +/- SD for all numeric variables unless specified in
 \code{force_ordinal}.}
 
-\item{print_normality}{Logical; if \code{TRUE}, includes Shapiro-Wilk P values as an 
-additional column in the output.}
+\item{print_normality}{Logical; if \code{TRUE}, includes Shapiro-Wilk P values as an
+additional column in the output. Default is \code{FALSE}.}
 
 \item{round_intg}{Logical; if \code{TRUE}, rounds all means, medians, IQRs, and standard 
 deviations to nearest integer (0.5 rounds up). Default is \code{FALSE}.}
@@ -52,10 +55,12 @@ deviations to nearest integer (0.5 rounds up). Default is \code{FALSE}.}
 subheadings for publication-ready output using built-in rule-based pattern matching for
 common medical abbreviations and prefixes. Default is \code{TRUE}.}
 
-\item{insert_subheads}{Logical; if \code{TRUE}, creates a hierarchical structure with a header row and
+\item{insert_subheads}{Logical; if \code{TRUE} (default), creates a hierarchical structure with a header row and
 indented sub-category rows for categorical variables with 3 or more levels. Binary variables
-(Y/N, YES/NO, or numeric 0/1 — which are auto-detected and treated as Y/N) are always displayed
-as a single row showing the positive/yes count regardless of this setting.
+(Y/N, YES/NO, or numeric 1/0 -- which are auto-detected and treated as Y/N) are always displayed
+as a single row showing the positive/yes count regardless of this setting. Two-level categorical
+variables whose values are not Y/N, YES/NO, or 1/0 (e.g. Male/Female) use the hierarchical
+sub-row format, showing both levels as indented rows.
 If \code{FALSE}, all categorical variables use a single-row flat format. Default is \code{TRUE}.}
 
 \item{factor_order}{Character; controls the ordering of factor levels in the output. If
@@ -72,24 +77,37 @@ into a manuscript.}
 Default is \code{"TernTables_methods.docx"}.}
 
 \item{category_start}{Named character vector specifying where to insert category headers.
-Names are the header label text to display; values are the anchor variable — either the
+Names are the header label text to display; values are the anchor variable -- either the
 original column name (e.g. \code{"Age_Years"}) or the cleaned display name
 (e.g. \code{"Age (yr)"}). Both forms are accepted.
 Example: \code{c("Demographics" = "Age_Years", "Clinical Measures" = "bmi")}.
 Default is \code{NULL} (no category headers).}
+
+\item{table_font_size}{Numeric; font size for Word document output tables. Default is 9.}
+
+\item{manual_italic_indent}{Character vector of display variable names (post-cleaning) that should be
+formatted as italicized and indented in Word output -- matching the appearance of factor sub-category
+rows. Has no effect on the returned tibble; only applies when \code{output_docx} is specified.
+Default is \code{NULL}.}
+
+\item{manual_underline}{Character vector of display variable names (post-cleaning) that should be
+formatted as underlined in Word output -- matching the appearance of multi-category variable headers.
+Has no effect on the returned tibble; only applies when \code{output_docx} is specified.
+Default is \code{NULL}.}
 }
 \value{
 A tibble with one row per variable (multi-row for factors), containing:
 \describe{
   \item{Variable}{Variable names with appropriate indentation}
-  \item{Total (N = n)}{Summary statistics (mean ± SD, median [IQR], or n (\%) as appropriate)}
+  \item{Total (N = n)}{Summary statistics (mean +/- SD, median [IQR], or n (\%) as appropriate)}
   \item{SW_p}{Shapiro-Wilk P values (only if \code{print_normality = TRUE})}
 }
 }
 \description{
-Creates a descriptive summary table with a single “Total” column format.
-For numeric variables, the default behavior is to show mean ± SD, but this
-can be modified using the \code{consider_normality} and \code{force_ordinal} parameters.
+Creates a descriptive summary table with a single "Total" column format.
+By default (\code{consider_normality = TRUE}), continuous variables are shown
+as mean +/- SD or median [IQR] based on Shapiro-Wilk testing. This can be
+overridden via \code{consider_normality} and \code{force_ordinal}.
 }
 \details{
 The function always returns a tibble with a single \code{Total (N = n)} column format, regardless of the
@@ -97,32 +115,39 @@ The function always returns a tibble with a single \code{Total (N = n)} column f
 \enumerate{
   \item Variables in \code{force_ordinal}: Always use median [IQR]
   \item When \code{consider_normality = TRUE}: Use Shapiro-Wilk test to choose format
-  \item When \code{consider_normality = FALSE}: Default to mean ± SD
+  \item When \code{consider_normality = FALSE}: Default to mean +/- SD
 }
 
 For categorical variables, the function shows frequencies and percentages. When
 \code{insert_subheads = TRUE}, categorical variables with 3 or more levels are displayed with
 hierarchical formatting (main variable as header, levels as indented sub-rows). Binary variables
-(Y/N, YES/NO, or numeric 0/1 auto-detected as Y/N) always use a single-row format showing
-only the positive/yes count, regardless of this setting.
+(Y/N, YES/NO, or numeric 1/0 auto-detected as Y/N) always use a single-row format showing
+only the positive/yes count, regardless of this setting. Two-level categorical variables whose
+values are not Y/N, YES/NO, or 1/0 (e.g. Male/Female) also use the hierarchical sub-row format.
 }
 \examples{
-# Basic descriptive summary
-ternD(mtcars)
-
-# Use normality testing to choose mean +/- SD vs median [IQR]
-ternD(mtcars, consider_normality = TRUE)
-
-# Force specific variables to ordinal display
-ternD(mtcars, force_ordinal = c("hp", "qsec"), consider_normality = TRUE)
-
-# Using the bundled clinical dataset
 data(tern_colon)
-ternD(tern_colon, exclude_vars = c("ID"), consider_normality = TRUE)
 
-# Export to Word (writes a file — not run during automated checks)
-\dontrun{
+# Basic descriptive summary
+ternD(tern_colon, exclude_vars = c("ID"))
+
+# With normality-aware formatting and category section headers
 ternD(tern_colon, exclude_vars = c("ID"),
-      output_docx = file.path(tempdir(), "descriptive.docx"))
+      category_start = c("Patient Demographics"  = "Age (yr)",
+                         "Tumor Characteristics" = "Positive Lymph Nodes (n)"))
+
+# Force specific variables to ordinal (median [IQR]) display
+ternD(tern_colon, exclude_vars = c("ID"),
+      force_ordinal = c("Positive_Lymph_Nodes_n"))
+
+# Export to Word (writes a file -- not run during automated checks)
+\dontrun{
+ternD(tern_colon,
+      exclude_vars     = c("ID"),
+      output_docx      = file.path(tempdir(), "descriptive.docx"),
+      category_start   = c("Patient Demographics"  = "Age (yr)",
+                           "Surgical Findings"     = "Colonic Obstruction",
+                           "Tumor Characteristics" = "Positive Lymph Nodes (n)",
+                           "Outcomes"              = "Recurrence"))
 }
 }

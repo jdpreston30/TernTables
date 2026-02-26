@@ -16,12 +16,13 @@
 #' @param output_docx Optional filename to export the table as a Word document.
 #' @param OR_col Logical; if \code{TRUE}, adds odds ratios with 95\% CI for binary categorical variables.
 #'   Only valid when \code{group_var} has exactly 2 levels; an error is raised for 3+ group comparisons.
+#'   Default is \code{FALSE}.
 #' @param OR_method Character; controls how odds ratios are calculated when \code{OR_col = TRUE}.
 #'   If \code{"dynamic"} (default), uses Fisher's exact method when any expected cell count is < 5
 #'   (Cochran criterion), otherwise uses the Wald method. If \code{"wald"}, forces the Wald method
 #'   regardless of expected cell counts.
 #' @param consider_normality Logical or character; controls how continuous variables are tested and displayed.
-#'   If \code{TRUE}, runs the Shapiro-Wilk test per group for each numeric variable; a variable is treated
+#'   If \code{TRUE} (default), runs the Shapiro-Wilk test per group for each numeric variable; a variable is treated
 #'   as normally distributed only if all groups pass (p > 0.05). Normal variables use mean \eqn{\pm} SD
 #'   and Welch t-test (2 groups) or ANOVA (3+ groups); non-normal variables use median [IQR] and Wilcoxon
 #'   rank-sum (2 groups) or Kruskal-Wallis (3+ groups). When Shapiro-Wilk cannot be computed (n < 3 in
@@ -30,37 +31,39 @@
 #'   parametric tests) regardless of distribution, unless listed in \code{force_ordinal}.
 #'   If \code{"FORCE"}, all numeric variables are treated as non-normal (median [IQR], nonparametric tests)
 #'   regardless of Shapiro-Wilk results.
-#' @param print_normality Logical; if \code{TRUE}, includes Shapiro-Wilk P values in the output.
+#' @param print_normality Logical; if \code{TRUE}, includes Shapiro-Wilk P values in the output. Default is \code{FALSE}.
 #' @param show_test Logical; if \code{TRUE}, includes the statistical test name as a column in the output. Default is \code{FALSE}.
 #' @param p_digits Integer; number of decimal places for P values (default 3).
 #' @param round_intg Logical; if \code{TRUE}, rounds all means, medians, IQRs, and standard deviations to nearest integer (0.5 rounds up). Default is \code{FALSE}.
 #' @param smart_rename Logical; if \code{TRUE}, automatically cleans variable names and subheadings for publication-ready output using built-in rule-based pattern matching for common medical abbreviations and prefixes. Default is \code{TRUE}.
-#' @param insert_subheads Logical; if \code{TRUE}, creates a hierarchical structure with a header row and
+#' @param insert_subheads Logical; if \code{TRUE} (default), creates a hierarchical structure with a header row and
 #'   indented sub-category rows for categorical variables with 3 or more levels. Binary variables
-#'   (Y/N, YES/NO, or numeric 0/1 — which are auto-detected and treated as Y/N) are always displayed
-#'   as a single row showing the positive/yes count regardless of this setting.
+#'   (Y/N, YES/NO, or numeric 1/0 -- which are auto-detected and treated as Y/N) are always displayed
+#'   as a single row showing the positive/yes count regardless of this setting. Two-level categorical
+#'   variables whose values are not Y/N, YES/NO, or 1/0 (e.g. Male/Female) use the hierarchical
+#'   sub-row format, showing both levels as indented rows.
 #'   If \code{FALSE}, all categorical variables use a single-row flat format. Default is \code{TRUE}.
 #' @param factor_order Character; controls the ordering of factor levels in the output. If \code{"levels"} (default), respects the original factor level ordering as defined in the data; if the variable is not a factor, falls back to frequency ordering. If \code{"frequency"}, orders levels by decreasing frequency (most common first).
 #' @param table_font_size Numeric; font size for Word document output tables. Default is 9.
 #' @param methods_doc Logical; if \code{TRUE} (default), generates a methods document describing the statistical tests used.
 #' @param methods_filename Character; filename for the methods document. Default is \code{"TernTables_methods.docx"}.
 #' @param category_start Named character vector specifying where to insert category headers.
-#'   Names are the header label text to display; values are the anchor variable — either the
+#'   Names are the header label text to display; values are the anchor variable -- either the
 #'   original column name (e.g. \code{"Age_Years"}) or the cleaned display name
 #'   (e.g. \code{"Age (yr)"}). Both forms are accepted.
 #'   Example: \code{c("Demographics" = "Age_Years", "Clinical" = "bmi")}.
 #'   Default is \code{NULL} (no category headers).
 #' @param manual_italic_indent Character vector of display variable names (post-cleaning) that should be
-#'   formatted as italicized and indented in Word output — matching the appearance of factor sub-category
+#'   formatted as italicized and indented in Word output -- matching the appearance of factor sub-category
 #'   rows. Has no effect on the returned tibble; only applies when \code{output_docx} is specified or when
 #'   the tibble is passed to \code{word_export}.
 #' @param manual_underline Character vector of display variable names (post-cleaning) that should be
-#'   formatted as underlined in Word output — matching the appearance of multi-category variable headers.
+#'   formatted as underlined in Word output -- matching the appearance of multi-category variable headers.
 #'   Has no effect on the returned tibble; only applies when \code{output_docx} is specified or when
 #'   the tibble is passed to \code{word_export}.
 #' @param show_total Logical; if \code{TRUE}, adds a "Total" column showing the aggregate summary statistic across all groups (e.g., for a publication Table 1 that includes both per-group and overall columns). Default is \code{TRUE}.
 #' @param indent_info_column Logical; if \code{FALSE} (default), the internal \code{.indent} helper column
-#'   is dropped from the returned tibble. Set to \code{TRUE} to retain it — this is necessary when you
+#'   is dropped from the returned tibble. Set to \code{TRUE} to retain it -- this is necessary when you
 #'   intend to post-process the tibble and later pass it to \code{word_export} directly, as
 #'   \code{word_export} uses the \code{.indent} column to apply correct indentation and italic formatting
 #'   in the Word table.
@@ -69,18 +72,29 @@
 #' P values, test type, and optionally odds ratios and total summary column.
 #'
 #' @examples
-#' # Basic 2-group comparison with built-in dataset
-#' ternG(mtcars, group_var = "am")
-#'
-#' # 2-group comparison using the bundled clinical dataset
 #' data(tern_colon)
+#'
+#' # 2-group comparison
+#' ternG(tern_colon, exclude_vars = c("ID"), group_var = "Recurrence")
+#'
+#' # 2-group comparison with odds ratios
 #' ternG(tern_colon, exclude_vars = c("ID"), group_var = "Recurrence",
-#'       consider_normality = TRUE, OR_col = TRUE)
+#'       OR_col = TRUE)
 #'
 #' # 3-group comparison
 #' ternG(tern_colon, exclude_vars = c("ID"), group_var = "Treatment_Arm",
-#'       group_order = c("Observation", "Levamisole", "Levamisole + 5FU"),
-#'       consider_normality = TRUE)
+#'       group_order = c("Observation", "Levamisole", "Levamisole + 5FU"))
+#'
+#' # Export to Word (writes a file -- not run during automated checks)
+#' \dontrun{
+#' ternG(tern_colon,
+#'       exclude_vars   = c("ID"),
+#'       group_var      = "Recurrence",
+#'       OR_col         = TRUE,
+#'       output_docx    = file.path(tempdir(), "comparison.docx"),
+#'       category_start = c("Patient Demographics"  = "Age (yr)",
+#'                          "Tumor Characteristics" = "Positive Lymph Nodes (n)"))
+#' }
 #'
 #' @export
 ternG <- function(data,
@@ -161,7 +175,7 @@ ternG <- function(data,
     v <- g[[var]]
 
     # Auto-detect binary numeric (0/1) as categorical Y/N
-    if (is.numeric(v) && length(unique(na.omit(v))) == 2 && all(na.omit(v) %in% c(0, 1))) {
+    if (is.numeric(v) && length(unique(stats::na.omit(v))) == 2 && all(stats::na.omit(v) %in% c(0, 1))) {
       v <- factor(v, levels = c(0, 1), labels = c("N", "Y"))
       g[[var]] <- v
     }
@@ -176,7 +190,7 @@ ternG <- function(data,
       tab_total_pct <- round(prop.table(tab_total_n) * 100)
 
       # Cochran (1954) criterion: use Fisher's exact when any *expected* cell count < 5
-      fisher_flag <- any(suppressWarnings(chisq.test(tab)$expected) < 5)
+      fisher_flag <- any(suppressWarnings(stats::chisq.test(tab)$expected) < 5)
       test_result <- tryCatch({
         if (fisher_flag) {
           list(p_value = stats::fisher.test(tab)$p.value, test_name = "Fisher exact", error = NULL)
@@ -245,7 +259,7 @@ ternG <- function(data,
             if (fisher_flag) {
               fisher_obj <- tryCatch(stats::fisher.test(tab), error = function(e) NULL)
               if (!is.null(fisher_obj)) {
-                result$OR <- sprintf("%.2f [%.2f–%.2f]", fisher_obj$estimate, fisher_obj$conf.int[1], fisher_obj$conf.int[2])
+                result$OR <- sprintf("%.2f [%.2f\u2013%.2f]", fisher_obj$estimate, fisher_obj$conf.int[1], fisher_obj$conf.int[2])
                 if (show_test) result$OR_method <- "Fisher"
               } else {
                 result$OR <- "NA (calculation failed)"
@@ -253,12 +267,12 @@ ternG <- function(data,
               }
             } else {
               or_obj <- tryCatch(epitools::oddsratio(tab, method = "wald")$measure, error = function(e) NULL)
-              result$OR <- if (!is.null(or_obj)) sprintf("%.2f [%.2f–%.2f]", or_obj[2,1], or_obj[2,2], or_obj[2,3]) else "NA (calculation failed)"
+              result$OR <- if (!is.null(or_obj)) sprintf("%.2f [%.2f\u2013%.2f]", or_obj[2,1], or_obj[2,2], or_obj[2,3]) else "NA (calculation failed)"
               if (show_test) result$OR_method <- "Wald"
             }
           } else if (OR_method == "wald") {
             or_obj <- tryCatch(epitools::oddsratio(tab, method = "wald")$measure, error = function(e) NULL)
-            result$OR <- if (!is.null(or_obj)) sprintf("%.2f [%.2f–%.2f]", or_obj[2,1], or_obj[2,2], or_obj[2,3]) else "NA (calculation failed)"
+            result$OR <- if (!is.null(or_obj)) sprintf("%.2f [%.2f\u2013%.2f]", or_obj[2,1], or_obj[2,2], or_obj[2,3]) else "NA (calculation failed)"
             if (show_test) result$OR_method <- "Wald"
           }
         } else if (OR_col) {
@@ -354,9 +368,9 @@ ternG <- function(data,
       for (g_lvl in group_levels) {
         val <- stats %>% filter(.data[[group_var]] == g_lvl)
         result[[group_labels[g_lvl]]] <- if (nrow(val) == 1) {
-          paste0(val$med, " [", val$Q1, "–", val$Q3, "]")
+          paste0(val$med, " [", val$Q1, "\u2013", val$Q3, "]")
         } else {
-          "NA [NA–NA]"
+          "NA [NA\u2013NA]"
         }
       }
       
@@ -482,12 +496,12 @@ ternG <- function(data,
       val <- stats %>% filter(.data[[group_var]] == g_lvl)
       result[[group_labels[g_lvl]]] <- if (nrow(val) == 1) {
         if (round_intg) {
-          paste0(round_up_half(val$mean, 0), " ± ", round_up_half(val$sd, 0))
+          paste0(round_up_half(val$mean, 0), " \u00b1 ", round_up_half(val$sd, 0))
         } else {
-          paste0(round(val$mean, 1), " ± ", round(val$sd, 1))
+          paste0(round(val$mean, 1), " \u00b1 ", round(val$sd, 1))
         }
       } else {
-        "NA ± NA"
+        "NA \u00b1 NA"
       }
     }
 
