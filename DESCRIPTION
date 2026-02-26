@@ -1,7 +1,7 @@
 Package: TernTables
 Type: Package
-Title: Automated Statistics and Table Generation for Clinical Research in R
-Version: 1.2.2.9006
+Title: Automated Statistics and Tables for Clinical Research
+Version: 1.2.2.9007
 Authors@R: c(
     person("Joshua D.", "Preston",
            email = "joshua.preston@emory.edu",
@@ -39,7 +39,9 @@ Imports:
     stringr,
     stats,
     magrittr,
-    cli
+    cli,
+    epitools,
+    rlang
 Suggests:
     testthat,
     knitr,
