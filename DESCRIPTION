@@ -1,7 +1,7 @@
 Package: TernTables
 Type: Package
 Title: Automated Statistics and Tables for Clinical Research
-Version: 1.2.2.9012
+Version: 1.3.0
 Authors@R: c(
     person("Joshua D.", "Preston",
            email = "joshua.preston@emory.edu",
