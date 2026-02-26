@@ -212,7 +212,6 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
         merge_at(i = cat_row_idx, j = 1:ncol(modified_tbl), part = "body") %>%
         bold(i = cat_row_idx, part = "body") %>%
         bg(i = cat_row_idx, bg = "white", part = "body") %>%
-        height(i = cat_row_idx, height = font_size / 72 * 2.2, part = "body") %>%
         border(i = cat_row_idx, border.bottom = fp_border(color = "black", width = 0.5), part = "body") %>%
         align(i = cat_row_idx, align = "left", part = "body") %>%
         padding(i = cat_row_idx, j = 1, padding.left = base_padding, padding.top = 2, padding.bottom = 2, part = "body")
@@ -257,8 +256,20 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
     }
   }
 
-  # Shrink all columns to fit their content
+  # Shrink all columns to fit their content, then lock row heights exactly.
+  # height() and hrule() must come AFTER autofit() — autofit resets row heights
+  # as a side effect of its column-width calculation.
   ft <- autofit(ft)
+  ft <- ft %>%
+    height(height = font_size / 72 * 1.5, part = "body") %>%
+    flextable::hrule(rule = "exact", part = "body")
+
+  # Re-apply category header row heights after the blanket lock
+  if (!is.null(category_rows) && length(category_rows) > 0) {
+    for (cat_row_idx in category_rows) {
+      ft <- ft %>% height(i = cat_row_idx, height = font_size / 72 * 2.05, part = "body")
+    }
+  }
 
   # Create Word document
   doc <- read_docx() %>% body_add_flextable(ft)

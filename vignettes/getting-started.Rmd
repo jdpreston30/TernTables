@@ -22,9 +22,13 @@ out_dir <- getOption("TernTables.vignette_outdir", tempdir())
 
 ## Overview
 
-**TernTables** generates publication-ready summary tables for clinical research —
-and takes them all the way from raw data to a formatted Word document table ready
-to paste into a manuscript, without any manual formatting steps.
+**TernTables** is built for clinical researchers — physicians, fellows, and
+residents who produce clinical papers and need publication-ready summary tables
+without manual formatting or statistical decision-making.
+
+It generates publication-ready summary tables for clinical research and takes
+them all the way from raw data to a formatted Word document table ready to
+paste into a manuscript, without any manual formatting steps.
 
 Given a data frame and an optional grouping variable, it automatically:
 
@@ -97,7 +101,9 @@ automatically detected as categorical and shown as n (%). Multi-level
 categorical variables show all levels as indented sub-rows beneath the variable
 name.
 
-![Descriptive table exported to Word with category section headers.](figures/tern_descriptive.png){width=100%}
+```{r ternD-figure, echo=FALSE, fig.align="center", out.width="75%"}
+knitr::include_graphics("figures/tern_descriptive.png")
+```
 
 ### Export to Excel
 
