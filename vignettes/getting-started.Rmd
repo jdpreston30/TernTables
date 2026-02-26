@@ -29,13 +29,13 @@ Given a data frame and an optional grouping variable, it automatically:
 ## Example Dataset
 
 ```{r load-data}
-data(colon_recurrence)
+data(tern_colon)
 ```
 
-`colon_recurrence` is bundled with TernTables. It contains 929 patients from a
+`tern_colon` is bundled with TernTables. It contains 929 patients from a
 landmark colon cancer adjuvant chemotherapy trial (Moertel et al., 1990),
 filtered to the recurrence endpoint — one row per patient. See
-`?colon_recurrence` for full details.
+`?tern_colon` for full details.
 
 Key variables used in these examples:
 
@@ -62,7 +62,7 @@ without group comparisons.
 
 ```{r ternD-example}
 TernDesc <- ternD(
-  data               = colon_recurrence,
+  data               = tern_colon,
   exclude_vars       = c("ID"),
   consider_normality = TRUE
 )
@@ -81,7 +81,7 @@ Compare baseline characteristics between patients with and without recurrence.
 
 ```{r ternG-2group}
 Tern2v <- ternG(
-  data               = colon_recurrence,
+  data               = tern_colon,
   exclude_vars       = c("ID"),
   group_var          = "Recurrence",
   consider_normality = TRUE,
@@ -104,7 +104,7 @@ ANOVA or Kruskal-Wallis for continuous variables.
 
 ```{r ternG-3group}
 Tern3v <- ternG(
-  data               = colon_recurrence,
+  data               = tern_colon,
   exclude_vars       = c("ID"),
   group_var          = "Treatment_Arm",
   group_order        = c("Observation", "Levamisole", "Levamisole + 5FU"),
@@ -121,11 +121,11 @@ Tern3v
 
 ### Word document
 
-`export_to_word()` formats any TernTables tibble as a publication-ready
+`word_export()` formats any TernTables tibble as a publication-ready
 flextable and writes it to a `.docx` file.
 
 ```{r export-word, eval = FALSE}
-export_to_word(
+word_export(
   tbl      = Tern3v,
   filename = "colon_treatment_table.docx",
   category_start = c(
@@ -164,7 +164,7 @@ headers grouping related variables:
 
 ```{r category-headers, eval = FALSE}
 ternD(
-  data           = colon_recurrence,
+  data           = tern_colon,
   exclude_vars   = c("ID"),
   output_docx    = "descriptive.docx",
   category_start = c(

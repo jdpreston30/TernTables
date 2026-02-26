@@ -12,9 +12,9 @@
 #' @return Invisibly returns the path to the written Word file.
 #' @examples
 #' \dontrun{
-#' data(colon_recurrence)
-#' tbl <- ternD(colon_recurrence, exclude_vars = c("ID"))
-#' export_to_word(
+#' data(tern_colon)
+#' tbl <- ternD(tern_colon, exclude_vars = c("ID"))
+#' word_export(
 #'   tbl      = tbl,
 #'   filename = file.path(tempdir(), "descriptive.docx"),
 #'   category_start = c(
@@ -24,7 +24,7 @@
 #' )
 #' }
 #' @export
-export_to_word <- function(tbl, filename, round_intg = FALSE, font_size = 9, category_start = NULL, manual_italic_indent = NULL, manual_underline = NULL) {
+word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, category_start = NULL, manual_italic_indent = NULL, manual_underline = NULL) {
   # Keep the table as-is
   modified_tbl <- tbl
 

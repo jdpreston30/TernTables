@@ -46,12 +46,12 @@
 #' ternG(mtcars, group_var = "am")
 #'
 #' # 2-group comparison using the bundled clinical dataset
-#' data(colon_recurrence)
-#' ternG(colon_recurrence, exclude_vars = c("ID"), group_var = "Recurrence",
+#' data(tern_colon)
+#' ternG(tern_colon, exclude_vars = c("ID"), group_var = "Recurrence",
 #'       consider_normality = TRUE, OR_col = TRUE)
 #'
 #' # 3-group comparison
-#' ternG(colon_recurrence, exclude_vars = c("ID"), group_var = "Treatment_Arm",
+#' ternG(tern_colon, exclude_vars = c("ID"), group_var = "Treatment_Arm",
 #'       group_order = c("Observation", "Levamisole", "Levamisole + 5FU"),
 #'       consider_normality = TRUE)
 #'
@@ -207,7 +207,7 @@ ternG <- function(data,
         if (!is.null(test_result$error)) {
           result$p <- paste0("NA (", test_result$error, ")")
         } else {
-          result$p <- fmt_p(test_result$p_value, p_digits)
+          result$p <- val_p_format(test_result$p_value, p_digits)
         }
         if (show_test) {
           result$test <- test_result$test_name
@@ -289,7 +289,7 @@ ternG <- function(data,
             if (!is.null(test_result$error)) {
               out$p <- paste0("NA (", test_result$error, ")")
             } else {
-              out$p <- fmt_p(test_result$p_value, p_digits)
+              out$p <- val_p_format(test_result$p_value, p_digits)
             }
             if (show_test) {
               out$test <- test_result$test_name
@@ -358,7 +358,7 @@ ternG <- function(data,
       if (!is.null(test_result$error)) {
         result$p <- paste0("NA (", test_result$error, ")")
       } else {
-        result$p <- fmt_p(test_result$p_value, p_digits)
+        result$p <- val_p_format(test_result$p_value, p_digits)
       }
       if (show_test) {
         result$test <- test_result$test_name
@@ -491,7 +491,7 @@ ternG <- function(data,
     if (!is.null(test_result$error)) {
       result$p <- paste0("NA (", test_result$error, ")")
     } else {
-      result$p <- fmt_p(test_result$p_value, p_digits)
+      result$p <- val_p_format(test_result$p_value, p_digits)
     }
     if (show_test) {
       result$test <- test_result$test_name
@@ -610,7 +610,7 @@ ternG <- function(data,
   }
 
   # Export to Word AFTER smart_rename so docx gets clean names
-  if (!is.null(output_docx)) export_to_word(out_tbl, output_docx, round_intg = round_intg, font_size = table_font_size, category_start = category_start, manual_italic_indent = manual_italic_indent, manual_underline = manual_underline)
+  if (!is.null(output_docx)) word_export(out_tbl, output_docx, round_intg = round_intg, font_size = table_font_size, category_start = category_start, manual_italic_indent = manual_italic_indent, manual_underline = manual_underline)
 
   if (!indent_info_column) out_tbl <- dplyr::select(out_tbl, -dplyr::any_of(".indent"))
 

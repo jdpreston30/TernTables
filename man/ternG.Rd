@@ -107,12 +107,12 @@ includes options to calculate p-values and odds ratios. For descriptive
 ternG(mtcars, group_var = "am")
 
 # 2-group comparison using the bundled clinical dataset
-data(colon_recurrence)
-ternG(colon_recurrence, exclude_vars = c("ID"), group_var = "Recurrence",
+data(tern_colon)
+ternG(tern_colon, exclude_vars = c("ID"), group_var = "Recurrence",
       consider_normality = TRUE, OR_col = TRUE)
 
 # 3-group comparison
-ternG(colon_recurrence, exclude_vars = c("ID"), group_var = "Treatment_Arm",
+ternG(tern_colon, exclude_vars = c("ID"), group_var = "Treatment_Arm",
       group_order = c("Observation", "Levamisole", "Levamisole + 5FU"),
       consider_normality = TRUE)
 

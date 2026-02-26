@@ -16,14 +16,16 @@ devtools::install_github("jdpreston30/TernTablesR")
 
 ## Example Data
 
-A pre-processed dataset `colon_recurrence` is bundled with the package. It
-contains 929 patients from the colon cancer adjuvant chemotherapy trial
-(Moertel et al., 1990), filtered to the recurrence endpoint with clinically
-labelled factors and renamed columns. Load it with:
+The bundled `tern_colon` dataset is derived from `survival::colon`
+(Moertel et al., 1990; Laurie et al., 1989). It is a reformatted subset
+restricted to the recurrence endpoint (`etype == 1`), providing one row per
+patient (n = 929) with clinically labelled factor levels and descriptive column
+names. See `?tern_colon` and `data-raw/tern_colon.R` for the full
+pre-processing pipeline.
 
 ```r
 library(TernTables)
-data(colon_recurrence)
+data(tern_colon)
 ```
 
 ## Functions
@@ -34,7 +36,7 @@ Generates a single-column summary of all variables without group comparisons.
 
 ```r
 TernDesc <- ternD(
-  data               = colon_recurrence,
+  data               = tern_colon,
   exclude_vars       = c("ID"),
   consider_normality = TRUE,
   output_docx        = "descriptive.docx"
@@ -55,7 +57,7 @@ statistical test.
 
 ```r
 Tern2v <- ternG(
-  data               = colon_recurrence,
+  data               = tern_colon,
   exclude_vars       = c("ID"),
   group_var          = "Recurrence",
   consider_normality = TRUE,
@@ -68,7 +70,7 @@ Tern2v <- ternG(
 
 ```r
 Tern3v <- ternG(
-  data               = colon_recurrence,
+  data               = tern_colon,
   exclude_vars       = c("ID"),
   group_var          = "Treatment_Arm",
   group_order        = c("Observation", "Levamisole", "Levamisole + 5FU"),
@@ -88,13 +90,13 @@ Statistical tests applied automatically:
 
 Fisher's exact is used when any expected cell count is < 5.
 
-### `export_to_word()` — Format and export to Word
+### `word_export()` — Format and export to Word
 
 Formats any TernTables result tibble as a flextable and writes to `.docx`.
 Use `category_start` to insert bold section-header rows between variable groups.
 
 ```r
-export_to_word(
+word_export(
   tbl      = Tern2v,
   filename = "two_group.docx",
   category_start = c(
@@ -117,19 +119,19 @@ write_methods_doc(
 )
 ```
 
-### `fmt_p()` / `format_val()` — Formatting utilities
+### `val_p_format()` / `val_format()` — Formatting utilities
 
 ```r
-fmt_p(0.0432)       # "0.043"
-fmt_p(0.000012)     # "1E-5"
-format_val(72.4, 8.1)  # "72.4 ± 8.1"
+val_p_format(0.0432)       # "0.043"
+val_p_format(0.000012)     # "1E-5"
+val_format(72.4, 8.1)  # "72.4 ± 8.1"
 ```
 
 ## Output
 
 Every `ternD()` and `ternG()` call returns a tibble that can be:
 
-- Passed directly to `export_to_word()` for a formatted `.docx`
+- Passed directly to `word_export()` for a formatted `.docx`
 - Written to Excel with `writexl::write_xlsx()`
 - Inspected or further manipulated in R
 

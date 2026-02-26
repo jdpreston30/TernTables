@@ -7,7 +7,7 @@
 #' parentheticals, replaces underscores with spaces, applies title case, and
 #' expands a small set of common medical abbreviations.
 #' Used automatically by ternG() and ternD() for every variable header.
-#' @keywords internal
+#' @noRd
 .clean_variable_name_for_header <- function(var_name) {
   clean_name <- var_name
 
@@ -52,7 +52,7 @@
 # Rule-based renaming helpers (used when smart_rename = TRUE)
 
 #' Apply comprehensive cleaning rules to a single variable name
-#' @keywords internal
+#' @noRd
 .apply_cleaning_rules <- function(var_name) {
 
   # Remove trailing : Y, : N patterns (binary indicators)
@@ -189,7 +189,7 @@
 }
 
 #' Capitalize medical terms appropriately
-#' @keywords internal
+#' @noRd
 .capitalize_medical_term <- function(term) {
 
   if (grepl("^[0-9.]+$", term)) return(term)

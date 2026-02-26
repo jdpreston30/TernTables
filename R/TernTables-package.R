@@ -9,10 +9,10 @@
 #' \describe{
 #'   \item{\code{\link{ternG}}}{Grouped comparison table for 2- or 3-level group variables.}
 #'   \item{\code{\link{ternD}}}{Descriptive-only summary table (no grouping).}
-#'   \item{\code{\link{export_to_word}}}{Export a TernTables tibble to a formatted Word document.}
+#'   \item{\code{\link{word_export}}}{Export a TernTables tibble to a formatted Word document.}
 #'   \item{\code{\link{write_methods_doc}}}{Generate a methods Word document describing tests used.}
-#'   \item{\code{\link{fmt_p}}}{Format a p-value for publication.}
-#'   \item{\code{\link{format_val}}}{Format a numeric value with rounding rules.}
+#'   \item{\code{\link{val_p_format}}}{Format a p-value for publication.}
+#'   \item{\code{\link{val_format}}}{Format a numeric value with rounding rules.}
 #' }
 #'
 #' @section Statistical tests applied:
@@ -25,7 +25,7 @@
 #'
 #' @section Getting started:
 #' See \code{vignette("getting-started", package = "TernTables")} for a
-#' walkthrough using the bundled \code{\link{colon_recurrence}} dataset.
+#' walkthrough using the bundled \code{\link{tern_colon}} dataset.
 #'
 #' @keywords internal
 "_PACKAGE"
