@@ -9,9 +9,6 @@
 #' @param manual_underline Character vector of variable names to manually format as underlined (like multi-category headers).
 #' @export
 export_to_word <- function(tbl, filename, round_intg = FALSE, font_size = 9, category_start = NULL, manual_italic_indent = NULL, manual_underline = NULL) {
-  library(officer)
-  library(flextable)
-
   # Keep the table as-is
   modified_tbl <- tbl
   

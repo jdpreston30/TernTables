@@ -1,5 +1,52 @@
-# Internal helpers for rule-based variable name cleaning.
-# Used by ternG() and ternD() when smart_rename = TRUE.
+# Internal helpers for variable name cleaning.
+# Used by ternG() and ternD() for all display name formatting.
+
+#' Clean a variable name for table display
+#'
+#' Strips internal suffixes, detects time unit suffixes and appends them as
+#' parentheticals, replaces underscores with spaces, applies title case, and
+#' expands a small set of common medical abbreviations.
+#' Used automatically by ternG() and ternD() for every variable header.
+#' @keywords internal
+.clean_variable_name_for_header <- function(var_name) {
+  clean_name <- var_name
+
+  # Strip internal suffixes
+  clean_name <- gsub("_simplified$", "", clean_name)
+  clean_name <- gsub("_calc$",       "", clean_name)
+  clean_name <- gsub("_tpx$",        "", clean_name)
+
+  # Detect and extract time-unit suffix before underscores are removed
+  unit_suffix <- ""
+  if (grepl("_(yr|year|years)$", clean_name, ignore.case = TRUE)) {
+    clean_name <- sub("_(yr|year|years)$", "", clean_name, ignore.case = TRUE)
+    unit_suffix <- " (yr)"
+  } else if (grepl("_(d|day|days)$", clean_name, ignore.case = TRUE)) {
+    clean_name <- sub("_(d|day|days)$", "", clean_name, ignore.case = TRUE)
+    unit_suffix <- " (days)"
+  } else if (grepl("_(mo|month|months)$", clean_name, ignore.case = TRUE)) {
+    clean_name <- sub("_(mo|month|months)$", "", clean_name, ignore.case = TRUE)
+    unit_suffix <- " (months)"
+  } else if (grepl("_(wk|wks|week|weeks)$", clean_name, ignore.case = TRUE)) {
+    clean_name <- sub("_(wk|wks|week|weeks)$", "", clean_name, ignore.case = TRUE)
+    unit_suffix <- " (weeks)"
+  }
+
+  clean_name <- gsub("_", " ", clean_name)
+  clean_name <- tools::toTitleCase(clean_name)
+  clean_name <- paste0(clean_name, unit_suffix)
+
+  # Common abbreviation fixes post title-case
+  clean_name <- gsub("\\bCod\\b",     "Cause of Death",       clean_name)
+  clean_name <- gsub("\\bDbd Dcd\\b", "Mode of Organ Donation", clean_name)
+  clean_name <- gsub("\\bPhm\\b",     "Predicted Heart Mass",  clean_name)
+  clean_name <- gsub("\\bPhs\\b",     "PHS",                   clean_name)
+  clean_name <- gsub("\\bLvef\\b",    "LVEF",                  clean_name)
+
+  return(clean_name)
+}
+
+# Rule-based renaming helpers (used when smart_rename = TRUE)
 
 #' Apply comprehensive cleaning rules to a single variable name
 #' @keywords internal

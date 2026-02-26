@@ -22,7 +22,7 @@
 #' @param round_intg Logical; if \code{TRUE}, rounds all means, medians, IQRs, and standard deviations to nearest integer (0.5 rounds up). Default is \code{FALSE}.
 #' @param smart_rename Logical; if \code{TRUE}, automatically cleans variable names and subheadings for publication-ready output using built-in rule-based pattern matching for common medical abbreviations and prefixes. Default is \code{FALSE}.
 #' @param insert_subheads Logical; if \code{TRUE}, creates hierarchical structure with headers and indented sub-categories for multi-level categorical variables (except Y/N). If \code{FALSE}, uses simple flat format. Default is \code{TRUE}.
-#' @param factor_order Character; controls the ordering of factor levels in the output. If \code{"frequency"} (default), orders levels by decreasing frequency (most common first). If \code{"levels"}, respects the original factor level ordering as defined in the data.
+#' @param factor_order Character; controls the ordering of factor levels in the output. If \code{"frequency"} (default), orders levels by decreasing frequency (most common first). If \code{"levels"}, respects the original factor level ordering as defined in the data; if the variable is not a factor, falls back to \code{"frequency"}.
 #' @param table_font_size Numeric; font size for Word document output tables. Default is 9.
 #' @param methods_doc Logical; if \code{TRUE} (default), generates a methods document describing the statistical tests used.
 #' @param methods_filename Character; filename for the methods document. Default is \code{"methods.docx"}.
@@ -38,11 +38,12 @@
 #' # Basic usage with built-in mtcars dataset
 #' ternG(mtcars, group_var = "am")
 #'
-#' # With CardioDataSets (if installed)
-#' if (requireNamespace("CardioDataSets", quietly = TRUE)) {
-#'   data("heart_transplant_df", package = "CardioDataSets")
-#'   ternG(heart_transplant_df, group_var = "transplant")
-#' }
+#' # With survival::colon (ships with base R)
+#' colon1 <- subset(survival::colon, etype == 1)
+#' ternG(colon1, group_var = "sex",
+#'       exclude_vars = c("id", "study", "etype", "time", "status"))  # 2-group
+#' ternG(colon1, group_var = "rx",
+#'       exclude_vars = c("id", "study", "etype", "time", "status"))  # 3-group
 #'
 #' @export
 ternG <- function(data,
@@ -113,30 +114,16 @@ ternG <- function(data,
   numeric_vars_failed <- 0
 
   .summarize_var_internal <- function(df, var, force_ordinal = NULL, show_test = TRUE, round_intg = FALSE) {
-    
-    # Helper function to clean variable names for headers
-    .clean_variable_name_for_header <- function(var_name) {
-      # Remove common suffixes and clean up for display
-      clean_name <- var_name
-      clean_name <- gsub("_simplified$", "", clean_name)
-      clean_name <- gsub("_calc$", "", clean_name)
-      clean_name <- gsub("_tpx$", "", clean_name)
-      clean_name <- gsub("_", " ", clean_name)
-      clean_name <- tools::toTitleCase(clean_name)
-      
-      # Handle common abbreviations
-      clean_name <- gsub("\\bCod\\b", "Cause of Death", clean_name)
-      clean_name <- gsub("\\bDbd Dcd\\b", "Mode of Organ Donation", clean_name)
-      clean_name <- gsub("\\bPhm\\b", "Predicted Heart Mass", clean_name)
-      clean_name <- gsub("\\bPhs\\b", "PHS", clean_name)
-      clean_name <- gsub("\\bLvef\\b", "LVEF", clean_name)
-      
-      return(clean_name)
-    }
-    
+
     g <- df %>% filter(!is.na(.data[[var]]), !is.na(.data[[group_var]]))
     if (nrow(g) == 0) return(NULL)
     v <- g[[var]]
+
+    # Auto-detect binary numeric (0/1) as categorical Y/N
+    if (is.numeric(v) && length(unique(na.omit(v))) == 2 && all(na.omit(v) %in% c(0, 1))) {
+      v <- factor(v, levels = c(0, 1), labels = c("N", "Y"))
+      g[[var]] <- v
+    }
 
     # ----- Categorical -----
     if (is.character(v) || is.factor(v)) {
@@ -174,17 +161,18 @@ ternG <- function(data,
       # Determine if this should use simple format or hierarchical subheads
       # Always use simple format for Y/N variables or when insert_subheads is FALSE
       # Otherwise use hierarchical format for categorical variables
-      is_yes_no <- all(c("Y", "N") %in% colnames(tab))
-      is_yes_no_full <- all(c("Yes", "No") %in% colnames(tab))
+      upper_cols     <- toupper(colnames(tab))
+      is_yes_no      <- all(c("Y", "N")   %in% upper_cols)
+      is_yes_no_full <- all(c("YES", "NO") %in% upper_cols)
       is_binary <- is_yes_no || is_yes_no_full
       use_simple_format <- is_binary || !insert_subheads
       
       if (use_simple_format) {
-        # Simple format: single row for the most common level (or Y for Y/N, Yes for Yes/No)
+        # Simple format: single row showing the positive/yes level
         if (is_yes_no) {
-          ref_level <- "Y"
+          ref_level <- colnames(tab)[toupper(colnames(tab)) == "Y"]
         } else if (is_yes_no_full) {
-          ref_level <- "Yes"
+          ref_level <- colnames(tab)[toupper(colnames(tab)) == "YES"]
         } else {
           if (factor_order == "levels" && is.factor(g[[var]])) {
             # Use the first level that actually appears in the data
@@ -424,8 +412,20 @@ ternG <- function(data,
       if (!is_normal) {
         numeric_vars_failed <<- numeric_vars_failed + 1
       }
+    } else {
+      # consider_normality = FALSE: still run Shapiro-Wilk for informational reporting,
+      # but always treat variables as normally distributed for display.
+      sw_p_all <- tryCatch({
+        out <- lapply(group_levels, function(g_lvl) {
+          x <- g %>% filter(.data[[group_var]] == g_lvl) %>% pull(.data[[var]])
+          pval <- if (length(x) >= 3) stats::shapiro.test(x)$p.value else NA_real_
+          setNames(pval, paste0("SW_p_", g_lvl))
+        })
+        do.call(c, out)
+      }, error = function(e) rep(NA_real_, n_levels))
+      numeric_vars_tested <<- numeric_vars_tested + 1
+      if (!all(sw_p_all > 0.05, na.rm = TRUE)) numeric_vars_failed <<- numeric_vars_failed + 1
     }
-    # If consider_normality is FALSE, we don't test normality and proceed with normal distribution assumption
 
     if (!is_normal) {
       return(.summarize_var_internal(df, var = var, force_ordinal = var, show_test = show_test, round_intg = round_intg))
@@ -546,26 +546,39 @@ ternG <- function(data,
   }
 
   # -- Report normality test results -----------------------------------------
-  if (numeric_vars_tested > 0 && (isTRUE(consider_normality) || consider_normality == "FORCE")) {
-    failed_pct <- round((numeric_vars_failed / numeric_vars_tested) * 100, 1)
+  if (numeric_vars_tested > 0) {
+    numeric_vars_passed <- numeric_vars_tested - numeric_vars_failed
+    passed_pct  <- round((numeric_vars_passed / numeric_vars_tested) * 100, 1)
+    param_test    <- if (n_levels == 2) "independent samples t-test" else "one-way ANOVA"
+    nonparam_test <- if (n_levels == 2) "Wilcoxon rank-sum" else "Kruskal-Wallis"
 
     if (consider_normality == "FORCE") {
       message(sprintf(
-        "%d of %d numerical variables failed normality tests at baseline (%s%%).",
-        numeric_vars_failed, numeric_vars_tested, failed_pct
+        "Normality (Shapiro-Wilk): %d of %d continuous variables were normally distributed (%.1f%%).",
+        numeric_vars_passed, numeric_vars_tested, passed_pct
       ))
-      message("Note: consider_normality = 'FORCE' used; treating all numeric variables as non-normal. All displayed as median [IQR] and tested using nonparametric methods (Wilcoxon rank-sum for two groups or Kruskal-Wallis for >=3 groups).")
+      message(sprintf(
+        "consider_normality = 'FORCE': All continuous variables displayed as median [IQR] and tested with nonparametric methods (%s).",
+        nonparam_test
+      ))
+    } else if (isTRUE(consider_normality)) {
+      message(sprintf(
+        "Normality (Shapiro-Wilk): %d of %d continuous variables were normally distributed (%.1f%%).",
+        numeric_vars_passed, numeric_vars_tested, passed_pct
+      ))
+      message(sprintf(
+        "Normally distributed variables: displayed as mean \u00b1 SD, tested with %s. Non-normal variables: displayed as median [IQR], tested with %s.",
+        param_test, nonparam_test
+      ))
     } else {
       message(sprintf(
-        "%d of %d numerical variables in your table failed normality tests (%s%%).",
-        numeric_vars_failed, numeric_vars_tested, failed_pct
+        "Normality (Shapiro-Wilk): %d of %d continuous variables were normally distributed (%.1f%%).",
+        numeric_vars_passed, numeric_vars_tested, passed_pct
       ))
-
-      if (failed_pct > 50) {
-        message("Consider running with consider_normality = 'FORCE' if a majority of your variables fail normality for stylistic consistency.")
-      } else {
-        message("Consider running with consider_normality = TRUE if a minority of your variables would fail normality for stylistic consistency.")
-      }
+      message(sprintf(
+        "consider_normality = FALSE: All continuous variables displayed as mean \u00b1 SD and tested with %s regardless of distribution.",
+        param_test
+      ))
     }
   }
 
