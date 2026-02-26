@@ -2,7 +2,7 @@
 % Please edit documentation in R/ternG.r
 \name{ternG}
 \alias{ternG}
-\title{Generate grouped or descriptive summary table with appropriate statistical tests}
+\title{Generate grouped summary table with appropriate statistical tests}
 \usage{
 ternG(
   data,
@@ -11,26 +11,26 @@ ternG(
   group_var,
   force_ordinal = NULL,
   group_order = NULL,
-  descriptive = NULL,
   output_xlsx = NULL,
   output_docx = NULL,
   OR_col = FALSE,
   OR_method = "dynamic",
   consider_normality = TRUE,
   print_normality = FALSE,
-  show_test = TRUE,
+  show_test = FALSE,
   p_digits = 3,
   round_intg = FALSE,
-  smart_rename = FALSE,
+  smart_rename = TRUE,
   insert_subheads = TRUE,
   factor_order = "frequency",
   table_font_size = 9,
   methods_doc = TRUE,
-  methods_filename = "methods.docx",
+  methods_filename = "TernTables_methods.docx",
   category_start = NULL,
   manual_italic_indent = NULL,
   manual_underline = NULL,
-  indent_info_column = FALSE
+  indent_info_column = FALSE,
+  show_total = TRUE
 )
 }
 \arguments{
@@ -46,8 +46,6 @@ ternG(
 
 \item{group_order}{Optional character vector to specify a custom group level order.}
 
-\item{descriptive}{Logical; if \code{TRUE}, suppresses statistical tests and returns descriptive statistics only.}
-
 \item{output_xlsx}{Optional filename to export the table as an Excel file.}
 
 \item{output_docx}{Optional filename to export the table as a Word document.}
@@ -60,23 +58,23 @@ ternG(
 
 \item{print_normality}{Logical; if \code{TRUE}, includes Shapiro-Wilk p-values in the output.}
 
-\item{show_test}{Logical; if \code{TRUE} (default), includes the statistical test name as a column in the output.}
+\item{show_test}{Logical; if \code{TRUE}, includes the statistical test name as a column in the output. Default is \code{FALSE}.}
 
 \item{p_digits}{Integer; number of decimal places for p-values (default 3).}
 
 \item{round_intg}{Logical; if \code{TRUE}, rounds all means, medians, IQRs, and standard deviations to nearest integer (0.5 rounds up). Default is \code{FALSE}.}
 
-\item{smart_rename}{Logical; if \code{TRUE}, automatically cleans variable names and subheadings for publication-ready output using built-in rule-based pattern matching for common medical abbreviations and prefixes. Default is \code{FALSE}.}
+\item{smart_rename}{Logical; if \code{TRUE}, automatically cleans variable names and subheadings for publication-ready output using built-in rule-based pattern matching for common medical abbreviations and prefixes. Default is \code{TRUE}.}
 
 \item{insert_subheads}{Logical; if \code{TRUE}, creates hierarchical structure with headers and indented sub-categories for multi-level categorical variables (except Y/N). If \code{FALSE}, uses simple flat format. Default is \code{TRUE}.}
 
-\item{factor_order}{Character; controls the ordering of factor levels in the output. If \code{"frequency"} (default), orders levels by decreasing frequency (most common first). If \code{"levels"}, respects the original factor level ordering as defined in the data.}
+\item{factor_order}{Character; controls the ordering of factor levels in the output. If \code{"frequency"} (default), orders levels by decreasing frequency (most common first). If \code{"levels"}, respects the original factor level ordering as defined in the data; if the variable is not a factor, falls back to \code{"frequency"}.}
 
 \item{table_font_size}{Numeric; font size for Word document output tables. Default is 9.}
 
 \item{methods_doc}{Logical; if \code{TRUE} (default), generates a methods document describing the statistical tests used.}
 
-\item{methods_filename}{Character; filename for the methods document. Default is \code{"methods.docx"}.}
+\item{methods_filename}{Character; filename for the methods document. Default is \code{"TernTables_methods.docx"}.}
 
 \item{category_start}{Named character vector specifying where to insert category headers. Names should be variable names, and values are the category header labels to insert before those variables. For example, \code{c("age" = "Demographics", "bmi" = "Clinical Measures")}. Default is \code{NULL} (no category headers).}
 
@@ -85,15 +83,18 @@ ternG(
 \item{manual_underline}{Character vector; optional parameter for specifying which variable names should be underlined in formatted outputs. Used for advanced formatting control.}
 
 \item{indent_info_column}{Logical; if \code{FALSE} (default), the internal \code{.indent} helper column is dropped from the returned tibble. Set to \code{TRUE} to retain it.}
+
+\item{show_total}{Logical; if \code{TRUE}, adds a "Total" column showing the aggregate summary statistic across all groups (e.g., for a publication Table 1 that includes both per-group and overall columns). Default is \code{TRUE}.}
 }
 \value{
 A tibble with one row per variable (multi-row for multi-level factors), showing summary statistics by group,
 p-values, test type, and optionally odds ratios and total summary column.
 }
 \description{
-Creates a grouped or ungrouped summary table, with optional statistical testing
-for group comparisons. Supports numeric, ordinal, and categorical variables, and
-includes options to calculate p-values and odds ratios.
+Creates a grouped summary table with optional statistical testing for group
+comparisons. Supports numeric, ordinal, and categorical variables, and
+includes options to calculate p-values and odds ratios. For descriptive
+(ungrouped) tables, use \code{ternD}.
 }
 \examples{
 # Basic usage with built-in mtcars dataset
@@ -105,4 +106,5 @@ ternG(colon1, group_var = "sex",
       exclude_vars = c("id", "study", "etype", "time", "status"))  # 2-group
 ternG(colon1, group_var = "rx",
       exclude_vars = c("id", "study", "etype", "time", "status"))  # 3-group
+
 }

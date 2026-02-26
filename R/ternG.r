@@ -1,8 +1,9 @@
-#' Generate grouped or descriptive summary table with appropriate statistical tests
+#' Generate grouped summary table with appropriate statistical tests
 #'
-#' Creates a grouped or ungrouped summary table, with optional statistical testing
-#' for group comparisons. Supports numeric, ordinal, and categorical variables, and
-#' includes options to calculate p-values and odds ratios.
+#' Creates a grouped summary table with optional statistical testing for group
+#' comparisons. Supports numeric, ordinal, and categorical variables, and
+#' includes options to calculate p-values and odds ratios. For descriptive
+#' (ungrouped) tables, use \code{ternD}.
 #'
 #' @param data Tibble containing all variables.
 #' @param vars Character vector of variables to summarize. Defaults to all except \code{group_var} and \code{exclude_vars}.
@@ -10,25 +11,25 @@
 #' @param group_var Character, the grouping variable (factor or character with >=2 levels).
 #' @param force_ordinal Character vector of variables to treat as ordinal (i.e., use medians/IQR and nonparametric tests).
 #' @param group_order Optional character vector to specify a custom group level order.
-#' @param descriptive Logical; if \code{TRUE}, suppresses statistical tests and returns descriptive statistics only.
 #' @param output_xlsx Optional filename to export the table as an Excel file.
 #' @param output_docx Optional filename to export the table as a Word document.
 #' @param OR_col Logical; if \code{TRUE}, adds odds ratios for 2-level categorical variables.
 #' @param OR_method Character; if \code{"dynamic"}, uses Fisher/Wald based on test type. If \code{"wald"}, forces Wald method.
 #' @param consider_normality Logical or character; if \code{TRUE}, uses Shapiro-Wilk to choose t-test vs. Wilcoxon for numeric vars. If \code{FALSE}, uses variable type and force_ordinal. If \code{"FORCE"}, treats all numeric variables as ordinal (median/IQR, nonparametric tests).
 #' @param print_normality Logical; if \code{TRUE}, includes Shapiro-Wilk p-values in the output.
-#' @param show_test Logical; if \code{TRUE} (default), includes the statistical test name as a column in the output.
+#' @param show_test Logical; if \code{TRUE}, includes the statistical test name as a column in the output. Default is \code{FALSE}.
 #' @param p_digits Integer; number of decimal places for p-values (default 3).
 #' @param round_intg Logical; if \code{TRUE}, rounds all means, medians, IQRs, and standard deviations to nearest integer (0.5 rounds up). Default is \code{FALSE}.
-#' @param smart_rename Logical; if \code{TRUE}, automatically cleans variable names and subheadings for publication-ready output using built-in rule-based pattern matching for common medical abbreviations and prefixes. Default is \code{FALSE}.
+#' @param smart_rename Logical; if \code{TRUE}, automatically cleans variable names and subheadings for publication-ready output using built-in rule-based pattern matching for common medical abbreviations and prefixes. Default is \code{TRUE}.
 #' @param insert_subheads Logical; if \code{TRUE}, creates hierarchical structure with headers and indented sub-categories for multi-level categorical variables (except Y/N). If \code{FALSE}, uses simple flat format. Default is \code{TRUE}.
 #' @param factor_order Character; controls the ordering of factor levels in the output. If \code{"frequency"} (default), orders levels by decreasing frequency (most common first). If \code{"levels"}, respects the original factor level ordering as defined in the data; if the variable is not a factor, falls back to \code{"frequency"}.
 #' @param table_font_size Numeric; font size for Word document output tables. Default is 9.
 #' @param methods_doc Logical; if \code{TRUE} (default), generates a methods document describing the statistical tests used.
-#' @param methods_filename Character; filename for the methods document. Default is \code{"methods.docx"}.
+#' @param methods_filename Character; filename for the methods document. Default is \code{"TernTables_methods.docx"}.
 #' @param category_start Named character vector specifying where to insert category headers. Names should be variable names, and values are the category header labels to insert before those variables. For example, \code{c("age" = "Demographics", "bmi" = "Clinical Measures")}. Default is \code{NULL} (no category headers).
 #' @param manual_italic_indent Character vector; optional parameter for specifying which variable names should be italicized and indented in formatted outputs. Used for advanced formatting control.
 #' @param manual_underline Character vector; optional parameter for specifying which variable names should be underlined in formatted outputs. Used for advanced formatting control.
+#' @param show_total Logical; if \code{TRUE}, adds a "Total" column showing the aggregate summary statistic across all groups (e.g., for a publication Table 1 that includes both per-group and overall columns). Default is \code{TRUE}.
 #' @param indent_info_column Logical; if \code{FALSE} (default), the internal \code{.indent} helper column is dropped from the returned tibble. Set to \code{TRUE} to retain it.
 #'
 #' @return A tibble with one row per variable (multi-row for multi-level factors), showing summary statistics by group,
@@ -52,26 +53,26 @@ ternG <- function(data,
                   group_var,
                   force_ordinal = NULL,
                   group_order = NULL,
-                  descriptive = NULL,
                   output_xlsx = NULL,
                   output_docx = NULL,
                   OR_col = FALSE,
                   OR_method = "dynamic",
                   consider_normality = TRUE,
                   print_normality = FALSE,
-                  show_test = TRUE,
+                  show_test = FALSE,
                   p_digits = 3,
                   round_intg = FALSE,
-                  smart_rename = FALSE,
+                  smart_rename = TRUE,
                   insert_subheads = TRUE,
                   factor_order = "frequency",
                   table_font_size = 9,
                   methods_doc = TRUE,
-                  methods_filename = "methods.docx",
+                  methods_filename = "TernTables_methods.docx",
                   category_start = NULL,
                   manual_italic_indent = NULL,
                   manual_underline = NULL,
-                  indent_info_column = FALSE) {
+                  indent_info_column = FALSE,
+                  show_total = TRUE) {
 
   # Helper function for proper rounding (0.5 always rounds up)
   round_up_half <- function(x, digits = 0) {
@@ -96,7 +97,6 @@ ternG <- function(data,
 
   data <- data %>% filter(!is.na(.data[[group_var]]))
   n_levels <- length(unique(data[[group_var]]))
-  if (is.null(descriptive)) descriptive <- n_levels < 2
 
   group_counts <- data %>% count(.data[[group_var]]) %>% deframe()
   group_levels <- names(group_counts)
@@ -113,7 +113,7 @@ ternG <- function(data,
   numeric_vars_tested <- 0
   numeric_vars_failed <- 0
 
-  .summarize_var_internal <- function(df, var, force_ordinal = NULL, show_test = TRUE, round_intg = FALSE) {
+  .summarize_var_internal <- function(df, var, force_ordinal = NULL, show_test = FALSE, round_intg = FALSE, show_total = FALSE) {
 
     g <- df %>% filter(!is.na(.data[[var]]), !is.na(.data[[group_var]]))
     if (nrow(g) == 0) return(NULL)
@@ -224,10 +224,10 @@ ternG <- function(data,
           result$OR <- NA_character_
           if (show_test) result$OR_method <- NA_character_
         }
-
-        if (descriptive) {
+        if (show_total) {
           result$Total <- paste0(tab_total_n[ref_level], " (", tab_total_pct[ref_level], "%)")
         }
+
       } else {
         # Hierarchical format: header + indented sub-categories
         # tab_total_n is already a vector of total counts per level
@@ -254,7 +254,7 @@ ternG <- function(data,
           header_row$OR <- ""
           if (show_test) header_row$OR_method <- ""
         }
-        if (descriptive) {
+        if (show_total) {
           header_row$Total <- ""
         }
         
@@ -291,7 +291,7 @@ ternG <- function(data,
             out$OR <- "-"
             if (show_test) out$OR_method <- "-"
           }
-          if (descriptive) {
+          if (show_total) {
             out$Total <- paste0(tab_total_n[level], " (", tab_total_pct[level], "%)")
           }
           out
@@ -351,12 +351,12 @@ ternG <- function(data,
       }
       
       if (OR_col) result$OR <- NA_character_
-      if (descriptive) {
-        val_total <- g %>% summarise(
-          Q1 = if (round_intg) round_up_half(quantile(.data[[var]], 0.25, na.rm = TRUE), 0) else round(quantile(.data[[var]], 0.25, na.rm = TRUE), 1),
+      if (show_total) {
+        val_total <- g %>% dplyr::summarise(
+          Q1  = if (round_intg) round_up_half(quantile(.data[[var]], 0.25, na.rm = TRUE), 0) else round(quantile(.data[[var]], 0.25, na.rm = TRUE), 1),
           med = if (round_intg) round_up_half(median(.data[[var]], na.rm = TRUE), 0) else round(median(.data[[var]], na.rm = TRUE), 1),
-          Q3 = if (round_intg) round_up_half(quantile(.data[[var]], 0.75, na.rm = TRUE), 0) else round(quantile(.data[[var]], 0.75, na.rm = TRUE), 1))
-        result$Total <- paste0(val_total$med, " [", val_total$Q1, "–", val_total$Q3, "]")
+          Q3  = if (round_intg) round_up_half(quantile(.data[[var]], 0.75, na.rm = TRUE), 0) else round(quantile(.data[[var]], 0.75, na.rm = TRUE), 1))
+        result$Total <- paste0(val_total$med, " [", val_total$Q1, "\u2013", val_total$Q3, "]")
       }
       if (print_normality) {
         for (g_lvl in group_levels) {
@@ -428,7 +428,7 @@ ternG <- function(data,
     }
 
     if (!is_normal) {
-      return(.summarize_var_internal(df, var = var, force_ordinal = var, show_test = show_test, round_intg = round_intg))
+      return(.summarize_var_internal(df, var = var, force_ordinal = var, show_test = show_test, round_intg = round_intg, show_total = show_total))
     }
 
     # ----- Normally distributed numeric -----
@@ -484,14 +484,15 @@ ternG <- function(data,
     }
     
     if (OR_col) result$OR <- NA_character_
-    if (descriptive) {
-      val_total <- g %>% summarise(mean = mean(.data[[var]], na.rm = TRUE), sd = sd(.data[[var]], na.rm = TRUE))
+    if (show_total) {
+      val_total <- g %>% dplyr::summarise(mean = mean(.data[[var]], na.rm = TRUE), sd = sd(.data[[var]], na.rm = TRUE))
       if (round_intg) {
-        result$Total <- paste0(round_up_half(val_total$mean, 0), " ± ", round_up_half(val_total$sd, 0))
+        result$Total <- paste0(round_up_half(val_total$mean, 0), " \u00b1 ", round_up_half(val_total$sd, 0))
       } else {
-        result$Total <- paste0(round(val_total$mean, 1), " ± ", round(val_total$sd, 1))
+        result$Total <- paste0(round(val_total$mean, 1), " \u00b1 ", round(val_total$sd, 1))
       }
     }
+
     if (print_normality && length(sw_p_all) > 0) {
       for (nm in names(sw_p_all)) {
         result[[nm]] <- formatC(sw_p_all[[nm]], format = "f", digits = 4)
@@ -501,7 +502,7 @@ ternG <- function(data,
   }
 
   out_tbl <- suppressWarnings({
-    result <- bind_rows(lapply(vars, function(v) .summarize_var_internal(data, v, force_ordinal, show_test, round_intg)))
+    result <- bind_rows(lapply(vars, function(v) .summarize_var_internal(data, v, force_ordinal, show_test, round_intg, show_total)))
     message("Note: Categorical variables with >2 levels return multiple rows.")
     result
   })
@@ -541,8 +542,8 @@ ternG <- function(data,
   if (!is.null(output_xlsx)) export_to_excel(out_tbl, output_xlsx)
   
   # Write methods document if requested
-  if (methods_doc && !descriptive) {
-    write_methods_doc(out_tbl, methods_filename, n_levels = n_levels, OR_col = OR_col)
+  if (methods_doc) {
+    write_methods_doc(out_tbl, methods_filename, n_levels = n_levels, OR_col = OR_col, source = "ternG")
   }
 
   # -- Report normality test results -----------------------------------------

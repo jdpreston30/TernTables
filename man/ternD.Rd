@@ -11,12 +11,14 @@ ternD(
   force_ordinal = NULL,
   output_xlsx = NULL,
   output_docx = NULL,
-  consider_normality = FALSE,
+  consider_normality = TRUE,
   print_normality = FALSE,
   round_intg = FALSE,
-  smart_rename = FALSE,
+  smart_rename = TRUE,
   insert_subheads = TRUE,
   factor_order = "frequency",
+  methods_doc = TRUE,
+  methods_filename = "TernTables_methods.docx",
   category_start = NULL
 )
 }
@@ -47,16 +49,25 @@ additional column in the output.}
 deviations to nearest integer (0.5 rounds up). Default is \code{FALSE}.}
 
 \item{smart_rename}{Logical; if \code{TRUE}, automatically cleans variable names and
-  subheadings for publication-ready output using built-in rule-based pattern matching for
-  common medical abbreviations and prefixes. Default is \code{FALSE}.}
+subheadings for publication-ready output using built-in rule-based pattern matching for
+common medical abbreviations and prefixes. Default is \code{TRUE}.}
 
 \item{insert_subheads}{Logical; if \code{TRUE}, creates hierarchical structure with headers 
 and indented sub-categories for multi-level categorical variables (except Y/N). If \code{FALSE}, 
 uses simple flat format. Default is \code{TRUE}.}
 
-\item{factor_order}{Character; controls the ordering of factor levels in the output. If 
-\code{"frequency"} (default), orders levels by decreasing frequency (most common first). 
-If \code{"levels"}, respects the original factor level ordering as defined in the data.}
+\item{factor_order}{Character; controls the ordering of factor levels in the output. If
+\code{"frequency"} (default), orders levels by decreasing frequency (most common first).
+If \code{"levels"}, respects the original factor level ordering as defined in the data;
+if the variable is not a factor, falls back to \code{"frequency"}.}
+
+\item{methods_doc}{Logical; if \code{TRUE} (default), generates a methods document
+describing the statistical presentation used. The document contains boilerplate
+text for all three table types so the relevant section can be copied directly
+into a manuscript.}
+
+\item{methods_filename}{Character; filename for the methods document.
+Default is \code{"TernTables_methods.docx"}.}
 
 \item{category_start}{Named character vector specifying where to insert category headers. 
 Names should be variable names, and values are the category header labels to insert before 
