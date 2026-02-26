@@ -1,7 +1,7 @@
 Package: TernTables
 Type: Package
 Title: Automated Statistics and Tables for Clinical Research
-Version: 1.2.2.9010
+Version: 1.2.2.9011
 Authors@R: c(
     person("Joshua D.", "Preston",
            email = "joshua.preston@emory.edu",
@@ -25,8 +25,8 @@ Authors@R: c(
   )
 Description: Generates publication-ready summary tables for clinical research,
     supporting descriptive summaries and comparisons across two or three groups.
-    Automatically detects whether each variable is continuous, binary, categorical,
-    or ordinal and selects the appropriate statistical test (Welch t-test, Wilcoxon
+    Automatically detects whether each variable is continuous, binary, or categorical
+    and selects the appropriate statistical test (Welch t-test, Wilcoxon
     rank-sum, ANOVA, Kruskal-Wallis, Chi-squared, or Fisher's exact test). Results
     are formatted as tibbles and can be exported directly to Word or Excel with
     hierarchical category headers, publication-quality formatting, and an
@@ -53,5 +53,5 @@ Suggests:
     survival
 VignetteBuilder: knitr
 Depends: 
-    R (>= 3.5)
+    R (>= 4.1.0)
 LazyData: true

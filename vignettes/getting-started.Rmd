@@ -15,6 +15,7 @@ knitr::opts_chunk$set(
   message   = FALSE
 )
 library(TernTables)
+options(tibble.width = Inf)  # show all columns in printed tibbles
 # Output directory for exported .docx files.
 # Override by setting options(TernTables.vignette_outdir = "/your/path") before rendering.
 out_dir <- getOption("TernTables.vignette_outdir", tempdir())
@@ -22,25 +23,26 @@ out_dir <- getOption("TernTables.vignette_outdir", tempdir())
 
 ## Overview
 
-**TernTables** is built for clinical researchers — physicians, fellows, and
-residents who produce clinical papers and need publication-ready summary tables
-without manual formatting or statistical decision-making.
-
-It generates publication-ready summary tables for clinical research and takes
-them all the way from raw data to a formatted Word document table ready to
-paste into a manuscript, without any manual formatting steps.
+**TernTables** is built for clinical researchers who need to go from raw data to a manuscript-ready Word table — with variable detection, statistical test selection, and formatting all handled automatically.
 
 Given a data frame and an optional grouping variable, it automatically:
 
-- Detects each variable's type (continuous, binary/categorical, or ordinal)
+- Detects each variable's type (continuous, binary, categorical)
 - Selects the appropriate statistical test
-- Formats p-values and summary statistics for publication
+- Formats *P* values and summary statistics for publication-ready tables
 - Exports directly to a styled `.docx` Word file and generates a boilerplate
   statistical methods paragraph
+- Returns a tibble for inspection, Excel export, or further analysis in R
 
 Three table types are supported: **descriptive summaries** (single cohort, no
 comparisons), **two-group comparisons** (with optional odds ratios), and
 **comparisons across three or more groups**.
+
+The convenience is in the automation, not in any compromise to statistical
+rigor. Test selection follows established published criteria throughout:
+normality by Shapiro-Wilk per group, Fisher's exact triggered by the Cochran
+(1954) expected-cell criterion, and odds ratios reported as unadjusted with
+the first factor level of the grouping variable as the reference. The auto-generated methods paragraph covers the statistical approach used and is suitable as a starting draft for a manuscript methods section.
 
 ## Example Dataset
 
@@ -48,10 +50,10 @@ comparisons), **two-group comparisons** (with optional odds ratios), and
 data(tern_colon)
 ```
 
-`tern_colon` is bundled with TernTables. It contains 929 patients from a
-landmark colon cancer adjuvant chemotherapy trial (Moertel et al., 1990),
-filtered to the recurrence endpoint — one row per patient. See
-`?tern_colon` for full details.
+`tern_colon` is bundled with TernTables. It is derived from `survival::colon`
+and contains 929 patients from a landmark colon cancer adjuvant chemotherapy
+trial (Moertel et al., 1990), filtered to the recurrence endpoint — one row
+per patient. See `?tern_colon` for full details.
 
 Key variables used in these examples:
 
@@ -59,11 +61,11 @@ Key variables used in these examples:
 |---|---|
 | `Age_Years` | Age at registration (years) |
 | `Sex` | Female / Male |
-| `Colonic_Obstruction` | Colonic obstruction present (N / Y) |
-| `Bowel_Perforation` | Bowel perforation present (N / Y) |
+| `Colonic_Obstruction` | Colonic obstruction present — n (%) |
+| `Bowel_Perforation` | Bowel perforation present — n (%) |
 | `Positive_Lymph_Nodes_n` | Number of positive lymph nodes |
-| `` >_4_Positive_Nodes `` | More than 4 positive lymph nodes (N / Y) |
-| `Tumor_Adherence` | Tumour adherence to nearby organs (N / Y) |
+| `` >_4_Positive_Nodes `` | More than 4 positive lymph nodes — n (%) |
+| `Tumor_Adherence` | Tumour adherence to nearby organs — n (%) |
 | `Tumor_Differentiation` | Well / Moderate / Poor |
 | `Extent_of_Local_Spread` | Depth of tumour penetration (4 levels) |
 | `Recurrence` | No Recurrence / Recurrence — **2-group** |
@@ -79,8 +81,8 @@ publication-ready Word file in the same call. Use `category_start` to insert
 bold section headers grouping related variables; anchors can be either the raw
 column name or the cleaned display label.
 
-```{r ternD-example}
-TernDesc <- ternD(
+```{r ternD-example, results = "hide"}
+tbl_descriptive <- ternD(
   data             = tern_colon,
   exclude_vars     = c("ID"),
   output_docx      = file.path(out_dir, "Tern_descriptive.docx"),
@@ -92,14 +94,22 @@ TernDesc <- ternD(
     "Outcomes"              = "Recurrence"
   )
 )
-TernDesc
+tbl_descriptive
 ```
 
 Continuous variables show mean ± SD or median [IQR] depending on normality
-(Shapiro-Wilk, p > 0.05 = normal). Binary columns (including numeric 0/1) are
-automatically detected as categorical and shown as n (%). Multi-level
-categorical variables show all levels as indented sub-rows beneath the variable
-name.
+(Shapiro-Wilk, p > 0.05 = normal). Columns whose values are exactly Y/N,
+YES/NO, or numeric 0/1 are detected as binary and shown as a single n (%) row
+(the positive/yes count). All other categorical variables — including two-level
+columns like Male/Female — are shown with each level as an indented sub-row.
+
+Variable names are automatically cleaned for display (`smart_rename = TRUE` by
+default) — underscores replaced with spaces, capitalisation normalised, and
+common medical abbreviations formatted (e.g. `Age_Years` → `Age (yr)`,
+`Positive_Lymph_Nodes_n` → `Positive Lymph Nodes (n)`). Pass
+`smart_rename = FALSE` to use column names exactly as they appear in the data.
+
+Descriptive summary table exported to Word:
 
 ```{r ternD-figure, echo=FALSE, fig.align="center", out.width="45%"}
 knitr::include_graphics("figures/tern_descriptive.png")
@@ -108,7 +118,7 @@ knitr::include_graphics("figures/tern_descriptive.png")
 ### Export to Excel
 
 ```{r ternD-excel, eval = FALSE}
-writexl::write_xlsx(TernDesc, "Tern_descriptive.xlsx")
+writexl::write_xlsx(tbl_descriptive, "Tern_descriptive.xlsx")
 ```
 
 ---
@@ -120,8 +130,8 @@ add odds ratios with 95% CI for binary variables (Fisher's exact or Wald,
 chosen automatically based on expected cell counts). The Word file is written
 directly via `output_docx`.
 
-```{r ternG-2group}
-Tern2v <- ternG(
+```{r ternG-2group, results = "hide"}
+tbl_2group <- ternG(
   data             = tern_colon,
   exclude_vars     = c("ID"),
   group_var        = "Recurrence",
@@ -136,37 +146,29 @@ Tern2v <- ternG(
     "Treatment Details"     = "Treatment Arm"
   )
 )
-Tern2v
+tbl_2group
 ```
 
-The `p` column shows the test p-value; `OR` shows the odds ratio with 95% CI
-where applicable.
+The Word table includes an `OR` column (odds ratio with 95% CI for binary
+variables) and a `P` column (test *P* value for each variable).
 
-![Two-group comparison table exported to Word, with odds ratios and category section headers.](figures/tern_2_group.png){width=100%}
+Two-group comparison table exported to Word, with odds ratios and category section headers:
 
-### Methods document
-
-`write_methods_doc()` generates a boilerplate methods paragraph listing every
-statistical test that was actually used — ready to copy directly into a
-manuscript methods section.
-
-```{r methods-doc, eval = FALSE}
-write_methods_doc(
-  tbl      = Tern2v,
-  filename = "Tern_methods.docx"
-)
-```
+![Two-group comparison exported to Word.](figures/tern_2_group.png){width=100%}
 
 ---
 
-## Three-Group Comparison (`ternG` — 3 levels)
+## Three or More Groups (`ternG` — 3+ levels)
 
 The same `ternG()` function handles three or more groups automatically,
 switching from t-test/Wilcoxon to ANOVA/Kruskal-Wallis as appropriate.
-Odds ratios are not available for 3+ group comparisons.
+Odds ratios are not available for 3+ group comparisons. `consider_normality`
+controls whether Shapiro-Wilk is used to choose between parametric and
+nonparametric tests; the default (`TRUE`) enables this, `FALSE` forces
+parametric tests throughout, and `"FORCE"` forces nonparametric throughout.
 
-```{r ternG-3group}
-Tern3v <- ternG(
+```{r ternG-3group, results = "hide"}
+tbl_3group <- ternG(
   data               = tern_colon,
   exclude_vars       = c("ID"),
   group_var          = "Treatment_Arm",
@@ -181,10 +183,12 @@ Tern3v <- ternG(
     "Outcomes"              = "Recurrence"
   )
 )
-Tern3v
+tbl_3group
 ```
 
-![Three-group comparison table exported to Word with category section headers.](figures/tern_3_group.png){width=100%}
+Three-group comparison table exported to Word with category section headers:
+
+![Three-group comparison exported to Word.](figures/tern_3_group.png){width=100%}
 
 ---
 
@@ -205,8 +209,30 @@ Normality is assessed with the Shapiro-Wilk test (p > 0.05 = normal) applied
 per group; a variable is treated as normally distributed only if all groups
 pass. If any group fails — or if a group has fewer than 3 observations and
 normality cannot be evaluated — the nonparametric test is used (conservative
-fail-safe). For 3+ group comparisons, omnibus p-values are reported; pairwise
+fail-safe). For 3+ group comparisons, omnibus *P* values are reported; pairwise
 post-hoc comparisons are not performed.
+
+---
+
+## Methods Document
+
+A methods paragraph is written automatically with every `ternD()` and `ternG()`
+call (`methods_doc = TRUE` by default), saved to `"TernTables_methods.docx"` in
+the working directory unless overridden via `methods_filename`. Set
+`methods_doc = FALSE` to suppress it.
+
+`write_methods_doc()` can also be called directly on any saved tibble. Pass
+`show_test = TRUE` to `ternG()` to populate the `test` column; when present,
+the paragraph is tailored to only the test types that actually appeared (e.g.
+omits the t-test sentence if all continuous variables were nonparametric).
+Without it, standard boilerplate is used.
+
+```{r methods-doc, eval = FALSE}
+write_methods_doc(
+  tbl      = tbl_2group,
+  filename = "Tern_methods.docx"
+)
+```
 
 ---
 

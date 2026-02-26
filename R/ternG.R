@@ -1,8 +1,9 @@
 #' Generate grouped summary table with appropriate statistical tests
 #'
 #' Creates a grouped summary table with optional statistical testing for group
-#' comparisons. Supports numeric, ordinal, and categorical variables, and
-#' includes options to calculate p-values and odds ratios. For descriptive
+#' comparisons. Supports numeric and categorical variables; numeric variables
+#' can be treated as ordinal via \code{force_ordinal}. Includes options to
+#' calculate P values and odds ratios. For descriptive
 #' (ungrouped) tables, use \code{ternD}.
 #'
 #' @param data Tibble containing all variables.
@@ -29,9 +30,9 @@
 #'   parametric tests) regardless of distribution, unless listed in \code{force_ordinal}.
 #'   If \code{"FORCE"}, all numeric variables are treated as non-normal (median [IQR], nonparametric tests)
 #'   regardless of Shapiro-Wilk results.
-#' @param print_normality Logical; if \code{TRUE}, includes Shapiro-Wilk p-values in the output.
+#' @param print_normality Logical; if \code{TRUE}, includes Shapiro-Wilk P values in the output.
 #' @param show_test Logical; if \code{TRUE}, includes the statistical test name as a column in the output. Default is \code{FALSE}.
-#' @param p_digits Integer; number of decimal places for p-values (default 3).
+#' @param p_digits Integer; number of decimal places for P values (default 3).
 #' @param round_intg Logical; if \code{TRUE}, rounds all means, medians, IQRs, and standard deviations to nearest integer (0.5 rounds up). Default is \code{FALSE}.
 #' @param smart_rename Logical; if \code{TRUE}, automatically cleans variable names and subheadings for publication-ready output using built-in rule-based pattern matching for common medical abbreviations and prefixes. Default is \code{TRUE}.
 #' @param insert_subheads Logical; if \code{TRUE}, creates a hierarchical structure with a header row and
@@ -65,7 +66,7 @@
 #'   in the Word table.
 #'
 #' @return A tibble with one row per variable (multi-row for multi-level factors), showing summary statistics by group,
-#' p-values, test type, and optionally odds ratios and total summary column.
+#' P values, test type, and optionally odds ratios and total summary column.
 #'
 #' @examples
 #' # Basic 2-group comparison with built-in dataset
@@ -231,9 +232,9 @@ ternG <- function(data,
         }
 
         if (!is.null(test_result$error)) {
-          result$p <- paste0("NA (", test_result$error, ")")
+          result$P <- paste0("NA (", test_result$error, ")")
         } else {
-          result$p <- val_p_format(test_result$p_value, p_digits)
+          result$P <- val_p_format(test_result$p_value, p_digits)
         }
         if (show_test) {
           result$test <- test_result$test_name
@@ -286,7 +287,7 @@ ternG <- function(data,
         for (g_lvl in group_levels) {
           header_row[[group_labels[g_lvl]]] <- ""
         }
-        header_row$p <- ""
+        header_row$P <- ""
         if (show_test) {
           header_row$test <- ""
         }
@@ -310,18 +311,18 @@ ternG <- function(data,
             out[[group_labels[g_lvl]]] <- val
           }
           
-          # Only first sub-row gets p-value, others get "-"
+          # Only first sub-row gets P value, others get "-"
           if (level == sorted_levels[1]) {
             if (!is.null(test_result$error)) {
-              out$p <- paste0("NA (", test_result$error, ")")
+              out$P <- paste0("NA (", test_result$error, ")")
             } else {
-              out$p <- val_p_format(test_result$p_value, p_digits)
+              out$P <- val_p_format(test_result$p_value, p_digits)
             }
             if (show_test) {
               out$test <- test_result$test_name
             }
           } else {
-            out$p <- "-"
+            out$P <- "-"
             if (show_test) {
               out$test <- "-"
             }
@@ -382,9 +383,9 @@ ternG <- function(data,
       })
       
       if (!is.null(test_result$error)) {
-        result$p <- paste0("NA (", test_result$error, ")")
+        result$P <- paste0("NA (", test_result$error, ")")
       } else {
-        result$p <- val_p_format(test_result$p_value, p_digits)
+        result$P <- val_p_format(test_result$p_value, p_digits)
       }
       if (show_test) {
         result$test <- test_result$test_name
@@ -515,9 +516,9 @@ ternG <- function(data,
     })
     
     if (!is.null(test_result$error)) {
-      result$p <- paste0("NA (", test_result$error, ")")
+      result$P <- paste0("NA (", test_result$error, ")")
     } else {
-      result$p <- val_p_format(test_result$p_value, p_digits)
+      result$P <- val_p_format(test_result$p_value, p_digits)
     }
     if (show_test) {
       result$test <- test_result$test_name

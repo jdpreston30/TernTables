@@ -2,15 +2,15 @@
 % Please edit documentation in R/utils_format.R
 \name{val_p_format}
 \alias{val_p_format}
-\title{Format a p-value for reporting}
+\title{Format a P value for reporting}
 \usage{
 val_p_format(p, digits = 3)
 }
 \arguments{
-\item{p}{Numeric p-value in the range [0, 1]. \code{NA} values are returned as \code{NA_character_}.
+\item{p}{Numeric P value in the range [0, 1]. \code{NA} values are returned as \code{NA_character_}.
 Values >= 1 (or rounding to >= 1) are returned as e.g. \code{">0.999"}.}
 
-\item{digits}{Integer; number of decimal places for reported p-values. Default is 3.
+\item{digits}{Integer; number of decimal places for reported P values. Default is 3.
 Note: for p < 0.001, the value is reported in scientific notation with 1 significant figure
 regardless of \code{digits} (e.g., \code{8E-4}).}
 }
@@ -20,5 +20,5 @@ A character string. Values < 0.001 are formatted in scientific notation with 1 s
   decimal places.
 }
 \description{
-Format a p-value for reporting
+Format a P value for reporting
 }

@@ -42,7 +42,7 @@ mean ± SD (for normal data) vs median [IQR] (for non-normal data) for numeric v
 If \code{FALSE}, defaults to mean ± SD for all numeric variables unless specified in 
 \code{force_ordinal}.}
 
-\item{print_normality}{Logical; if \code{TRUE}, includes Shapiro-Wilk p-values as an 
+\item{print_normality}{Logical; if \code{TRUE}, includes Shapiro-Wilk P values as an 
 additional column in the output.}
 
 \item{round_intg}{Logical; if \code{TRUE}, rounds all means, medians, IQRs, and standard 
@@ -83,7 +83,7 @@ A tibble with one row per variable (multi-row for factors), containing:
 \describe{
   \item{Variable}{Variable names with appropriate indentation}
   \item{Total (N = n)}{Summary statistics (mean ± SD, median [IQR], or n (\%) as appropriate)}
-  \item{SW_p}{Shapiro-Wilk p-values (only if \code{print_normality = TRUE})}
+  \item{SW_p}{Shapiro-Wilk P values (only if \code{print_normality = TRUE})}
 }
 }
 \description{
