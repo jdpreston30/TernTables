@@ -55,6 +55,10 @@
   # Remove trailing : Y, : N patterns (binary indicators)
   clean_name <- gsub(": [YN]$", "", var_name)
 
+  # If there are no underscores the name has already been cleaned — return as-is
+  # to avoid .capitalize_medical_term destroying title case
+  if (!grepl("_", clean_name)) return(trimws(clean_name))
+
   # Split by underscores and process each part
   parts <- strsplit(clean_name, "_")[[1]]
 

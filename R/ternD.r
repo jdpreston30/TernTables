@@ -36,9 +36,9 @@
 #'   into a manuscript.
 #' @param methods_filename Character; filename for the methods document.
 #'   Default is \code{"TernTables_methods.docx"}.
-#' @param category_start Named character vector specifying where to insert category headers. 
-#'   Names should be variable names, and values are the category header labels to insert before 
-#'   those variables. For example, \code{c("age" = "Demographics", "bmi" = "Clinical Measures")}. 
+#' @param category_start Named character vector specifying where to insert category headers.
+#'   Names are the header label text to display, and values are the variable name the header
+#'   should appear before. For example, \code{c("Demographics" = "age", "Clinical Measures" = "bmi")}.
 #'   Default is \code{NULL} (no category headers).
 #'
 #' @details
@@ -144,7 +144,7 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
       tab <- table(v, useNA = "no")
       if (length(tab) == 0) {
         # all missing
-        out <- tibble::tibble(Variable = paste0("  ", var), Summary = "0 (0%)")
+        out <- tibble::tibble(Variable = .clean_variable_name_for_header(var), .indent = 2, Summary = "0 (0%)")
         if (print_normality) out$SW_p <- NA_real_
         return(out)
       }
@@ -173,8 +173,9 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
       if (use_hierarchical) {
         # Create header row for the main variable
         header_row <- tibble::tibble(
-          Variable = paste0("  ", .clean_variable_name_for_header(var)),
-          Summary = ""
+          Variable = .clean_variable_name_for_header(var),
+          .indent  = 2L,
+          Summary  = ""
         )
         if (print_normality) header_row$SW_p <- NA_real_
         
@@ -183,9 +184,9 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
           n <- as.integer(tab[[level]])
           p <- pct[[level]]
           row <- tibble::tibble(
-            Variable = paste0("      ", level),
-            Summary  = paste0(n, " (", p, "%)")
-          )
+            Variable = level,
+            .indent  = 6L,
+            Summary  = paste0(n, " (", p, "%)"))
           if (print_normality) row$SW_p <- NA_real_
           return(row)
         })
@@ -214,8 +215,9 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
         }
         
         row <- tibble::tibble(
-          Variable = paste0("  ", var),
-          Summary = paste0(as.integer(tab[[ref_level]]), " (", pct[[ref_level]], "%)")
+          Variable = .clean_variable_name_for_header(var),
+          .indent  = 2L,
+          Summary  = paste0(as.integer(tab[[ref_level]]), " (", pct[[ref_level]], "%)")
         )
         if (print_normality) row$SW_p <- NA_real_
         rows <- list(row)
@@ -248,7 +250,8 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
     }
     
     out <- tibble::tibble(
-      Variable = paste0("  ", var),
+      Variable = .clean_variable_name_for_header(var),
+      .indent  = 2L,
       Summary  = summary_str
     )
     if (print_normality) out$SW_p <- sw
@@ -313,5 +316,6 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
   if (!is.null(output_docx)) export_to_word(out_tbl, output_docx, category_start = category_start)
   if (methods_doc) write_methods_doc(out_tbl, methods_filename, source = "ternD")
 
+  out_tbl <- dplyr::select(out_tbl, -dplyr::any_of(".indent"))
   out_tbl
 }
