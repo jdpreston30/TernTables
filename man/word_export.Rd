@@ -24,7 +24,7 @@ word_export(
 \item{font_size}{Numeric; font size for table body. Default is 9.}
 
 \item{category_start}{Named character vector specifying category headers. Names are header
-label text; values are anchor variable names — either the original column name or the
+label text; values are anchor variable names -- either the original column name or the
 cleaned display name (both forms accepted).}
 
 \item{manual_italic_indent}{Character vector of display variable names (post-cleaning) to force into

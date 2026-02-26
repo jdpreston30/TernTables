@@ -51,7 +51,8 @@ ternG(
 \item{output_docx}{Optional filename to export the table as a Word document.}
 
 \item{OR_col}{Logical; if \code{TRUE}, adds odds ratios with 95\% CI for binary categorical variables.
-Only valid when \code{group_var} has exactly 2 levels; an error is raised for 3+ group comparisons.}
+Only valid when \code{group_var} has exactly 2 levels; an error is raised for 3+ group comparisons.
+Default is \code{FALSE}.}
 
 \item{OR_method}{Character; controls how odds ratios are calculated when \code{OR_col = TRUE}.
 If \code{"dynamic"} (default), uses Fisher's exact method when any expected cell count is < 5
@@ -59,7 +60,7 @@ If \code{"dynamic"} (default), uses Fisher's exact method when any expected cell
 regardless of expected cell counts.}
 
 \item{consider_normality}{Logical or character; controls how continuous variables are tested and displayed.
-If \code{TRUE}, runs the Shapiro-Wilk test per group for each numeric variable; a variable is treated
+If \code{TRUE} (default), runs the Shapiro-Wilk test per group for each numeric variable; a variable is treated
 as normally distributed only if all groups pass (p > 0.05). Normal variables use mean \eqn{\pm} SD
 and Welch t-test (2 groups) or ANOVA (3+ groups); non-normal variables use median [IQR] and Wilcoxon
 rank-sum (2 groups) or Kruskal-Wallis (3+ groups). When Shapiro-Wilk cannot be computed (n < 3 in
@@ -69,7 +70,7 @@ parametric tests) regardless of distribution, unless listed in \code{force_ordin
 If \code{"FORCE"}, all numeric variables are treated as non-normal (median [IQR], nonparametric tests)
 regardless of Shapiro-Wilk results.}
 
-\item{print_normality}{Logical; if \code{TRUE}, includes Shapiro-Wilk P values in the output.}
+\item{print_normality}{Logical; if \code{TRUE}, includes Shapiro-Wilk P values in the output. Default is \code{FALSE}.}
 
 \item{show_test}{Logical; if \code{TRUE}, includes the statistical test name as a column in the output. Default is \code{FALSE}.}
 
@@ -79,10 +80,12 @@ regardless of Shapiro-Wilk results.}
 
 \item{smart_rename}{Logical; if \code{TRUE}, automatically cleans variable names and subheadings for publication-ready output using built-in rule-based pattern matching for common medical abbreviations and prefixes. Default is \code{TRUE}.}
 
-\item{insert_subheads}{Logical; if \code{TRUE}, creates a hierarchical structure with a header row and
+\item{insert_subheads}{Logical; if \code{TRUE} (default), creates a hierarchical structure with a header row and
 indented sub-category rows for categorical variables with 3 or more levels. Binary variables
-(Y/N, YES/NO, or numeric 0/1 — which are auto-detected and treated as Y/N) are always displayed
-as a single row showing the positive/yes count regardless of this setting.
+(Y/N, YES/NO, or numeric 1/0 -- which are auto-detected and treated as Y/N) are always displayed
+as a single row showing the positive/yes count regardless of this setting. Two-level categorical
+variables whose values are not Y/N, YES/NO, or 1/0 (e.g. Male/Female) use the hierarchical
+sub-row format, showing both levels as indented rows.
 If \code{FALSE}, all categorical variables use a single-row flat format. Default is \code{TRUE}.}
 
 \item{factor_order}{Character; controls the ordering of factor levels in the output. If \code{"levels"} (default), respects the original factor level ordering as defined in the data; if the variable is not a factor, falls back to frequency ordering. If \code{"frequency"}, orders levels by decreasing frequency (most common first).}
@@ -94,24 +97,24 @@ If \code{FALSE}, all categorical variables use a single-row flat format. Default
 \item{methods_filename}{Character; filename for the methods document. Default is \code{"TernTables_methods.docx"}.}
 
 \item{category_start}{Named character vector specifying where to insert category headers.
-Names are the header label text to display; values are the anchor variable — either the
+Names are the header label text to display; values are the anchor variable -- either the
 original column name (e.g. \code{"Age_Years"}) or the cleaned display name
 (e.g. \code{"Age (yr)"}). Both forms are accepted.
 Example: \code{c("Demographics" = "Age_Years", "Clinical" = "bmi")}.
 Default is \code{NULL} (no category headers).}
 
 \item{manual_italic_indent}{Character vector of display variable names (post-cleaning) that should be
-formatted as italicized and indented in Word output — matching the appearance of factor sub-category
+formatted as italicized and indented in Word output -- matching the appearance of factor sub-category
 rows. Has no effect on the returned tibble; only applies when \code{output_docx} is specified or when
 the tibble is passed to \code{word_export}.}
 
 \item{manual_underline}{Character vector of display variable names (post-cleaning) that should be
-formatted as underlined in Word output — matching the appearance of multi-category variable headers.
+formatted as underlined in Word output -- matching the appearance of multi-category variable headers.
 Has no effect on the returned tibble; only applies when \code{output_docx} is specified or when
 the tibble is passed to \code{word_export}.}
 
 \item{indent_info_column}{Logical; if \code{FALSE} (default), the internal \code{.indent} helper column
-is dropped from the returned tibble. Set to \code{TRUE} to retain it — this is necessary when you
+is dropped from the returned tibble. Set to \code{TRUE} to retain it -- this is necessary when you
 intend to post-process the tibble and later pass it to \code{word_export} directly, as
 \code{word_export} uses the \code{.indent} column to apply correct indentation and italic formatting
 in the Word table.}
@@ -130,17 +133,28 @@ calculate P values and odds ratios. For descriptive
 (ungrouped) tables, use \code{ternD}.
 }
 \examples{
-# Basic 2-group comparison with built-in dataset
-ternG(mtcars, group_var = "am")
-
-# 2-group comparison using the bundled clinical dataset
 data(tern_colon)
+
+# 2-group comparison
+ternG(tern_colon, exclude_vars = c("ID"), group_var = "Recurrence")
+
+# 2-group comparison with odds ratios
 ternG(tern_colon, exclude_vars = c("ID"), group_var = "Recurrence",
-      consider_normality = TRUE, OR_col = TRUE)
+      OR_col = TRUE)
 
 # 3-group comparison
 ternG(tern_colon, exclude_vars = c("ID"), group_var = "Treatment_Arm",
-      group_order = c("Observation", "Levamisole", "Levamisole + 5FU"),
-      consider_normality = TRUE)
+      group_order = c("Observation", "Levamisole", "Levamisole + 5FU"))
+
+# Export to Word (writes a file -- not run during automated checks)
+\dontrun{
+ternG(tern_colon,
+      exclude_vars   = c("ID"),
+      group_var      = "Recurrence",
+      OR_col         = TRUE,
+      output_docx    = file.path(tempdir(), "comparison.docx"),
+      category_start = c("Patient Demographics"  = "Age (yr)",
+                         "Tumor Characteristics" = "Positive Lymph Nodes (n)"))
+}
 
 }

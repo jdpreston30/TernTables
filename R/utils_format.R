@@ -44,7 +44,7 @@ val_p_format <- function(p, digits = 3) {
   return(sprintf(paste0("%.", digits, "f"), p_rounded))
 }
 
-#' Format a mean \u00b1 SD string
+#' Format a mean +/- SD string
 #'
 #' @param mean Numeric mean value. Formatted to 1 decimal place.
 #' @param sd Numeric standard deviation. Formatted to 1 decimal place.

@@ -5,7 +5,7 @@
 #' @param round_intg Logical; if TRUE, adds note about integer rounding. Default is FALSE.
 #' @param font_size Numeric; font size for table body. Default is 9.
 #' @param category_start Named character vector specifying category headers. Names are header
-#'   label text; values are anchor variable names — either the original column name or the
+#'   label text; values are anchor variable names -- either the original column name or the
 #'   cleaned display name (both forms accepted).
 #' @param manual_italic_indent Character vector of display variable names (post-cleaning) to force into
 #'   italicized and indented formatting, matching the appearance of factor sub-category rows (e.g., levels
@@ -241,8 +241,8 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
     or_col_index <- which(colnames(modified_tbl) == "OR")
     sig_or_rows <- which(sapply(modified_tbl$OR, function(or_val) {
       if (is.na(or_val) || is.null(or_val) || or_val == "" || or_val == "-" || grepl("NA", or_val)) return(FALSE)
-      # Parse format: "1.23 [0.45–2.67]"
-      match <- regmatches(or_val, regexec("([0-9.]+)\\s*\\[([0-9.]+)–([0-9.]+)\\]", or_val))
+      # Parse format: "1.23 [0.45-2.67]"
+      match <- regmatches(or_val, regexec("([0-9.]+)\\s*\\[([0-9.]+)\u2013([0-9.]+)\\]", or_val))
       if (length(match[[1]]) == 4) {
         lower_ci <- as.numeric(match[[1]][3])
         upper_ci <- as.numeric(match[[1]][4])
@@ -257,7 +257,7 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
   }
 
   # Shrink all columns to fit their content, then lock row heights exactly.
-  # height() and hrule() must come AFTER autofit() — autofit resets row heights
+  # height() and hrule() must come AFTER autofit() -- autofit resets row heights
   # as a side effect of its column-width calculation.
   ft <- autofit(ft)
   ft <- ft %>%
