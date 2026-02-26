@@ -1,4 +1,4 @@
-Package: TernTablesR
+Package: TernTables
 Type: Package
 Title: Automated statistics and table generation for clinical research in R.
 Version: 1.2.2.9000

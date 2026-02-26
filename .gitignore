@@ -1,3 +1,22 @@
+# R artifacts
 .Rproj.user
-test/
-Outputs/
+*.Rhistory
+*.RData
+*.Ruserdata
+
+# devtools/roxygen build artifacts
+/doc/
+/Meta/
+..Rcheck/
+
+# Test output
+/tests/testthat/Rplots.pdf
+
+# Example outputs
+inst/examples/Outputs/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db

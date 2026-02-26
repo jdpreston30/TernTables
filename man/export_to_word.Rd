@@ -2,7 +2,7 @@
 % Please edit documentation in R/export_to_word.r
 \name{export_to_word}
 \alias{export_to_word}
-\title{Export TernTablesR output to a formatted Word document}
+\title{Export TernTables output to a formatted Word document}
 \usage{
 export_to_word(
   tbl,
@@ -30,5 +30,5 @@ export_to_word(
 \item{manual_underline}{Character vector of variable names to manually format as underlined (like multi-category headers).}
 }
 \description{
-Export TernTablesR output to a formatted Word document
+Export TernTables output to a formatted Word document
 }

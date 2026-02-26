@@ -1,4 +1,4 @@
-#' Export TernTablesR output to a formatted Word document
+#' Export TernTables output to a formatted Word document
 #'
 #' @param tbl A tibble created by ternG or ternD
 #' @param filename Output file path ending in .docx

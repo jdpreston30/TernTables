@@ -1,4 +1,4 @@
-# TernTablesR Local Testing Script
+# TernTables Local Testing Script
 # Run from the repo root: source("inst/examples/example_usage.r")
 # or: Rscript inst/examples/example_usage.r
 
