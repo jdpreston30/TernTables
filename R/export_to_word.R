@@ -135,7 +135,7 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
     align(align = "center", j = 2:ncol(modified_tbl), part = "header") %>%
     border_remove() %>%
     border(i = 1, border.bottom = fp_border(color = "black", width = 0.5), part = "header") %>%
-    padding(padding.top = 0, padding.bottom = 2, part = "body") %>%
+    padding(padding.top = 0, padding.bottom = 1, part = "body") %>%
     padding(padding.left = 0, padding.right = 6, part = "body") %>%
     padding(padding.left = 3, padding.right = 6, part = "header")
   
@@ -212,10 +212,10 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
         merge_at(i = cat_row_idx, j = 1:ncol(modified_tbl), part = "body") %>%
         bold(i = cat_row_idx, part = "body") %>%
         bg(i = cat_row_idx, bg = "white", part = "body") %>%
-        height(i = cat_row_idx, height = 0.25, part = "body") %>%
+        height(i = cat_row_idx, height = font_size / 72 * 2.2, part = "body") %>%
         border(i = cat_row_idx, border.bottom = fp_border(color = "black", width = 0.5), part = "body") %>%
         align(i = cat_row_idx, align = "left", part = "body") %>%
-        padding(i = cat_row_idx, j = 1, padding.left = base_padding, padding.top = 3, padding.bottom = 3, part = "body")
+        padding(i = cat_row_idx, j = 1, padding.left = base_padding, padding.top = 2, padding.bottom = 2, part = "body")
     }
   }
   

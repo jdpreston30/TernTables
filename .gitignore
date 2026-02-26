@@ -21,3 +21,6 @@ TernTables_methods.docx
 
 # Windows
 Thumbs.db
+
+# Local dev helpers (not part of the package)
+# run_vignette.R
