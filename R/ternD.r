@@ -266,41 +266,23 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
   
   # Apply smart variable name cleaning if requested
   if (smart_rename) {
-    # Source the cleaning function if not already loaded
-    if (!exists("clean_variable_names")) {
-      source(system.file("R", "clean_variable_names.r", package = "TernTablesR"))
-    }
-    
-    # Clean variable names - handle both main variables and subheadings
     for (i in seq_len(nrow(out_tbl))) {
       current_var <- out_tbl$Variable[i]
-      
-      # Check if this is a subheading (has leading spaces)
+
       if (grepl("^\\s+", current_var)) {
-        # Extract padding and clean the variable name part
         padding <- stringr::str_extract(current_var, "^\\s+")
         trimmed_var <- trimws(current_var)
-        
-        # For categorical variables with suffixes, clean only the base name
+
         if (grepl(": [A-Za-z0-9]+$", trimmed_var)) {
-          # Split variable name and suffix
           parts <- strsplit(trimmed_var, ": ")[[1]]
-          base_name <- parts[1]
-          suffix <- parts[2]
-          
-          # Clean the base name only
-          cleaned_base <- clean_variable_names(base_name, method = "hybrid")
-          cleaned_var <- paste0(cleaned_base, ": ", suffix)
+          cleaned_var <- paste0(.apply_cleaning_rules(parts[1]), ": ", parts[2])
         } else {
-          # Clean the entire variable name
-          cleaned_var <- clean_variable_names(trimmed_var, method = "hybrid")
+          cleaned_var <- .apply_cleaning_rules(trimmed_var)
         }
-        
-        # Restore original padding
+
         out_tbl$Variable[i] <- paste0(padding, cleaned_var)
       } else {
-        # This shouldn't happen with insert_subheads = TRUE, but handle it just in case
-        out_tbl$Variable[i] <- clean_variable_names(current_var, method = "rules")
+        out_tbl$Variable[i] <- .apply_cleaning_rules(current_var)
       }
     }
   }
