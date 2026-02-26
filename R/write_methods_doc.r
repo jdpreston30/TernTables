@@ -6,7 +6,6 @@
 #' @param OR_col Logical; whether odds ratios were calculated
 #' @export
 write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE) {
-  library(officer)
   
   # Detect which statistical tests were actually used
   has_test_column <- "test" %in% colnames(tbl)
@@ -80,36 +79,9 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE) {
   # Add significance statement
   methods_text <- paste0(methods_text, "Statistical significance was defined as p ≤ 0.05.")
   
-  # Create Word document with Arial 11, double-spaced
+  # Create Word document
   fp_text_props <- fp_text(font.size = 11, font.family = "Arial")
-  fp_par_props <- fp_par(line_spacing = 2, text.align = "left")
-  
-  doc <- read_docx()
-  doc <- doc %>%
-    body_add_fpar(
-      fpar(
-        ftext(methods_text, prop = fp_text_props)
-      ),
-      style = "Normal"
-    ) %>%
-    cursor_begin() %>%
-    slip_in_seqfield("SEQ", "")  # Dummy operation to trigger cursor
-  
-  # Apply paragraph formatting for double spacing
-  # Note: officer's body_add_fpar should respect line_spacing in fpar
-  doc <- read_docx()
-  doc <- doc %>%
-    body_add_fpar(
-      fpar(
-        ftext(methods_text, prop = fp_text_props)
-      )
-    )
-  
-  # Apply double spacing to the paragraph
-  # This requires modifying the XML, but for simplicity, we'll use default spacing
-  # Users can manually adjust spacing if needed, or we can add more complex XML manipulation
-  
-  # For now, create with line breaks to simulate double spacing
+
   doc <- read_docx() %>%
     body_add_par("", style = "Normal") %>%
     body_add_fpar(
@@ -117,7 +89,7 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE) {
         ftext(methods_text, prop = fp_text_props)
       )
     )
-  
+
   # Save document
   print(doc, target = filename)
   message(paste0("Methods document written to: ", filename))

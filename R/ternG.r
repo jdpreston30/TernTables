@@ -20,7 +20,7 @@
 #' @param show_test Logical; if \code{TRUE} (default), includes the statistical test name as a column in the output.
 #' @param p_digits Integer; number of decimal places for p-values (default 3).
 #' @param round_intg Logical; if \code{TRUE}, rounds all means, medians, IQRs, and standard deviations to nearest integer (0.5 rounds up). Default is \code{FALSE}.
-#' @param smart_rename Logical; if \code{TRUE}, automatically cleans variable names and subheadings for publication-ready output using hybrid AI+rules cleaning. Uses rule-based cleaning for known medical terms, falls back to AI for complex cases. Default is \code{FALSE}.
+#' @param smart_rename Logical; if \code{TRUE}, automatically cleans variable names and subheadings for publication-ready output using built-in rule-based pattern matching for common medical abbreviations and prefixes. Default is \code{FALSE}.
 #' @param insert_subheads Logical; if \code{TRUE}, creates hierarchical structure with headers and indented sub-categories for multi-level categorical variables (except Y/N). If \code{FALSE}, uses simple flat format. Default is \code{TRUE}.
 #' @param factor_order Character; controls the ordering of factor levels in the output. If \code{"frequency"} (default), orders levels by decreasing frequency (most common first). If \code{"levels"}, respects the original factor level ordering as defined in the data.
 #' @param table_font_size Numeric; font size for Word document output tables. Default is 9.
@@ -29,9 +29,20 @@
 #' @param category_start Named character vector specifying where to insert category headers. Names should be variable names, and values are the category header labels to insert before those variables. For example, \code{c("age" = "Demographics", "bmi" = "Clinical Measures")}. Default is \code{NULL} (no category headers).
 #' @param manual_italic_indent Character vector; optional parameter for specifying which variable names should be italicized and indented in formatted outputs. Used for advanced formatting control.
 #' @param manual_underline Character vector; optional parameter for specifying which variable names should be underlined in formatted outputs. Used for advanced formatting control.
+#' @param indent_info_column Logical; if \code{FALSE} (default), the internal \code{.indent} helper column is dropped from the returned tibble. Set to \code{TRUE} to retain it.
 #'
 #' @return A tibble with one row per variable (multi-row for multi-level factors), showing summary statistics by group,
 #' p-values, test type, and optionally odds ratios and total summary column.
+#'
+#' @examples
+#' # Basic usage with built-in mtcars dataset
+#' ternG(mtcars, group_var = "am")
+#'
+#' # With CardioDataSets (if installed)
+#' if (requireNamespace("CardioDataSets", quietly = TRUE)) {
+#'   data("heart_transplant_df", package = "CardioDataSets")
+#'   ternG(heart_transplant_df, group_var = "transplant")
+#' }
 #'
 #' @export
 ternG <- function(data,
@@ -58,7 +69,8 @@ ternG <- function(data,
                   methods_filename = "methods.docx",
                   category_start = NULL,
                   manual_italic_indent = NULL,
-                  manual_underline = NULL) {
+                  manual_underline = NULL,
+                  indent_info_column = FALSE) {
 
   # Helper function for proper rounding (0.5 always rounds up)
   round_up_half <- function(x, digits = 0) {
@@ -634,6 +646,8 @@ ternG <- function(data,
       }
     }
   }
+
+  if (!indent_info_column) out_tbl <- dplyr::select(out_tbl, -dplyr::any_of(".indent"))
 
   return(out_tbl)
 }

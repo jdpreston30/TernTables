@@ -1,73 +1,28 @@
-# TernTablesR Example Usage
-# 
-# First install the package fresh
-if ("TernTablesR" %in% rownames(installed.packages())) {
-  remove.packages("TernTablesR")
-}
+# TernTablesR Local Testing Script
+# Run from the repo root: source("inst/examples/example_usage.r")
+# or: Rscript inst/examples/example_usage.r
 
-# Install fresh version
-system("R CMD INSTALL .", wait = TRUE)
+devtools::load_all(".")
+library(CardioDataSets)
+data("heart_transplant_df", package = "CardioDataSets")
 
-# Load the freshly installed package
-library(TernTablesR)
-library(dplyr)
-library(readr)
-
-# Import and structure data
-demographics_i <- read_csv("inst/examples/synthetic_data.csv") %>%
-    mutate(
-      survived = factor(survived),
-      index_group = factor(index_group),
-      renal_pres = factor(renal_pres),
-      AKI = if_else(survived == "N", NA_character_, AKI),
-      AKI = factor(AKI),
-      return_ed_30d = if_else(survived == "N", NA_character_, return_ed_30d),
-      return_ed_30d = factor(return_ed_30d),
-      grade = as.integer(grade),
-      GCS = as.integer(GCS),
-      ISS = as.integer(ISS),
-      surv_ICU_LOS = as.integer(surv_ICU_LOS),
-      vent_LOS = as.integer(vent_LOS),
-      surv_hosp_LOS = as.integer(surv_hosp_LOS),
-      Age = as.integer(Age)
-    )
-
-# Run TernG (2-level comparison using index_operative)
-cat("Running ternG with insert_subheads = TRUE and smart_rename = FALSE (default)...\n")
-Tern2v <- ternG(
-  data = demographics_i,
-  exclude_vars = c("ID"),
-  group_var = "index_operative",
-  force_ordinal = c("ISS", "GCS"),
-  group_order = c("Nonoperative", "Operative"),
-  output_xlsx = "inst/examples/Outputs/summary_oper_vs_nonop.xlsx",
-  output_docx = "inst/examples/Outputs/summary_oper_vs_nonop.docx",
-  OR_col = FALSE,
-  consider_normality = "FORCE",
-  show_test = FALSE,
-  insert_subheads = TRUE,
-  smart_rename = FALSE  # Changed to FALSE to match new default
+# --- ternD: descriptive summary ---
+cat("Running ternD (descriptive only)...\n")
+TernDesc <- ternD(
+  data = heart_transplant_df,
+  consider_normality = TRUE
 )
+print(TernDesc)
 
+# --- ternG: 2-level comparison ---
+cat("\nRunning ternG (2-level: transplant status)...\n")
+Tern2v <- ternG(
+  data = heart_transplant_df,
+  group_var = "transplant",
+  consider_normality = TRUE,
+  show_test = TRUE,
+  insert_subheads = TRUE
+)
 print(Tern2v)
 
-# Run TernG (3-level comparison using grade)
-cat("\nRunning ternG with 3-level comparison and smart_rename = FALSE (default)...\n")
-Tern3v <- ternG(
-  data = demographics_i,
-  exclude_vars = c("ID"),
-  group_var = "grade",
-  force_ordinal = c("ISS", "GCS"),
-  OR_col = FALSE,
-  consider_normality = "FORCE",
-  show_test = FALSE,
-  insert_subheads = TRUE,
-  smart_rename = FALSE  # Changed to FALSE to match new default
-)
-
-print(Tern3v)
-
-cat("\n✅ Examples completed successfully!\n")
-cat("Generated files:\n")
-cat("- inst/examples/Outputs/summary_oper_vs_nonop.xlsx\n")
-cat("- inst/examples/Outputs/summary_oper_vs_nonop.docx\n")
+cat("\nDone.\n")

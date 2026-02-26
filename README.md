@@ -10,29 +10,13 @@ You can install the development version of TernTablesR from GitHub:
 devtools::install_github("jdpreston30/TernTablesR")
 ```
 
-### 🤖 Optional: AI-Enhanced Variable Cleaning
+### 🏥 Example Data
 
-TernTablesR includes optional AI-powered variable name cleaning via `smart_rename = TRUE`. To use this feature, you'll need to install ollama (a free, local AI tool):
+Examples in this package use the `heart_transplant_df` dataset from the [CardioDataSets](https://cran.r-project.org/package=CardioDataSets) package. Install it to run the full examples:
 
-**macOS:**
-```bash
-brew install ollama
-ollama serve
-ollama pull llama3.2:1b
-```
-
-**Windows/Linux:** Download from [ollama.ai](https://ollama.ai) and run:
-```bash
-ollama serve
-ollama pull llama3.2:1b
-```
-
-Once installed, you can use AI enhancement:
 ```r
-ternG(data, group_var = "treatment", smart_rename = TRUE)
+install.packages("CardioDataSets")
 ```
-
-Without ollama, the package works normally with `smart_rename = FALSE` (default).
 
 ## 📦 Functions
 
@@ -129,5 +113,12 @@ This project is licensed under the MIT License.
 
 ---
 
-**Developed and maintained by Josh Preston and Helen Abadiotakis**  
+**Developed and maintained by:**
+
+- [Joshua D. Preston](https://orcid.org/0000-0001-9834-3017) [![ORCID](https://img.shields.io/badge/ORCID-0000--0001--9834--3017-brightgreen?logo=orcid)](https://orcid.org/0000-0001-9834-3017)
+- [Helen Abadiotakis](https://orcid.org/0009-0002-8268-927X) [![ORCID](https://img.shields.io/badge/ORCID-0009--0002--8268--927X-brightgreen?logo=orcid)](https://orcid.org/0009-0002-8268-927X)
+- [Ailin Tang](https://orcid.org/0009-0007-8715-1678) [![ORCID](https://img.shields.io/badge/ORCID-0009--0007--8715--1678-brightgreen?logo=orcid)](https://orcid.org/0009-0007-8715-1678)
+- [Clayton J. Rust](https://orcid.org/0000-0001-5929-0733) [![ORCID](https://img.shields.io/badge/ORCID-0000--0001--5929--0733-brightgreen?logo=orcid)](https://orcid.org/0000-0001-5929-0733)
+- [Joshua L. Chan](https://orcid.org/0000-0001-7220-561X) [![ORCID](https://img.shields.io/badge/ORCID-0000--0001--7220--561X-brightgreen?logo=orcid)](https://orcid.org/0000-0001-7220-561X)
+
 Feedback and contributions are welcome!

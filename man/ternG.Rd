@@ -29,7 +29,8 @@ ternG(
   methods_filename = "methods.docx",
   category_start = NULL,
   manual_italic_indent = NULL,
-  manual_underline = NULL
+  manual_underline = NULL,
+  indent_info_column = FALSE
 )
 }
 \arguments{
@@ -65,7 +66,7 @@ ternG(
 
 \item{round_intg}{Logical; if \code{TRUE}, rounds all means, medians, IQRs, and standard deviations to nearest integer (0.5 rounds up). Default is \code{FALSE}.}
 
-\item{smart_rename}{Logical; if \code{TRUE}, automatically cleans variable names and subheadings for publication-ready output using hybrid AI+rules cleaning. Uses rule-based cleaning for known medical terms, falls back to AI for complex cases. Default is \code{FALSE}.}
+\item{smart_rename}{Logical; if \code{TRUE}, automatically cleans variable names and subheadings for publication-ready output using built-in rule-based pattern matching for common medical abbreviations and prefixes. Default is \code{FALSE}.}
 
 \item{insert_subheads}{Logical; if \code{TRUE}, creates hierarchical structure with headers and indented sub-categories for multi-level categorical variables (except Y/N). If \code{FALSE}, uses simple flat format. Default is \code{TRUE}.}
 
@@ -82,6 +83,8 @@ ternG(
 \item{manual_italic_indent}{Character vector; optional parameter for specifying which variable names should be italicized and indented in formatted outputs. Used for advanced formatting control.}
 
 \item{manual_underline}{Character vector; optional parameter for specifying which variable names should be underlined in formatted outputs. Used for advanced formatting control.}
+
+\item{indent_info_column}{Logical; if \code{FALSE} (default), the internal \code{.indent} helper column is dropped from the returned tibble. Set to \code{TRUE} to retain it.}
 }
 \value{
 A tibble with one row per variable (multi-row for multi-level factors), showing summary statistics by group,
@@ -91,4 +94,14 @@ p-values, test type, and optionally odds ratios and total summary column.
 Creates a grouped or ungrouped summary table, with optional statistical testing
 for group comparisons. Supports numeric, ordinal, and categorical variables, and
 includes options to calculate p-values and odds ratios.
+}
+\examples{
+# Basic usage with built-in mtcars dataset
+ternG(mtcars, group_var = "am")
+
+# With CardioDataSets (if installed)
+if (requireNamespace("CardioDataSets", quietly = TRUE)) {
+  data("heart_transplant_df", package = "CardioDataSets")
+  ternG(heart_transplant_df, group_var = "transplant")
+}
 }
