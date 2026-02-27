@@ -28,10 +28,10 @@ Or install the development version directly from GitHub:
 
 ```r
 # install.packages("devtools")
-devtools::install_github("jdpreston30/TernTables")
+devtools::install_github("jdpreston30/TernTables", build_vignettes = TRUE)
 ```
 
-A full walkthrough is available in the package vignette:
+A full walkthrough is available in the package vignette (built automatically when installing from R-universe; use `build_vignettes = TRUE` with the GitHub install):
 
 ```r
 vignette("getting-started", package = "TernTables")
