@@ -18,7 +18,7 @@ library(TernTables)
 options(tibble.width = Inf)  # show all columns in printed tibbles
 # Output directory for exported .docx files.
 # Override by setting options(TernTables.vignette_outdir = "/your/path") before rendering.
-out_dir <- getOption("TernTables.vignette_outdir", tempdir())
+out_dir <- tempdir()
 ```
 
 ## Overview
@@ -225,7 +225,7 @@ Without it, standard boilerplate is used.
 ```{r methods-doc, eval = FALSE}
 write_methods_doc(
   tbl      = tbl_2group,
-  filename = "Tern_methods.docx"
+  filename = file.path(out_dir, "Tern_methods.docx")
 )
 ```
 
