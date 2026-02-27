@@ -417,7 +417,7 @@ ternG <- function(data,
         for (g_lvl in group_levels) {
           sw_p <- tryCatch({
             x <- g %>% filter(.data[[group_var]] == g_lvl) %>% pull(.data[[var]])
-            if (length(x) >= 3) stats::shapiro.test(x)$p.value else NA_real_
+            if (length(x) >= 3 && length(x) <= 5000) stats::shapiro.test(x)$p.value else NA_real_
           }, error = function(e) NA_real_)
           result[[paste0("SW_p_", g_lvl)]] <- formatC(sw_p, format = "f", digits = 4)
         }
@@ -435,7 +435,7 @@ ternG <- function(data,
       sw_p_all <- tryCatch({
         out <- lapply(group_levels, function(g_lvl) {
           x <- g %>% filter(.data[[group_var]] == g_lvl) %>% pull(.data[[var]])
-          pval <- if (length(x) >= 3) stats::shapiro.test(x)$p.value else NA_real_
+          pval <- if (length(x) >= 3 && length(x) <= 5000) stats::shapiro.test(x)$p.value else NA_real_
           setNames(pval, paste0("SW_p_", g_lvl))
         })
         do.call(c, out)
@@ -455,7 +455,7 @@ ternG <- function(data,
       sw_p_all <- tryCatch({
         out <- lapply(group_levels, function(g_lvl) {
           x <- g %>% filter(.data[[group_var]] == g_lvl) %>% pull(.data[[var]])
-          pval <- if (length(x) >= 3) stats::shapiro.test(x)$p.value else NA_real_
+          pval <- if (length(x) >= 3 && length(x) <= 5000) stats::shapiro.test(x)$p.value else NA_real_
           setNames(pval, paste0("SW_p_", g_lvl))
         })
         do.call(c, out)
@@ -473,7 +473,7 @@ ternG <- function(data,
       sw_p_all <- tryCatch({
         out <- lapply(group_levels, function(g_lvl) {
           x <- g %>% filter(.data[[group_var]] == g_lvl) %>% pull(.data[[var]])
-          pval <- if (length(x) >= 3) stats::shapiro.test(x)$p.value else NA_real_
+          pval <- if (length(x) >= 3 && length(x) <= 5000) stats::shapiro.test(x)$p.value else NA_real_
           setNames(pval, paste0("SW_p_", g_lvl))
         })
         do.call(c, out)

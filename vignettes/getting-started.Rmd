@@ -64,7 +64,7 @@ Key variables used in these examples:
 | `Colonic_Obstruction` | Colonic obstruction present — n (%) |
 | `Bowel_Perforation` | Bowel perforation present — n (%) |
 | `Positive_Lymph_Nodes_n` | Number of positive lymph nodes |
-| `` >_4_Positive_Nodes `` | More than 4 positive lymph nodes — n (%) |
+| `Over_4_Positive_Nodes` | More than 4 positive lymph nodes — n (%) |
 | `Tumor_Adherence` | Tumour adherence to nearby organs — n (%) |
 | `Tumor_Differentiation` | Well / Moderate / Poor |
 | `Extent_of_Local_Spread` | Depth of tumour penetration (4 levels) |
