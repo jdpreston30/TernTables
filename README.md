@@ -29,7 +29,7 @@ Install the development version from GitHub:
 
 ```r
 # install.packages("devtools")
-devtools::install_github("jdpreston30/TernTablesR")
+devtools::install_github("jdpreston30/TernTables")
 ```
 
 ## Example Data
@@ -120,7 +120,7 @@ Use `category_start` to insert bold section-header rows between variable groups.
 
 ```r
 word_export(
-  tbl      = tbl_2group,,
+  tbl      = tbl_2group,
   category_start = c(
     "Patient Demographics"  = "Age (yr)",
     "Surgical Findings"     = "Colonic Obstruction",
@@ -167,7 +167,7 @@ The tibble can also be:
 
 ## License
 
-[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/jdpreston30/TernTablesR/blob/main/LICENSE)
 
 This project is licensed under the MIT License.
 
