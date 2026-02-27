@@ -2,7 +2,7 @@
 
 Clinical researchers spend a disproportionate amount of time on the mechanics of generating summary tables: choosing the right test, formatting *P* values, cleaning variable names, writing the methods paragraph, and wrestling with Word. For descriptive statistics and standard univariate comparisons, this work is largely procedural — it follows well-established rules — yet it consistently becomes a bottleneck that slows down manuscript preparation.
 
-**TernTables** handles that procedural layer automatically. Variable type detection, statistical test selection, *P* value formatting, Word document export, and methods text generation are all handled in a single function call. The output is ready to paste directly into a submission.
+**TernTables** handles that procedural layer automatically. Variable type detection, statistical test selection, *P* value formatting, Word document export, and methods text generation are all handled in a single function call. The output tables are ready to paste directly into a submission.
 
 The time savings come entirely from automating the administrative work (formatting, test selection bookkeeping, and methods writing), not from bypassing statistical rigour. Every decision follows established criteria: normality is assessed with the Shapiro-Wilk test applied per group; the Fisher's exact / Chi-squared switch follows the Cochran (1954) expected-cell criterion; odds ratios are unadjusted, with the first factor level of the grouping variable as the reference; and the auto-generated methods paragraph covers the statistical approach used, ready to serve as a starting draft for a manuscript's statistical methods section. The output is appropriate for submission to peer-reviewed clinical journals.
 
@@ -31,10 +31,16 @@ Or install the development version directly from GitHub:
 devtools::install_github("jdpreston30/TernTables")
 ```
 
+A full walkthrough is available in the package vignette:
+
+```r
+vignette("getting-started", package = "TernTables")
+```
+
 ## Example Data
 
 The bundled `tern_colon` dataset is derived from `survival::colon`
-(Moertel et al., 1990; Laurie et al., 1989). It is a reformatted subset
+([Moertel et al., 1990](https://doi.org/10.1056/NEJM199002083220602)). It is a reformatted subset
 restricted to the recurrence endpoint (`etype == 1`), providing one row per
 patient (n = 929) with clinically labelled factor levels and descriptive column
 names. See `?tern_colon` and `data-raw/tern_colon.R` for the full
@@ -109,8 +115,7 @@ Fisher's exact is used when any expected cell count is < 5 (Cochran criterion).
 Normality is assessed with the Shapiro-Wilk test per group; a variable is treated
 as normally distributed only if all groups pass (p > 0.05). If any group has fewer
 than 3 observations, normality cannot be evaluated and the nonparametric test is
-used (conservative fail-safe). For 3+ group comparisons, omnibus *P* values are
-reported; pairwise post-hoc comparisons are not performed.
+used (conservative fail-safe).
 
 ### `word_export()` — Format and export to Word
 
@@ -120,6 +125,7 @@ Use `category_start` to insert bold section-header rows between variable groups.
 ```r
 word_export(
   tbl      = tbl_2group,
+  filename = "two_group.docx",
   category_start = c(
     "Patient Demographics"  = "Age (yr)",
     "Surgical Findings"     = "Colonic Obstruction",
@@ -139,6 +145,7 @@ a manuscript methods section.
 ```r
 write_methods_doc(
   tbl      = tbl_2group,
+  filename = "methods.docx"
 )
 ```
 
