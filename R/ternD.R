@@ -84,15 +84,15 @@
 #' data(tern_colon)
 #'
 #' # Basic descriptive summary
-#' ternD(tern_colon, exclude_vars = c("ID"))
+#' ternD(tern_colon, exclude_vars = c("ID"), methods_doc = FALSE)
 #'
 #' # With normality-aware formatting and category section headers
-#' ternD(tern_colon, exclude_vars = c("ID"),
+#' ternD(tern_colon, exclude_vars = c("ID"), methods_doc = FALSE,
 #'       category_start = c("Patient Demographics"  = "Age (yr)",
 #'                          "Tumor Characteristics" = "Positive Lymph Nodes (n)"))
 #'
 #' # Force specific variables to ordinal (median [IQR]) display
-#' ternD(tern_colon, exclude_vars = c("ID"),
+#' ternD(tern_colon, exclude_vars = c("ID"), methods_doc = FALSE,
 #'       force_ordinal = c("Positive_Lymph_Nodes_n"))
 #'
 #' # Export to Word (writes a file -- not run during automated checks)

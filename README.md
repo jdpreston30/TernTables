@@ -167,7 +167,7 @@ The tibble can also be:
 
 ## License
 
-[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/jdpreston30/TernTablesR/blob/main/LICENSE)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/jdpreston30/TernTables/blob/main/LICENSE)
 
 This project is licensed under the MIT License.
 
