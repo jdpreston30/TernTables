@@ -1,6 +1,6 @@
 #' Colon Cancer Recurrence Data (Example Dataset)
 #'
-#' A processed subset of the \code{survival::colon} dataset restricted to the
+#' A processed subset of the \link[survival]{colon} dataset restricted to the
 #' recurrence endpoint (\code{etype == 1}), providing one row per patient.
 #' Variables have been relabelled with clinically descriptive names and
 #' factor levels suitable for direct use in TernTables functions. This dataset
@@ -15,7 +15,7 @@
 #'   \item{Colonic_Obstruction}{Colonic obstruction present: \code{"N"} or \code{"Y"}.}
 #'   \item{Bowel_Perforation}{Bowel perforation present: \code{"N"} or \code{"Y"}.}
 #'   \item{Positive_Lymph_Nodes_n}{Number of positive lymph nodes detected.}
-#'   \item{>_4_Positive_Nodes}{More than 4 positive lymph nodes: \code{"N"} or \code{"Y"}.}
+#'   \item{Over_4_Positive_Nodes}{More than 4 positive lymph nodes: \code{"N"} or \code{"Y"}.}
 #'   \item{Tumor_Adherence}{Tumour adherence to surrounding organs: \code{"N"} or \code{"Y"}.}
 #'   \item{Tumor_Differentiation}{Tumour differentiation grade: \code{"Well"},
 #'     \code{"Moderate"}, or \code{"Poor"}.}
@@ -25,8 +25,8 @@
 #'   \item{Treatment_Arm}{Randomised treatment: \code{"Levamisole + 5FU"},
 #'     \code{"Levamisole"}, or \code{"Observation"}.}
 #' }
-#' @source Derived from \code{survival::colon} (Laurie et al., 1989).
-#'   See \code{?survival::colon} for full provenance.
+#' @source Derived from \code{\link[survival]{colon}} (Laurie et al., 1989).
+#'   See \code{\link[survival]{colon}} for full provenance.
 #'   Pre-processing script: \code{data-raw/tern_colon.R}.
 #' @examples
 #' data(tern_colon)

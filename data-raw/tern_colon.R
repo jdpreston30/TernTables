@@ -35,7 +35,7 @@ tern_colon <- as_tibble(survival::colon) |>
     "Tumor_Differentiation"  = differ,
     "Extent_of_Local_Spread" = extent,
     "Time_to_Registration"   = surg,
-    ">_4_Positive_Nodes"     = node4,
+    "Over_4_Positive_Nodes"   = node4,
     "Time_to_Event_days"     = time,
     "Event_Type"             = etype
   ) |>
@@ -44,7 +44,7 @@ tern_colon <- as_tibble(survival::colon) |>
     ID,
     Age_Years, Sex,
     Colonic_Obstruction, Bowel_Perforation,
-    Positive_Lymph_Nodes_n, `>_4_Positive_Nodes`, Tumor_Adherence,
+    Positive_Lymph_Nodes_n, Over_4_Positive_Nodes, Tumor_Adherence,
     Tumor_Differentiation, Extent_of_Local_Spread,
     Recurrence, Treatment_Arm
   )

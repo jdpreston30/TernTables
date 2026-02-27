@@ -35,6 +35,9 @@
     unit_suffix <- " (weeks)"
   }
 
+  # Convert Over_ prefix to "> " for display (e.g. Over_4_Positive_Nodes -> > 4 Positive Nodes)
+  clean_name <- sub("^Over_", "> ", clean_name)
+
   clean_name <- gsub("_", " ", clean_name)
   clean_name <- tools::toTitleCase(clean_name)
   clean_name <- paste0(clean_name, unit_suffix)

@@ -153,8 +153,8 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
 
   shapiro_p <- function(x) {
     x <- x[!is.na(x)]
-    # Shapiro requires n >= 3 and not all equal
-    if (length(x) < 3 || stats::var(x) == 0) {
+    # Shapiro requires 3 <= n <= 5000 and not all equal
+    if (length(x) < 3 || length(x) > 5000 || stats::var(x) == 0) {
       return(NA_real_)
     }
     out <- tryCatch(stats::shapiro.test(x)$p.value, error = function(e) NA_real_)

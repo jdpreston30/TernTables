@@ -13,7 +13,7 @@ A tibble with 929 rows and 12 variables:
   \item{Colonic_Obstruction}{Colonic obstruction present: \code{"N"} or \code{"Y"}.}
   \item{Bowel_Perforation}{Bowel perforation present: \code{"N"} or \code{"Y"}.}
   \item{Positive_Lymph_Nodes_n}{Number of positive lymph nodes detected.}
-  \item{>_4_Positive_Nodes}{More than 4 positive lymph nodes: \code{"N"} or \code{"Y"}.}
+  \item{Over_4_Positive_Nodes}{More than 4 positive lymph nodes: \code{"N"} or \code{"Y"}.}
   \item{Tumor_Adherence}{Tumour adherence to surrounding organs: \code{"N"} or \code{"Y"}.}
   \item{Tumor_Differentiation}{Tumour differentiation grade: \code{"Well"},
     \code{"Moderate"}, or \code{"Poor"}.}

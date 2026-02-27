@@ -27,8 +27,8 @@ val_p_format <- function(p, digits = 3) {
     sci <- format(base, scientific = TRUE, digits = 1)
     # Capitalize E and remove leading zeros from exponent
     sci <- gsub("e", "E", sci)
-    sci <- gsub("E-0", "E-", sci)
-    sci <- gsub("E\\+0", "E+", sci)
+    sci <- gsub("E-0+", "E-", sci)
+    sci <- gsub("E\\+0+", "E+", sci)
     return(sci)
   }
 
