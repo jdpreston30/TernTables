@@ -136,15 +136,17 @@ calculate P values and odds ratios. For descriptive
 data(tern_colon)
 
 # 2-group comparison
-ternG(tern_colon, exclude_vars = c("ID"), group_var = "Recurrence")
+ternG(tern_colon, exclude_vars = c("ID"), group_var = "Recurrence",
+      methods_doc = FALSE)
 
 # 2-group comparison with odds ratios
 ternG(tern_colon, exclude_vars = c("ID"), group_var = "Recurrence",
-      OR_col = TRUE)
+      OR_col = TRUE, methods_doc = FALSE)
 
 # 3-group comparison
 ternG(tern_colon, exclude_vars = c("ID"), group_var = "Treatment_Arm",
-      group_order = c("Observation", "Levamisole", "Levamisole + 5FU"))
+      group_order = c("Observation", "Levamisole", "Levamisole + 5FU"),
+      methods_doc = FALSE)
 
 # Export to Word (writes a file -- not run during automated checks)
 \dontrun{

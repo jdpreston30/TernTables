@@ -25,15 +25,15 @@ A tibble with 929 rows and 12 variables:
 }
 }
 \source{
-Derived from \code{survival::colon} (Laurie et al., 1989).
-  See \code{?survival::colon} for full provenance.
+Derived from \code{\link[survival]{colon}} (Laurie et al., 1989).
+  See \code{\link[survival]{colon}} for full provenance.
   Pre-processing script: \code{data-raw/tern_colon.R}.
 }
 \usage{
 tern_colon
 }
 \description{
-A processed subset of the \code{survival::colon} dataset restricted to the
+A processed subset of the \link[survival]{colon} dataset restricted to the
 recurrence endpoint (\code{etype == 1}), providing one row per patient.
 Variables have been relabelled with clinically descriptive names and
 factor levels suitable for direct use in TernTables functions. This dataset
