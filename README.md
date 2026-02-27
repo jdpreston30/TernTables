@@ -1,21 +1,12 @@
 # TernTables
 
-**TernTables** is built for clinical researchers who need to go from raw data
-to a publication-ready manuscript table in a single function call. Variable
-type detection, statistical test selection, *P* value formatting, Word export,
-and methods text generation are all handled automatically — the output is
-ready to paste directly into a submission.
+Clinical researchers spend a disproportionate amount of time on the mechanics of generating summary tables: choosing the right test, formatting *P* values, cleaning variable names, writing the methods paragraph, and wrestling with Word. For descriptive statistics and standard univariate comparisons, this work is largely procedural — it follows well-established rules — yet it consistently becomes a bottleneck that slows down manuscript preparation.
 
-The time savings come entirely from automating the administrative work —
-formatting, test selection bookkeeping, and methods writing — not from
-bypassing statistical rigour. Every decision follows established criteria:
-normality is assessed with the Shapiro-Wilk test applied per group; the
-Fisher's exact / Chi-squared switch follows the Cochran (1954) expected-cell
-criterion; odds ratios are unadjusted, with the first factor level of the
-grouping variable as the reference; and the auto-generated methods paragraph
-covers the statistical approach used, ready to serve as a starting draft for
-a manuscript methods section. The output is appropriate for submission to
-peer-reviewed clinical journals.
+**TernTables** handles that procedural layer automatically. Variable type detection, statistical test selection, *P* value formatting, Word document export, and methods text generation are all handled in a single function call. The output is ready to paste directly into a submission.
+
+The time savings come entirely from automating the administrative work (formatting, test selection bookkeeping, and methods writing), not from bypassing statistical rigour. Every decision follows established criteria: normality is assessed with the Shapiro-Wilk test applied per group; the Fisher's exact / Chi-squared switch follows the Cochran (1954) expected-cell criterion; odds ratios are unadjusted, with the first factor level of the grouping variable as the reference; and the auto-generated methods paragraph covers the statistical approach used, ready to serve as a starting draft for a manuscript's statistical methods section. The output is appropriate for submission to peer-reviewed clinical journals.
+
+For analyses that go beyond descriptive statistics and standard group comparisons, a biostatistician remains the right resource. TernTables is designed to free up that time for the work that actually requires it.
 
 Descriptive summaries (Table 1), two-group comparisons (with optional odds
 ratios), and three-group comparisons are all supported, for continuous,
@@ -25,7 +16,15 @@ median/IQR and nonparametric tests.
 
 ## Installation
 
-Install the development version from GitHub:
+Install from R-universe (no additional tools required):
+
+```r
+install.packages("TernTables",
+                 repos = c("https://jdpreston30.r-universe.dev",
+                           "https://cloud.r-project.org"))
+```
+
+Or install the development version directly from GitHub:
 
 ```r
 # install.packages("devtools")
@@ -66,7 +65,7 @@ tbl_descriptive <- ternD(
 
 ### `ternG()` — Grouped comparison table
 
-Use `ternG()` to compare variables between two or more groups. Set `OR_col = TRUE` to add\nunadjusted odds ratios with 95% CI for binary variables in two-group comparisons\n(Fisher's exact or Wald method, chosen automatically based on expected cell counts —\nCochran criterion).
+Use `ternG()` to compare variables between two or more groups. Set `OR_col = TRUE` to add unadjusted odds ratios with 95% CI for binary variables in two-group comparisons (Fisher's exact or Wald method, chosen automatically based on expected cell counts; Cochran criterion).
 
 **Two-group comparison:**
 
@@ -153,8 +152,7 @@ val_format(72.4, 8.1)  # "72.4  +-  8.1"
 
 ## Output
 
-Every `ternD()` and `ternG()` call returns a tibble and — when `output_docx`
-is specified — writes a publication-ready `.docx` file directly. The Word
+Every `ternD()` and `ternG()` call returns a tibble and, when `output_docx` is specified, writes a publication-ready `.docx` file directly. The Word
 output uses Arial, consistent padding, bold significant *P* values, and optional
 bold category-section headers. No post-processing is required before pasting
 into a manuscript.
