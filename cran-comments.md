@@ -23,3 +23,8 @@ The single win-builder NOTE:
 * All exported functions include `\examples{}` sections. Examples that write
   files to disk use `\dontrun{}` or pass `methods_doc = FALSE` so they do
   not produce side-effects during `R CMD check`.
+
+## Git Information
+* Version: 1.3.1
+* Date: 2026-02-27 14:19:59 UTC
+* SHA: 4845974d8e984a2b88a9a47545f3dd31d75b18be
