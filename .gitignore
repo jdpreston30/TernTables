@@ -24,3 +24,5 @@ Thumbs.db
 
 # Local dev helpers (not part of the package)
 run_vignette.R
+statistical-review-request.Rmd
+statistical-review-request.html

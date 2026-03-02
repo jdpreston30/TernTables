@@ -22,7 +22,8 @@ ternD(
   category_start = NULL,
   table_font_size = 9,
   manual_italic_indent = NULL,
-  manual_underline = NULL
+  manual_underline = NULL,
+  table_caption = NULL
 )
 }
 \arguments{
@@ -94,6 +95,10 @@ Default is \code{NULL}.}
 formatted as underlined in Word output -- matching the appearance of multi-category variable headers.
 Has no effect on the returned tibble; only applies when \code{output_docx} is specified.
 Default is \code{NULL}.}
+
+\item{table_caption}{Optional character string for a table caption to display above the table in
+the Word document. Rendered as size 11 Arial italic text. Default is \code{NULL} (no caption).
+Example: \code{"Table 1. Patient demographics."}.}
 }
 \value{
 A tibble with one row per variable (multi-row for factors), containing:

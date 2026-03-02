@@ -11,7 +11,8 @@ word_export(
   font_size = 9,
   category_start = NULL,
   manual_italic_indent = NULL,
-  manual_underline = NULL
+  manual_underline = NULL,
+  table_caption = NULL
 )
 }
 \arguments{
@@ -35,6 +36,9 @@ automatically detected as such.}
 \item{manual_underline}{Character vector of display variable names (post-cleaning) to force into
 underlined formatting, matching the appearance of multi-category variable header rows. Use this for
 rows that should visually appear as section headers but are not automatically detected as such.}
+
+\item{table_caption}{Optional character string to display as a caption above the table in the Word
+document. Rendered as size 11 Arial italic text. Default is \code{NULL} (no caption).}
 }
 \value{
 Invisibly returns the path to the written Word file.

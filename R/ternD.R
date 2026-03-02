@@ -56,6 +56,9 @@
 #'   formatted as underlined in Word output -- matching the appearance of multi-category variable headers.
 #'   Has no effect on the returned tibble; only applies when \code{output_docx} is specified.
 #'   Default is \code{NULL}.
+#' @param table_caption Optional character string for a table caption to display above the table in
+#'   the Word document. Rendered as size 11 Arial italic text. Default is \code{NULL} (no caption).
+#'   Example: \code{"Table 1. Patient demographics."}.
 #'
 #' @details
 #' The function always returns a tibble with a single \code{Total (N = n)} column format, regardless of the
@@ -112,7 +115,8 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
                   round_intg = FALSE, smart_rename = TRUE, insert_subheads = TRUE,
                   factor_order = "levels", methods_doc = TRUE,
                   methods_filename = "TernTables_methods.docx", category_start = NULL,
-                  table_font_size = 9, manual_italic_indent = NULL, manual_underline = NULL) {
+                  table_font_size = 9, manual_italic_indent = NULL, manual_underline = NULL,
+                  table_caption = NULL) {
   stopifnot(is.data.frame(data))
   
   # Store total N for column header
@@ -345,7 +349,8 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
   if (!is.null(output_docx)) word_export(out_tbl, output_docx, font_size = table_font_size,
                                          category_start = category_start,
                                          manual_italic_indent = manual_italic_indent,
-                                         manual_underline = manual_underline)
+                                         manual_underline = manual_underline,
+                                         table_caption = table_caption)
   if (methods_doc) write_methods_doc(out_tbl, methods_filename, source = "ternD")
 
   out_tbl <- dplyr::select(out_tbl, -dplyr::any_of(".indent"))

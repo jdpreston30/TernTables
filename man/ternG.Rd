@@ -30,7 +30,8 @@ ternG(
   manual_italic_indent = NULL,
   manual_underline = NULL,
   indent_info_column = FALSE,
-  show_total = TRUE
+  show_total = TRUE,
+  table_caption = NULL
 )
 }
 \arguments{
@@ -120,6 +121,10 @@ intend to post-process the tibble and later pass it to \code{word_export} direct
 in the Word table.}
 
 \item{show_total}{Logical; if \code{TRUE}, adds a "Total" column showing the aggregate summary statistic across all groups (e.g., for a publication Table 1 that includes both per-group and overall columns). Default is \code{TRUE}.}
+
+\item{table_caption}{Optional character string for a table caption to display above the table in
+the Word document. Rendered as size 11 Arial italic text. Default is \code{NULL} (no caption).
+Example: \code{"Table 2. Comparison of recurrence vs. no recurrence."}.}
 }
 \value{
 A tibble with one row per variable (multi-row for multi-level factors), showing summary statistics by group,

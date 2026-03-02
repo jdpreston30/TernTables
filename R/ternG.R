@@ -62,6 +62,9 @@
 #'   Has no effect on the returned tibble; only applies when \code{output_docx} is specified or when
 #'   the tibble is passed to \code{word_export}.
 #' @param show_total Logical; if \code{TRUE}, adds a "Total" column showing the aggregate summary statistic across all groups (e.g., for a publication Table 1 that includes both per-group and overall columns). Default is \code{TRUE}.
+#' @param table_caption Optional character string for a table caption to display above the table in
+#'   the Word document. Rendered as size 11 Arial italic text. Default is \code{NULL} (no caption).
+#'   Example: \code{"Table 2. Comparison of recurrence vs. no recurrence."}.
 #' @param indent_info_column Logical; if \code{FALSE} (default), the internal \code{.indent} helper column
 #'   is dropped from the returned tibble. Set to \code{TRUE} to retain it -- this is necessary when you
 #'   intend to post-process the tibble and later pass it to \code{word_export} directly, as
@@ -124,7 +127,8 @@ ternG <- function(data,
                   manual_italic_indent = NULL,
                   manual_underline = NULL,
                   indent_info_column = FALSE,
-                  show_total = TRUE) {
+                  show_total = TRUE,
+                  table_caption = NULL) {
 
   # Helper function for proper rounding (0.5 always rounds up)
   round_up_half <- function(x, digits = 0) {
@@ -653,7 +657,7 @@ ternG <- function(data,
   }
 
   # Export to Word AFTER smart_rename so docx gets clean names
-  if (!is.null(output_docx)) word_export(out_tbl, output_docx, round_intg = round_intg, font_size = table_font_size, category_start = category_start, manual_italic_indent = manual_italic_indent, manual_underline = manual_underline)
+  if (!is.null(output_docx)) word_export(out_tbl, output_docx, round_intg = round_intg, font_size = table_font_size, category_start = category_start, manual_italic_indent = manual_italic_indent, manual_underline = manual_underline, table_caption = table_caption)
 
   if (!indent_info_column) out_tbl <- dplyr::select(out_tbl, -dplyr::any_of(".indent"))
 

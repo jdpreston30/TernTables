@@ -14,6 +14,8 @@
 #' @param manual_underline Character vector of display variable names (post-cleaning) to force into
 #'   underlined formatting, matching the appearance of multi-category variable header rows. Use this for
 #'   rows that should visually appear as section headers but are not automatically detected as such.
+#' @param table_caption Optional character string to display as a caption above the table in the Word
+#'   document. Rendered as size 11 Arial italic text. Default is \code{NULL} (no caption).
 #' @return Invisibly returns the path to the written Word file.
 #' @examples
 #' \dontrun{
@@ -29,7 +31,7 @@
 #' )
 #' }
 #' @export
-word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, category_start = NULL, manual_italic_indent = NULL, manual_underline = NULL) {
+word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, category_start = NULL, manual_italic_indent = NULL, manual_underline = NULL, table_caption = NULL) {
   # Keep the table as-is
   modified_tbl <- tbl
 
@@ -272,7 +274,14 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
   }
 
   # Create Word document
-  doc <- read_docx() %>% body_add_flextable(ft)
+  doc <- read_docx()
+  if (!is.null(table_caption) && nchar(trimws(table_caption)) > 0) {
+    caption_text <- fpar(
+      ftext(table_caption, prop = fp_text(font.size = 11, font.family = "Arial", italic = TRUE))
+    )
+    doc <- doc %>% body_add_fpar(caption_text)
+  }
+  doc <- doc %>% body_add_flextable(ft)
   dir.create(dirname(filename), recursive = TRUE, showWarnings = FALSE)
   print(doc, target = filename)
   invisible(filename)
