@@ -63,7 +63,7 @@
 #'   the tibble is passed to \code{word_export}.
 #' @param show_total Logical; if \code{TRUE}, adds a "Total" column showing the aggregate summary statistic across all groups (e.g., for a publication Table 1 that includes both per-group and overall columns). Default is \code{TRUE}.
 #' @param table_caption Optional character string for a table caption to display above the table in
-#'   the Word document. Rendered as size 11 Arial italic text. Default is \code{NULL} (no caption).
+#'   the Word document. Rendered as size 11 Arial bold italic, double-spaced. Default is \code{NULL} (no caption).
 #'   Example: \code{"Table 2. Comparison of recurrence vs. no recurrence."}.
 #' @param indent_info_column Logical; if \code{FALSE} (default), the internal \code{.indent} helper column
 #'   is dropped from the returned tibble. Set to \code{TRUE} to retain it -- this is necessary when you

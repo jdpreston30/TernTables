@@ -13,7 +13,7 @@
 ^vignettes/.*_files$
 ^doc$
 ^Meta$
-^run_vignette\.R$
+^run-vignette\.R$
 ^CRAN-SUBMISSION$
-^CRAN_checklist\.R$
+^CRAN-checklist\.R$
 ^development$

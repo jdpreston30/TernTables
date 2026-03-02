@@ -15,7 +15,7 @@
 #'   underlined formatting, matching the appearance of multi-category variable header rows. Use this for
 #'   rows that should visually appear as section headers but are not automatically detected as such.
 #' @param table_caption Optional character string to display as a caption above the table in the Word
-#'   document. Rendered as size 11 Arial italic text. Default is \code{NULL} (no caption).
+#'   document. Rendered as size 11 Arial bold italic, double-spaced. Default is \code{NULL} (no caption).
 #' @return Invisibly returns the path to the written Word file.
 #' @examples
 #' \dontrun{
@@ -277,7 +277,8 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
   doc <- read_docx()
   if (!is.null(table_caption) && nchar(trimws(table_caption)) > 0) {
     caption_text <- fpar(
-      ftext(table_caption, prop = fp_text(font.size = 11, font.family = "Arial", italic = TRUE))
+      ftext(table_caption, prop = fp_text(font.size = 11, font.family = "Arial", italic = TRUE, bold = TRUE)),
+      fp_p = fp_par(line_spacing = 2)
     )
     doc <- doc %>% body_add_fpar(caption_text)
   }

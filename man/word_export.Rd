@@ -38,7 +38,7 @@ underlined formatting, matching the appearance of multi-category variable header
 rows that should visually appear as section headers but are not automatically detected as such.}
 
 \item{table_caption}{Optional character string to display as a caption above the table in the Word
-document. Rendered as size 11 Arial italic text. Default is \code{NULL} (no caption).}
+document. Rendered as size 11 Arial bold italic, double-spaced. Default is \code{NULL} (no caption).}
 }
 \value{
 Invisibly returns the path to the written Word file.

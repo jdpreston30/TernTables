@@ -1,0 +1,44 @@
+# Fresh setup
+{
+  devtools::install(pkg = ".", quick = TRUE, upgrade = "never", quiet = TRUE)
+  library(TernTables)
+  data(tern_colon)
+}
+
+# Build tables
+T1 <- ternD(
+  data = tern_colon,
+  exclude_vars = c("ID"),
+  methods_doc = FALSE,
+  table_caption = "Table 1. Overall patient characteristics.",
+  category_start = c(
+    "Patient Demographics"  = "Age (yr)",
+    "Tumor Characteristics" = "Positive Lymph Nodes (n)"
+  )
+)
+
+T2 <- ternG(
+  data = tern_colon,
+  exclude_vars = c("ID"),
+  group_var = "Recurrence",
+  OR_col = TRUE,
+  methods_doc = FALSE,
+  table_caption = "Table 2. Characteristics by recurrence status.",
+  category_start = c(
+    "Patient Demographics"  = "Age (yr)",
+    "Tumor Characteristics" = "Positive Lymph Nodes (n)"
+  )
+)
+
+T3 <- ternG(
+  data          = tern_colon,
+  exclude_vars  = c("ID"),
+  group_var     = "Treatment_Arm",
+  methods_doc   = FALSE,
+  table_caption = "Table 3. Characteristics by treatment arm."
+)
+
+ternB(
+  tables      = list(T1, T2, T3),
+  output_docx = "development/ternB-test/T1-T3.docx"
+)
