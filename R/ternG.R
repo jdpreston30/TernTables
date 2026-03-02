@@ -519,7 +519,9 @@ ternG <- function(data,
         p_val <- stats::t.test(g[[var]] ~ g[[group_var]])$p.value
         list(p_value = p_val, test_name = "Welch t-test", error = NULL)
       } else {
-        p_val <- stats::aov(g[[var]] ~ g[[group_var]]) %>% summary() %>% .[[1]] %>% .["Pr(>F)"][[1]][1]
+        aov_fit <- stats::aov(g[[var]] ~ g[[group_var]])
+        aov_tbl <- summary(aov_fit)[[1]]
+        p_val   <- aov_tbl[["Pr(>F)"]][1]
         list(p_value = p_val, test_name = "ANOVA", error = NULL)
       }
     }, error = function(e) {
@@ -532,7 +534,7 @@ ternG <- function(data,
       } else if (stats::var(g[[var]], na.rm = TRUE) == 0) {
         reason <- "no variation in values"
       } else {
-        reason <- "test failure"
+        reason <- paste0("test failure: ", conditionMessage(e))
       }
       test_name <- if (n_levels == 2) "Welch t-test" else "ANOVA"
       list(p_value = NA_real_, test_name = test_name, error = reason)
