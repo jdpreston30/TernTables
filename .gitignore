@@ -9,6 +9,8 @@
 /Meta/
 ..Rcheck/
 
+# Misc
+hx.txt
 # Test output
 /tests/testthat/Rplots.pdf
 
