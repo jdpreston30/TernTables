@@ -305,10 +305,41 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
   # Create Word document
   doc <- read_docx()
   if (!is.null(table_caption) && nchar(trimws(table_caption)) > 0) {
-    caption_text <- fpar(
-      ftext(table_caption, prop = fp_text(font.size = 11, font.family = "Arial", italic = TRUE, bold = TRUE)),
-      fp_p = fp_par(line_spacing = 2)
-    )
+    cap <- trimws(table_caption)
+
+    # Split into sentences on period + whitespace boundaries
+    sentences <- strsplit(cap, "(?<=\\.)\\s+", perl = TRUE)[[1]]
+
+    bold_prop  <- fp_text(font.size = 11, font.family = "Arial", bold = TRUE,  italic = FALSE)
+    plain_prop <- fp_text(font.size = 11, font.family = "Arial", bold = FALSE, italic = FALSE)
+
+    # Rule: if caption starts with "Table <n>." and has at least two sentences,
+    # sentences 1-2 are bold and the remainder is plain weight.
+    # Otherwise the whole caption is bold. Italic is never applied.
+    use_split <- length(sentences) >= 2 && grepl("^Table\\s*\\d", sentences[1])
+
+    if (use_split) {
+      bold_text  <- paste(sentences[1:2], collapse = " ")
+      plain_text <- if (length(sentences) > 2) paste(sentences[3:length(sentences)], collapse = " ") else NULL
+
+      caption_text <- if (!is.null(plain_text)) {
+        fpar(
+          ftext(bold_text,              prop = bold_prop),
+          ftext(paste0(" ", plain_text), prop = plain_prop),
+          fp_p = fp_par(line_spacing = 2)
+        )
+      } else {
+        fpar(
+          ftext(bold_text, prop = bold_prop),
+          fp_p = fp_par(line_spacing = 2)
+        )
+      }
+    } else {
+      caption_text <- fpar(
+        ftext(cap, prop = bold_prop),
+        fp_p = fp_par(line_spacing = 2)
+      )
+    }
     doc <- doc %>% body_add_fpar(caption_text)
   }
   doc <- doc %>% body_add_flextable(ft)
