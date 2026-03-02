@@ -1,3 +1,5 @@
+t.test()
+
 # =============================================================================
 # Manual vs ternG() Welch ANOVA validation
 # Purpose: confirm that the switch from aov() to oneway.test(var.equal = FALSE)
@@ -41,7 +43,7 @@ tbl <- ternG(
   group_var  = GROUP,
   vars       = c("Age_Years"),
   show_test  = TRUE,
-  consider_normality = "ASSESS"   # default: let Shapiro-Wilk decide
+  consider_normality = TRUE    # default: let Shapiro-Wilk decide
 )
 print(tbl)
 cat("\n")
@@ -112,7 +114,7 @@ tbl3 <- ternG(
   group_var = "Recurrence",
   vars      = c("Age_Years"),
   show_test = TRUE,
-  consider_normality = "ASSESS"
+  consider_normality = TRUE
 )
 print(tbl3)
 cat("\n")

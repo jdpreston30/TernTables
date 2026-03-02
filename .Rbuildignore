@@ -17,3 +17,5 @@
 ^CRAN-SUBMISSION$
 ^CRAN-checklist\.R$
 ^development$
+^test\.csv$
+^.*\.csv$

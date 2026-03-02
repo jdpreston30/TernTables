@@ -517,7 +517,7 @@ ternG <- function(data,
 
     test_result <- tryCatch({
       if (n_levels == 2) {
-        p_val <- stats::t.test(g[[var]] ~ g[[group_var]])$p.value
+        p_val <- stats::t.test(g[[var]] ~ g[[group_var]], var.equal = FALSE)$p.value
         list(p_value = p_val, test_name = "Welch t-test", error = NULL)
       } else {
         p_val <- stats::oneway.test(g[[var]] ~ g[[group_var]], var.equal = FALSE)$p.value
