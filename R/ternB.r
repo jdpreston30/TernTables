@@ -5,10 +5,10 @@
 #' the exact formatting settings that were used when each table was built.
 #'
 #' @param tables A \strong{list} of tibbles created by \code{ternD()} or \code{ternG()}.
-#'   Must be constructed with \code{list()}, not \code{c()} -- e.g.
-#'   \code{list(T1, T2, T3)}.  Each tibble must have been produced in the
-#'   \emph{current R session} (the metadata is stored in memory, not in the tibble
-#'   columns).
+#'   Must be constructed with \code{list()}, not \code{c()} (e.g.
+#'   \code{list(T1, T2, T3)}).  Each tibble must have been produced in the
+#'   \emph{current R session}; the metadata is stored in memory, not in the
+#'   tibble columns.
 #' @param output_docx Output file path ending in \code{.docx}.
 #' @param page_break Logical; if \code{TRUE} (default), inserts a page break
 #'   between each consecutive table.

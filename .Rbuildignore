@@ -16,3 +16,4 @@
 ^run_vignette\.R$
 ^CRAN-SUBMISSION$
 ^CRAN_checklist\.R$
+^development$

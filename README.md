@@ -167,6 +167,8 @@ into a manuscript.
 The tibble can also be:
 
 - Passed to `word_export()` for additional formatting control (e.g. `category_start`)
+- Given a caption in the Word output via `table_caption = "Table 1. Patient demographics."`
+- Combined with other tables into one document using `ternB(list(T1, T2, T3), output_docx = "tables.docx")`
 - Written to Excel with `writexl::write_xlsx()`
 - Inspected or further manipulated in R
 

@@ -8,10 +8,10 @@ ternB(tables, output_docx, page_break = TRUE)
 }
 \arguments{
 \item{tables}{A \strong{list} of tibbles created by \code{ternD()} or \code{ternG()}.
-Must be constructed with \code{list()}, not \code{c()} -- e.g.
-\code{list(T1, T2, T3)}.  Each tibble must have been produced in the
-\emph{current R session} (the metadata is stored in memory, not in the tibble
-columns).}
+Must be constructed with \code{list()}, not \code{c()} (e.g.
+\code{list(T1, T2, T3)}).  Each tibble must have been produced in the
+\emph{current R session}; the metadata is stored in memory, not in the
+tibble columns.}
 
 \item{output_docx}{Output file path ending in \code{.docx}.}
 
