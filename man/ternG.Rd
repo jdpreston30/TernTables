@@ -124,8 +124,9 @@ in the Word table.}
 \item{show_total}{Logical; if \code{TRUE}, adds a "Total" column showing the aggregate summary statistic across all groups (e.g., for a publication Table 1 that includes both per-group and overall columns). Default is \code{TRUE}.}
 
 \item{table_caption}{Optional character string for a table caption to display above the table in
-the Word document. Rendered as size 11 Arial bold italic, double-spaced. Default is \code{NULL} (no caption).
-Example: \code{"Table 2. Comparison of recurrence vs. no recurrence."}.}
+the Word document. Rendered as size 11 Arial bold, single-spaced with a small gap before the table.
+Default is \code{NULL} (no caption).
+Example: \code{"Table 2. Comparison of recurrence vs. no recurrence."}}
 
 \item{table_footnote}{Optional character string for a footnote to display below the table in the
 Word document. Rendered as size 6 Arial italic with a double-bar border above and below.

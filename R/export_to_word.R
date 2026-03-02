@@ -15,7 +15,8 @@
 #'   underlined formatting, matching the appearance of multi-category variable header rows. Use this for
 #'   rows that should visually appear as section headers but are not automatically detected as such.
 #' @param table_caption Optional character string to display as a caption above the table in the Word
-#'   document. Rendered as size 11 Arial bold italic, double-spaced. Default is \code{NULL} (no caption).
+#'   document. Rendered as size 11 Arial bold, single-spaced with a small gap before the table.
+#'   Default is \code{NULL} (no caption).
 #' @param table_footnote Optional character string to display as a footnote below the table in the Word
 #'   document. Rendered as size 6 Arial italic. A double-bar border is applied above and below the
 #'   footnote row. Default is \code{NULL} (no footnote).
@@ -326,18 +327,18 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
         fpar(
           ftext(bold_text,              prop = bold_prop),
           ftext(paste0(" ", plain_text), prop = plain_prop),
-          fp_p = fp_par(line_spacing = 2)
+          fp_p = fp_par(line_spacing = 1, padding.bottom = 6)
         )
       } else {
         fpar(
           ftext(bold_text, prop = bold_prop),
-          fp_p = fp_par(line_spacing = 2)
+          fp_p = fp_par(line_spacing = 1, padding.bottom = 6)
         )
       }
     } else {
       caption_text <- fpar(
         ftext(cap, prop = bold_prop),
-        fp_p = fp_par(line_spacing = 2)
+        fp_p = fp_par(line_spacing = 1, padding.bottom = 6)
       )
     }
     doc <- doc %>% body_add_fpar(caption_text)

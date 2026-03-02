@@ -39,7 +39,8 @@ underlined formatting, matching the appearance of multi-category variable header
 rows that should visually appear as section headers but are not automatically detected as such.}
 
 \item{table_caption}{Optional character string to display as a caption above the table in the Word
-document. Rendered as size 11 Arial bold italic, double-spaced. Default is \code{NULL} (no caption).}
+document. Rendered as size 11 Arial bold, single-spaced with a small gap before the table.
+Default is \code{NULL} (no caption).}
 
 \item{table_footnote}{Optional character string to display as a footnote below the table in the Word
 document. Rendered as size 6 Arial italic. A double-bar border is applied above and below the

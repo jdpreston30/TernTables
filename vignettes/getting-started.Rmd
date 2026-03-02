@@ -196,8 +196,8 @@ Three-group comparison table exported to Word with category section headers:
 Two optional parameters control text that appears outside the table body in the
 exported Word document.
 
-**`table_caption`** places a bold italic size-11 Arial caption above the table,
-double-spaced:
+**`table_caption`** places a bold size-11 Arial caption above the table,
+single-spaced with a small gap between the caption and the table:
 
 ```{r caption-example, eval = FALSE}
 tbl_descriptive <- ternD(

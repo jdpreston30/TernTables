@@ -57,8 +57,9 @@
 #'   Has no effect on the returned tibble; only applies when \code{output_docx} is specified.
 #'   Default is \code{NULL}.
 #' @param table_caption Optional character string for a table caption to display above the table in
-#'   the Word document. Rendered as size 11 Arial bold italic, double-spaced. Default is \code{NULL} (no caption).
-#'   Example: \code{"Table 1. Patient demographics."}.
+#'   the Word document. Rendered as size 11 Arial bold, single-spaced with a small gap before the table.
+#'   Default is \code{NULL} (no caption).
+#'   Example: \code{"Table 1. Patient demographics."}
 #' @param table_footnote Optional character string for a footnote to display below the table in the
 #'   Word document. Rendered as size 6 Arial italic with a double-bar border above and below.
 #'   Default is \code{NULL} (no footnote).
