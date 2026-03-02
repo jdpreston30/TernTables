@@ -64,7 +64,7 @@ regardless of expected cell counts.}
 \item{consider_normality}{Logical or character; controls how continuous variables are tested and displayed.
 If \code{TRUE} (default), runs the Shapiro-Wilk test per group for each numeric variable; a variable is treated
 as normally distributed only if all groups pass (p > 0.05). Normal variables use mean \eqn{\pm} SD
-and Welch t-test (2 groups) or ANOVA (3+ groups); non-normal variables use median [IQR] and Wilcoxon
+and Welch t-test (2 groups) or Welch ANOVA (3+ groups); non-normal variables use median [IQR] and Wilcoxon
 rank-sum (2 groups) or Kruskal-Wallis (3+ groups). When Shapiro-Wilk cannot be computed (n < 3 in
 any group), that variable is treated as non-normal (conservative fail-safe).
 If \code{FALSE}, all numeric variables are treated as normally distributed (mean \eqn{\pm} SD,

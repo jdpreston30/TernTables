@@ -106,7 +106,7 @@ Statistical tests applied automatically:
 
 | Variable type | 2 groups | 3+ groups |
 |---|---|---|
-| Continuous, normal | Welch's *t*-test | ANOVA |
+| Continuous, normal | Welch's *t*-test | Welch ANOVA |
 | Continuous, non-normal | Wilcoxon rank-sum | Kruskal-Wallis |
 | Binary / Categorical | Fisher's exact or Chi-squared | Fisher's exact or Chi-squared |
 | Ordinal (`force_ordinal`) | Wilcoxon rank-sum | Kruskal-Wallis |

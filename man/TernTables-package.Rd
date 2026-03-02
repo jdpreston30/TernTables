@@ -28,7 +28,7 @@ Numeric variables can be designated as ordinal via \code{force_ordinal}.
 
 \describe{
   \item{Continuous (2 groups)}{Welch's \emph{t}-test or Wilcoxon rank-sum, chosen by Shapiro-Wilk.}
-  \item{Continuous (3+ groups)}{ANOVA or Kruskal-Wallis, chosen by Shapiro-Wilk per group.}
+  \item{Continuous (3+ groups)}{Welch ANOVA or Kruskal-Wallis, chosen by Shapiro-Wilk per group.}
   \item{Binary / Categorical}{Chi-squared or Fisher's exact, based on expected cell counts.}
   \item{Ordinal (forced)}{Wilcoxon rank-sum (2 groups) or Kruskal-Wallis (3+ groups).}
 }

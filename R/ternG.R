@@ -24,7 +24,7 @@
 #' @param consider_normality Logical or character; controls how continuous variables are tested and displayed.
 #'   If \code{TRUE} (default), runs the Shapiro-Wilk test per group for each numeric variable; a variable is treated
 #'   as normally distributed only if all groups pass (p > 0.05). Normal variables use mean \eqn{\pm} SD
-#'   and Welch t-test (2 groups) or ANOVA (3+ groups); non-normal variables use median [IQR] and Wilcoxon
+#'   and Welch t-test (2 groups) or Welch ANOVA (3+ groups); non-normal variables use median [IQR] and Wilcoxon
 #'   rank-sum (2 groups) or Kruskal-Wallis (3+ groups). When Shapiro-Wilk cannot be computed (n < 3 in
 #'   any group), that variable is treated as non-normal (conservative fail-safe).
 #'   If \code{FALSE}, all numeric variables are treated as normally distributed (mean \eqn{\pm} SD,
@@ -520,10 +520,8 @@ ternG <- function(data,
         p_val <- stats::t.test(g[[var]] ~ g[[group_var]])$p.value
         list(p_value = p_val, test_name = "Welch t-test", error = NULL)
       } else {
-        aov_fit <- stats::aov(g[[var]] ~ g[[group_var]])
-        aov_tbl <- summary(aov_fit)[[1]]
-        p_val   <- aov_tbl[["Pr(>F)"]][1]
-        list(p_value = p_val, test_name = "ANOVA", error = NULL)
+        p_val <- stats::oneway.test(g[[var]] ~ g[[group_var]], var.equal = FALSE)$p.value
+        list(p_value = p_val, test_name = "Welch ANOVA", error = NULL)
       }
     }, error = function(e) {
       # Determine reason for test failure
@@ -537,7 +535,7 @@ ternG <- function(data,
       } else {
         reason <- paste0("test failure: ", conditionMessage(e))
       }
-      test_name <- if (n_levels == 2) "Welch t-test" else "ANOVA"
+      test_name <- if (n_levels == 2) "Welch t-test" else "Welch ANOVA"
       list(p_value = NA_real_, test_name = test_name, error = reason)
     })
     
@@ -617,7 +615,7 @@ ternG <- function(data,
   if (numeric_vars_tested > 0) {
     numeric_vars_passed <- numeric_vars_tested - numeric_vars_failed
     passed_pct  <- round((numeric_vars_passed / numeric_vars_tested) * 100, 1)
-    param_test    <- if (n_levels == 2) "Welch's independent samples t-test" else "one-way ANOVA"
+    param_test    <- if (n_levels == 2) "Welch's independent samples t-test" else "Welch's one-way ANOVA"
     nonparam_test <- if (n_levels == 2) "Wilcoxon rank-sum" else "Kruskal-Wallis"
 
     cli::cli_rule(left = "Normality Assessment (Shapiro-Wilk) \u2014 ternG")

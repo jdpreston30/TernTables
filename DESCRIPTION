@@ -1,7 +1,7 @@
 Package: TernTables
 Type: Package
 Title: Publication-Ready Summary Tables and Statistical Testing for Clinical Research
-Version: 1.3.1.9008
+Version: 1.4.0.9000
 Authors@R: c(
     person("Joshua D.", "Preston",
            email = "joshua.preston@emory.edu",
@@ -27,7 +27,7 @@ Description: Generates publication-ready summary tables for clinical research,
     supporting descriptive summaries and comparisons across two or three groups. 
     The package streamlines the analytical workflow by detecting variable types 
     and applying appropriate statistical tests (Welch t-test, Wilcoxon rank-sum, 
-    ANOVA, Kruskal-Wallis, Chi-squared, or Fisher's exact test). Results are 
+    Welch ANOVA, Kruskal-Wallis, Chi-squared, or Fisher's exact test). Results are 
     formatted as 'tibble' objects and can be exported to Word or Excel using 
     the 'officer', 'flextable', and 'writexl' packages.
 License: MIT + file LICENSE

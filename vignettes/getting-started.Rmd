@@ -160,7 +160,7 @@ Two-group comparison table exported to Word, with odds ratios and category secti
 ## Three or More Groups (`ternG` — 3+ levels)
 
 The same `ternG()` function handles three or more groups automatically,
-switching from t-test/Wilcoxon to ANOVA/Kruskal-Wallis as appropriate.
+switching from t-test/Wilcoxon to Welch ANOVA/Kruskal-Wallis as appropriate.
 Odds ratios are not available for 3+ group comparisons. `consider_normality`
 controls whether Shapiro-Wilk is used to choose between parametric and
 nonparametric tests; the default (`TRUE`) enables this, `FALSE` forces
@@ -240,7 +240,7 @@ TernTables selects tests automatically based on variable type and normality:
 
 | Variable type | Test (2 groups) | Test (3+ groups) |
 |---|---|---|
-| Continuous, normal | Welch's *t*-test | ANOVA |
+| Continuous, normal | Welch's *t*-test | Welch ANOVA |
 | Continuous, non-normal | Wilcoxon rank-sum | Kruskal-Wallis |
 | Binary / Categorical | Fisher's exact or Chi-squared\* | Fisher's exact or Chi-squared\* |
 | Ordinal (`force_ordinal`) | Wilcoxon rank-sum | Kruskal-Wallis |

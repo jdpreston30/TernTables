@@ -99,20 +99,20 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
   # ── Section 3: Three-or-more-group ───────────────────────────────────────────
   if (source == "ternG" && n_levels >= 3) {
     s3_cont <- if (has_anova && has_kruskal) {
-      "Normally distributed continuous variables were compared across groups using one-way ANOVA; non-normally distributed or ordinal continuous variables were compared using the Kruskal-Wallis test. "
+      "Normally distributed continuous variables were compared across groups using Welch's one-way ANOVA; non-normally distributed or ordinal continuous variables were compared using the Kruskal-Wallis test. "
     } else if (has_anova) {
-      "Continuous variables were compared across groups using one-way ANOVA. "
+      "Continuous variables were compared across groups using Welch's one-way ANOVA. "
     } else if (has_kruskal) {
       "Continuous variables were compared across groups using the Kruskal-Wallis test. "
     } else {
-      "Normally distributed continuous variables were compared using one-way ANOVA; non-normally distributed variables were compared using the Kruskal-Wallis test. "
+      "Normally distributed continuous variables were compared using Welch's one-way ANOVA; non-normally distributed variables were compared using the Kruskal-Wallis test. "
     }
     omnibus_note <- "Omnibus P values are reported; pairwise post-hoc comparisons were not performed. "
     sec3_body <- paste0(desc_sentence, " ", s3_cont, omnibus_note, cat_sentence(has_fisher, has_chisq), sig_sentence)
   } else {
     sec3_body <- paste0(
       desc_sentence, " ",
-      "Normally distributed continuous variables were compared across groups using one-way ANOVA; ",
+      "Normally distributed continuous variables were compared across groups using Welch's one-way ANOVA; ",
       "non-normally distributed or ordinal continuous variables were compared using the Kruskal-Wallis test. ",
       "Omnibus P values are reported; pairwise post-hoc comparisons were not performed. ",
       "Categorical variables were compared using Chi-squared tests, or Fisher's exact tests when any expected cell count was less than 5 (Cochran criterion). ",
