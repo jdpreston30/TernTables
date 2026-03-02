@@ -240,3 +240,4 @@ write_methods_doc(
 Moertel CG, Fleming TR, Macdonald JS, et al. (1990). Levamisole and fluorouracil
 for adjuvant therapy of resected colon carcinoma. *New England Journal of Medicine*,
 **322**(6), 352–358. <https://doi.org/10.1056/NEJM199002083220602>
+
