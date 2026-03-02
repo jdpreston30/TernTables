@@ -345,6 +345,9 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
   out_tbl <- out_tbl %>%
     dplyr::mutate(dplyr::across(dplyr::where(is.character), ~ gsub("0 \\(NaN%\\)", "-", .x)))
 
+  # Save with .indent intact for ternB multi-table export metadata
+  out_tbl_with_indent <- out_tbl
+
   if (!is.null(output_xlsx)) export_to_excel(out_tbl, output_xlsx)
   if (!is.null(output_docx)) word_export(out_tbl, output_docx, font_size = table_font_size,
                                          category_start = category_start,
@@ -354,5 +357,17 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
   if (methods_doc) write_methods_doc(out_tbl, methods_filename, source = "ternD")
 
   out_tbl <- dplyr::select(out_tbl, -dplyr::any_of(".indent"))
+
+  # Attach word-export metadata so ternB() can reproduce this table in a combined document
+  attr(out_tbl, "ternB_meta") <- list(
+    tbl                  = out_tbl_with_indent,
+    round_intg           = FALSE,
+    font_size            = table_font_size,
+    category_start       = category_start,
+    manual_italic_indent = manual_italic_indent,
+    manual_underline     = manual_underline,
+    table_caption        = table_caption
+  )
+
   out_tbl
 }

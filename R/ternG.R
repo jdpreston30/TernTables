@@ -656,10 +656,24 @@ ternG <- function(data,
     }
   }
 
+  # Save with .indent intact for ternB multi-table export metadata
+  out_tbl_with_indent <- out_tbl
+
   # Export to Word AFTER smart_rename so docx gets clean names
   if (!is.null(output_docx)) word_export(out_tbl, output_docx, round_intg = round_intg, font_size = table_font_size, category_start = category_start, manual_italic_indent = manual_italic_indent, manual_underline = manual_underline, table_caption = table_caption)
 
   if (!indent_info_column) out_tbl <- dplyr::select(out_tbl, -dplyr::any_of(".indent"))
+
+  # Attach word-export metadata so ternB() can reproduce this table in a combined document
+  attr(out_tbl, "ternB_meta") <- list(
+    tbl                  = out_tbl_with_indent,
+    round_intg           = round_intg,
+    font_size            = table_font_size,
+    category_start       = category_start,
+    manual_italic_indent = manual_italic_indent,
+    manual_underline     = manual_underline,
+    table_caption        = table_caption
+  )
 
   return(out_tbl)
 }
