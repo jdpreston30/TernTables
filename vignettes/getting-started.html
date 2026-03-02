@@ -519,13 +519,13 @@ category section headers:</p>
 <div id="three-or-more-groups-terng-3-levels" class="section level2">
 <h2>Three or More Groups (<code>ternG</code> — 3+ levels)</h2>
 <p>The same <code>ternG()</code> function handles three or more groups
-automatically, switching from t-test/Wilcoxon to ANOVA/Kruskal-Wallis as
-appropriate. Odds ratios are not available for 3+ group comparisons.
-<code>consider_normality</code> controls whether Shapiro-Wilk is used to
-choose between parametric and nonparametric tests; the default
-(<code>TRUE</code>) enables this, <code>FALSE</code> forces parametric
-tests throughout, and <code>&quot;FORCE&quot;</code> forces nonparametric
-throughout.</p>
+automatically, switching from t-test/Wilcoxon to Welch
+ANOVA/Kruskal-Wallis as appropriate. Odds ratios are not available for
+3+ group comparisons. <code>consider_normality</code> controls whether
+Shapiro-Wilk is used to choose between parametric and nonparametric
+tests; the default (<code>TRUE</code>) enables this, <code>FALSE</code>
+forces parametric tests throughout, and <code>&quot;FORCE&quot;</code> forces
+nonparametric throughout.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>tbl_3group <span class="ot">&lt;-</span> <span class="fu">ternG</span>(</span>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="at">data               =</span> tern_colon,</span>
 <span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">exclude_vars       =</span> <span class="fu">c</span>(<span class="st">&quot;ID&quot;</span>),</span>
@@ -551,8 +551,9 @@ headers:</p>
 <h2>Word Output Formatting</h2>
 <p>Two optional parameters control text that appears outside the table
 body in the exported Word document.</p>
-<p><strong><code>table_caption</code></strong> places a bold italic
-size-11 Arial caption above the table, double-spaced:</p>
+<p><strong><code>table_caption</code></strong> places a bold size-11
+Arial caption above the table, single-spaced with a small gap between
+the caption and the table:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>tbl_descriptive <span class="ot">&lt;-</span> <span class="fu">ternD</span>(</span>
 <span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="at">data          =</span> tern_colon,</span>
 <span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="at">exclude_vars  =</span> <span class="fu">c</span>(<span class="st">&quot;ID&quot;</span>),</span>
@@ -603,7 +604,7 @@ normality:</p>
 <tr class="odd">
 <td>Continuous, normal</td>
 <td>Welch’s <em>t</em>-test</td>
-<td>ANOVA</td>
+<td>Welch ANOVA</td>
 </tr>
 <tr class="even">
 <td>Continuous, non-normal</td>

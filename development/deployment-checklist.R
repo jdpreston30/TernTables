@@ -1,9 +1,11 @@
-#* ANY NEW CRAN COMMIT:
-# 1. update cran-comments.md
-# 2. Run the following:
+#* ANY NEW DEPLOYMENT
+# Run the following for GitHub commits
 rmarkdown::render("vignettes/getting-started.Rmd")
 devtools::document()
 devtools::check()
+
+# Run these in addition for CRAN submission
+#!!! update cran-comments.md
 devtools::check_win_devel()
 devtools::submit_cran()
 
