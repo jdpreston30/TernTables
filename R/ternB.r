@@ -12,6 +12,11 @@
 #' @param output_docx Output file path ending in \code{.docx}.
 #' @param page_break Logical; if \code{TRUE} (default), inserts a page break
 #'   between each consecutive table.
+#' @param methods_doc Logical; if \code{TRUE}, writes a single methods section
+#'   Word document that covers all tables in the list. Statistical test details
+#'   are pooled across all tables. Default is \code{FALSE}.
+#' @param methods_filename Output file path for the methods document. Defaults
+#'   to \code{"TernTables_methods.docx"} in the working directory.
 #'
 #' @details
 #' \code{ternB()} works by replaying the exact \code{word_export()} call that
@@ -19,10 +24,10 @@
 #' attached as an attribute to each returned tibble -- but directing all output
 #' into a single combined document instead of separate files.
 #'
-#' Table captions (\code{table_caption}) specified in the original
+#' Table captions (\code{table_caption}) and footnotes (\code{table_footnote}) specified in the original
 #' \code{ternD()} / \code{ternG()} call are reproduced automatically.  You can
 #' override them by modifying the \code{"ternB_meta"} attribute before calling
-#' \code{ternB()}, though in practice it is easier to set captions when you
+#' \code{ternB()}, though in practice it is easier to set captions and footnotes when you
 #' first build each table.
 #'
 #' @return Invisibly returns the path to the written Word file.
@@ -46,7 +51,9 @@
 #'       output_docx = file.path(tempdir(), "combined_tables.docx"))
 #' }
 #' @export
-ternB <- function(tables, output_docx, page_break = TRUE) {
+ternB <- function(tables, output_docx, page_break = TRUE,
+                  methods_doc = FALSE,
+                  methods_filename = "TernTables_methods.docx") {
 
   # ── Input validation ──────────────────────────────────────────────────────
   if (!is.list(tables) || inherits(tables, "data.frame")) {
@@ -88,7 +95,8 @@ ternB <- function(tables, output_docx, page_break = TRUE) {
       category_start       = meta$category_start,
       manual_italic_indent = meta$manual_italic_indent,
       manual_underline     = meta$manual_underline,
-      table_caption        = meta$table_caption
+      table_caption        = meta$table_caption,
+      table_footnote       = meta$table_footnote
     )
   }
 
@@ -104,6 +112,20 @@ ternB <- function(tables, output_docx, page_break = TRUE) {
 
   dir.create(dirname(output_docx), recursive = TRUE, showWarnings = FALSE)
   print(doc, target = output_docx)
+
+  # ── Optional unified methods document ─────────────────────────────────────
+  if (methods_doc) {
+    all_metas <- lapply(tables, function(t) attr(t, "ternB_meta"))
+    all_tests <- unlist(lapply(all_metas, function(m) {
+      if (!is.null(m$tbl) && "test" %in% colnames(m$tbl)) m$tbl[["test"]] else character(0)
+    }))
+    combined_tbl    <- data.frame(test = all_tests, stringsAsFactors = FALSE)
+    max_n_levels    <- max(vapply(all_metas, function(m) if (is.null(m$n_levels)) 1L else m$n_levels, integer(1)))
+    any_or_col      <- any(vapply(all_metas, function(m) isTRUE(m$OR_col), logical(1)))
+    combined_source <- if (any(vapply(all_metas, function(m) identical(m$source, "ternG"), logical(1)))) "ternG" else "ternD"
+    write_methods_doc(combined_tbl, methods_filename,
+                      n_levels = max_n_levels, OR_col = any_or_col, source = combined_source)
+  }
 
   invisible(output_docx)
 }

@@ -31,7 +31,8 @@ ternG(
   manual_underline = NULL,
   indent_info_column = FALSE,
   show_total = TRUE,
-  table_caption = NULL
+  table_caption = NULL,
+  table_footnote = NULL
 )
 }
 \arguments{
@@ -125,6 +126,10 @@ in the Word table.}
 \item{table_caption}{Optional character string for a table caption to display above the table in
 the Word document. Rendered as size 11 Arial bold italic, double-spaced. Default is \code{NULL} (no caption).
 Example: \code{"Table 2. Comparison of recurrence vs. no recurrence."}.}
+
+\item{table_footnote}{Optional character string for a footnote to display below the table in the
+Word document. Rendered as size 6 Arial italic with a double-bar border above and below.
+Default is \code{NULL} (no footnote).}
 }
 \value{
 A tibble with one row per variable (multi-row for multi-level factors), showing summary statistics by group,

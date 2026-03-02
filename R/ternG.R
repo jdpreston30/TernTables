@@ -65,6 +65,9 @@
 #' @param table_caption Optional character string for a table caption to display above the table in
 #'   the Word document. Rendered as size 11 Arial bold italic, double-spaced. Default is \code{NULL} (no caption).
 #'   Example: \code{"Table 2. Comparison of recurrence vs. no recurrence."}.
+#' @param table_footnote Optional character string for a footnote to display below the table in the
+#'   Word document. Rendered as size 6 Arial italic with a double-bar border above and below.
+#'   Default is \code{NULL} (no footnote).
 #' @param indent_info_column Logical; if \code{FALSE} (default), the internal \code{.indent} helper column
 #'   is dropped from the returned tibble. Set to \code{TRUE} to retain it -- this is necessary when you
 #'   intend to post-process the tibble and later pass it to \code{word_export} directly, as
@@ -128,7 +131,7 @@ ternG <- function(data,
                   manual_underline = NULL,
                   indent_info_column = FALSE,
                   show_total = TRUE,
-                  table_caption = NULL) {
+                  table_caption = NULL, table_footnote = NULL) {
 
   # Helper function for proper rounding (0.5 always rounds up)
   round_up_half <- function(x, digits = 0) {
@@ -660,7 +663,7 @@ ternG <- function(data,
   out_tbl_with_indent <- out_tbl
 
   # Export to Word AFTER smart_rename so docx gets clean names
-  if (!is.null(output_docx)) word_export(out_tbl, output_docx, round_intg = round_intg, font_size = table_font_size, category_start = category_start, manual_italic_indent = manual_italic_indent, manual_underline = manual_underline, table_caption = table_caption)
+  if (!is.null(output_docx)) word_export(out_tbl, output_docx, round_intg = round_intg, font_size = table_font_size, category_start = category_start, manual_italic_indent = manual_italic_indent, manual_underline = manual_underline, table_caption = table_caption, table_footnote = table_footnote)
 
   if (!indent_info_column) out_tbl <- dplyr::select(out_tbl, -dplyr::any_of(".indent"))
 
@@ -672,7 +675,11 @@ ternG <- function(data,
     category_start       = category_start,
     manual_italic_indent = manual_italic_indent,
     manual_underline     = manual_underline,
-    table_caption        = table_caption
+    table_caption        = table_caption,
+    table_footnote       = table_footnote,
+    source               = "ternG",
+    n_levels             = n_levels,
+    OR_col               = OR_col
   )
 
   return(out_tbl)

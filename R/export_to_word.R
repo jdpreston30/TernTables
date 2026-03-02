@@ -16,6 +16,9 @@
 #'   rows that should visually appear as section headers but are not automatically detected as such.
 #' @param table_caption Optional character string to display as a caption above the table in the Word
 #'   document. Rendered as size 11 Arial bold italic, double-spaced. Default is \code{NULL} (no caption).
+#' @param table_footnote Optional character string to display as a footnote below the table in the Word
+#'   document. Rendered as size 6 Arial italic. A double-bar border is applied above and below the
+#'   footnote row. Default is \code{NULL} (no footnote).
 #' @return Invisibly returns the path to the written Word file.
 #' @examples
 #' \dontrun{
@@ -31,7 +34,7 @@
 #' )
 #' }
 #' @export
-word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, category_start = NULL, manual_italic_indent = NULL, manual_underline = NULL, table_caption = NULL) {
+word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, category_start = NULL, manual_italic_indent = NULL, manual_underline = NULL, table_caption = NULL, table_footnote = NULL) {
   # Keep the table as-is
   modified_tbl <- tbl
 
@@ -271,6 +274,20 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
     for (cat_row_idx in category_rows) {
       ft <- ft %>% height(i = cat_row_idx, height = font_size / 72 * 2.05, part = "body")
     }
+  }
+
+  # Add footer footnote
+  if (!is.null(table_footnote) && length(table_footnote) > 0 && any(nchar(trimws(table_footnote)) > 0)) {
+    dbl_border <- fp_border(color = "black", width = 0.5, style = "double")
+    footnote_text <- paste(table_footnote, collapse = "\n")
+    ft <- ft %>%
+      add_footer_lines(values = footnote_text) %>%
+      font(fontname = "Arial", part = "footer") %>%
+      fontsize(size = 6, part = "footer") %>%
+      italic(part = "footer") %>%
+      align(align = "left", part = "footer") %>%
+      hline_top(border = dbl_border, part = "footer") %>%
+      hline_bottom(border = dbl_border, part = "footer")
   }
 
   # Create Word document

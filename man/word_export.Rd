@@ -12,7 +12,8 @@ word_export(
   category_start = NULL,
   manual_italic_indent = NULL,
   manual_underline = NULL,
-  table_caption = NULL
+  table_caption = NULL,
+  table_footnote = NULL
 )
 }
 \arguments{
@@ -39,6 +40,10 @@ rows that should visually appear as section headers but are not automatically de
 
 \item{table_caption}{Optional character string to display as a caption above the table in the Word
 document. Rendered as size 11 Arial bold italic, double-spaced. Default is \code{NULL} (no caption).}
+
+\item{table_footnote}{Optional character string to display as a footnote below the table in the Word
+document. Rendered as size 6 Arial italic. A double-bar border is applied above and below the
+footnote row. Default is \code{NULL} (no footnote).}
 }
 \value{
 Invisibly returns the path to the written Word file.

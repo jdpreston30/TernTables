@@ -4,7 +4,13 @@
 \alias{ternB}
 \title{Combine multiple ternD/ternG tables into a single Word document}
 \usage{
-ternB(tables, output_docx, page_break = TRUE)
+ternB(
+  tables,
+  output_docx,
+  page_break = TRUE,
+  methods_doc = FALSE,
+  methods_filename = "TernTables_methods.docx"
+)
 }
 \arguments{
 \item{tables}{A \strong{list} of tibbles created by \code{ternD()} or \code{ternG()}.
@@ -17,6 +23,13 @@ tibble columns.}
 
 \item{page_break}{Logical; if \code{TRUE} (default), inserts a page break
 between each consecutive table.}
+
+\item{methods_doc}{Logical; if \code{TRUE}, writes a single methods section
+Word document that covers all tables in the list. Statistical test details
+are pooled across all tables. Default is \code{FALSE}.}
+
+\item{methods_filename}{Output file path for the methods document. Defaults
+to \code{"TernTables_methods.docx"} in the working directory.}
 }
 \value{
 Invisibly returns the path to the written Word file.
@@ -32,10 +45,10 @@ the exact formatting settings that were used when each table was built.
 attached as an attribute to each returned tibble -- but directing all output
 into a single combined document instead of separate files.
 
-Table captions (\code{table_caption}) specified in the original
+Table captions (\code{table_caption}) and footnotes (\code{table_footnote}) specified in the original
 \code{ternD()} / \code{ternG()} call are reproduced automatically.  You can
 override them by modifying the \code{"ternB_meta"} attribute before calling
-\code{ternB()}, though in practice it is easier to set captions when you
+\code{ternB()}, though in practice it is easier to set captions and footnotes when you
 first build each table.
 }
 \examples{

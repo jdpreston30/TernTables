@@ -191,6 +191,49 @@ Three-group comparison table exported to Word with category section headers:
 
 ---
 
+## Word Output Formatting
+
+Two optional parameters control text that appears outside the table body in the
+exported Word document.
+
+**`table_caption`** places a bold italic size-11 Arial caption above the table,
+double-spaced:
+
+```{r caption-example, eval = FALSE}
+tbl_descriptive <- ternD(
+  data          = tern_colon,
+  exclude_vars  = c("ID"),
+  output_docx   = file.path(out_dir, "Tern_descriptive.docx"),
+  table_caption = "Table 1. Baseline patient characteristics."
+)
+```
+
+**`table_footnote`** adds a merged footer row below the table in size-6 Arial
+italic, bordered above and below by a double rule. Pass a single string or a
+character vector for multiple lines (lines are joined with a line break inside
+the same cell — no extra row spacing):
+
+```{r footnote-example, eval = FALSE}
+tbl_2group <- ternG(
+  data           = tern_colon,
+  exclude_vars   = c("ID"),
+  group_var      = "Recurrence",
+  OR_col         = TRUE,
+  output_docx    = file.path(out_dir, "Tern_2_group.docx"),
+  table_caption  = "Table 2. Characteristics by recurrence status.",
+  table_footnote = c(
+    "Abbreviations: OR, odds ratio; CI, confidence interval.",
+    "\u2020 P values from chi-square or Wilcoxon rank-sum test.",
+    "\u2021 ORs from unadjusted logistic regression."
+  )
+)
+```
+
+Both parameters are also stored in the table's metadata and reproduced
+automatically when combining tables with `ternB()`.
+
+---
+
 ## Statistical Test Logic
 
 TernTables selects tests automatically based on variable type and normality:
