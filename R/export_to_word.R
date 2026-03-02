@@ -106,10 +106,22 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
   # Replace first column header with category hierarchy
   new_colnames[1] <- "Category\n   Variable"
   
-  # Add line breaks for sample sizes (no asterisks)
+  # Add line breaks for sample sizes and multi-word group names
   for (i in 2:length(new_colnames)) {
     if (!new_colnames[i] %in% c("P", "test", "OR", "OR_method") && !grepl("^Total", new_colnames[i])) {
-      new_colnames[i] <- gsub(" \\(n = ", "\n(n = ", new_colnames[i])
+      col <- new_colnames[i]
+      # Insert \n before the (n = ...) count suffix
+      col <- gsub(" \\(n = ", "\n(n = ", col)
+      # For multi-word group names, replace any remaining spaces in the label
+      # portion (before the count suffix) with \n so they wrap automatically
+      if (grepl("\n", col, fixed = TRUE)) {
+        parts <- strsplit(col, "\n", fixed = TRUE)[[1]]
+        parts[1] <- gsub(" ", "\n", parts[1])
+        col <- paste(parts, collapse = "\n")
+      } else {
+        col <- gsub(" ", "\n", col)
+      }
+      new_colnames[i] <- col
     } else if (new_colnames[i] == "P") {
       new_colnames[i] <- "P value"
     } else if (grepl("^Total", new_colnames[i])) {
