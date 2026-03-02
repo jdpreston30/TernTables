@@ -27,11 +27,14 @@ Numeric variables can be designated as ordinal via \code{force_ordinal}.
 \section{Statistical tests applied}{
 
 \describe{
-  \item{Continuous (2 groups)}{Welch's \emph{t}-test or Wilcoxon rank-sum, chosen by Shapiro-Wilk.}
-  \item{Continuous (3+ groups)}{Welch ANOVA or Kruskal-Wallis, chosen by Shapiro-Wilk per group.}
+  \item{Continuous (2 groups)}{Welch's \emph{t}-test or Wilcoxon rank-sum, routed by ROBUST logic.}
+  \item{Continuous (3+ groups)}{Welch ANOVA or Kruskal-Wallis, routed by ROBUST logic per group.}
   \item{Binary / Categorical}{Chi-squared or Fisher's exact, based on expected cell counts.}
   \item{Ordinal (forced)}{Wilcoxon rank-sum (2 groups) or Kruskal-Wallis (3+ groups).}
 }
+ROBUST routing uses three gates: (1) |skewness| > 2 in any group \eqn{\Rightarrow} non-parametric;
+(2) all groups n \eqn{\geq} 30 \eqn{\Rightarrow} parametric (CLT);
+(3) otherwise Shapiro-Wilk p > 0.05 in all groups \eqn{\Rightarrow} parametric.
 }
 
 \section{Getting started}{

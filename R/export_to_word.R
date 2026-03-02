@@ -117,10 +117,26 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
       # portion (before the count suffix) with \n so they wrap automatically
       if (grepl("\n", col, fixed = TRUE)) {
         parts <- strsplit(col, "\n", fixed = TRUE)[[1]]
-        parts[1] <- gsub(" ", "\n", parts[1])
+        # Keep "+ word" together: only break spaces in the portion before " + "
+        if (grepl(" \\+ ", parts[1])) {
+          plus_pos <- regexpr(" \\+ ", parts[1])
+          pre  <- substr(parts[1], 1, plus_pos - 1)
+          post <- paste0("+ ", substr(parts[1], plus_pos + 3, nchar(parts[1])))
+          parts[1] <- paste0(gsub(" ", "\n", pre), "\n", post)
+        } else {
+          parts[1] <- gsub(" ", "\n", parts[1])
+        }
         col <- paste(parts, collapse = "\n")
       } else {
-        col <- gsub(" ", "\n", col)
+        # Keep "+ word" together: only break spaces before " + "
+        if (grepl(" \\+ ", col)) {
+          plus_pos <- regexpr(" \\+ ", col)
+          pre  <- substr(col, 1, plus_pos - 1)
+          post <- paste0("+ ", substr(col, plus_pos + 3, nchar(col)))
+          col  <- paste0(gsub(" ", "\n", pre), "\n", post)
+        } else {
+          col <- gsub(" ", "\n", col)
+        }
       }
       new_colnames[i] <- col
     } else if (new_colnames[i] == "P") {
@@ -152,7 +168,9 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
     align(align = "left", j = 1, part = "header") %>%
     align(align = "center", j = 2:ncol(modified_tbl), part = "header") %>%
     border_remove() %>%
-    border(i = 1, border.bottom = fp_border(color = "black", width = 0.5), part = "header") %>%
+    border(border.left  = fp_border(color = "#cdcdcd", width = 0.75), part = "header") %>%
+    border(border.right = fp_border(color = "#cdcdcd", width = 0.75), part = "header") %>%
+    border(i = 1, border.bottom = fp_border(color = "black", width = 1.0), part = "header") %>%
     padding(padding.top = 0, padding.bottom = 1, part = "body") %>%
     padding(padding.left = 0, padding.right = 6, part = "body") %>%
     padding(padding.left = 3, padding.right = 6, part = "header")

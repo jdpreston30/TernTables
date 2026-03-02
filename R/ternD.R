@@ -1,21 +1,25 @@
 #' Generate descriptive summary table (optionally normality-aware)
 #'
 #' Creates a descriptive summary table with a single "Total" column format.
-#' By default (\code{consider_normality = TRUE}), continuous variables are shown
-#' as mean +/- SD or median [IQR] based on Shapiro-Wilk testing. This can be
-#' overridden via \code{consider_normality} and \code{force_ordinal}.
+#' By default (\code{consider_normality = "ROBUST"}), continuous variables are shown
+#' as mean +/- SD or median [IQR] based on a three-gate decision (skewness, CLT, and Shapiro-Wilk).
+#' This can be overridden via \code{consider_normality} and \code{force_ordinal}.
 #'
 #' @param data Tibble with variables.
 #' @param vars Character vector of variables to summarize. Defaults to all except \code{exclude_vars}.
 #' @param exclude_vars Character vector to exclude from the summary.
 #' @param force_ordinal Character vector of variables to treat as ordinal (i.e., use median [IQR]) 
 #'   regardless of the \code{consider_normality} setting. This parameter takes priority over 
-#'   normality testing when \code{consider_normality = TRUE}.
+#'   normality testing when \code{consider_normality = "ROBUST"} or \code{TRUE}.
 #' @param output_xlsx Optional Excel filename to export the table.
 #' @param output_docx Optional Word filename to export the table.
-#' @param consider_normality Logical; if \code{TRUE} (default), uses Shapiro-Wilk test to choose between
-#'   mean +/- SD (for normal data) vs median [IQR] (for non-normal data) for numeric variables.
-#'   If \code{FALSE}, defaults to mean +/- SD for all numeric variables unless specified in
+#' @param consider_normality Character or logical; controls routing of continuous variables to
+#'   mean \eqn{\pm} SD vs median [IQR].
+#'   \code{"ROBUST"} (default) applies a three-gate decision: (1) absolute skewness > 2 routes to
+#'   median [IQR] regardless of n; (2) n \eqn{\geq} 30 routes to mean \eqn{\pm} SD via the Central
+#'   Limit Theorem; (3) otherwise Shapiro-Wilk p > 0.05 routes to mean \eqn{\pm} SD.
+#'   If \code{TRUE}, uses Shapiro-Wilk alone (can be over-sensitive at large n).
+#'   If \code{FALSE}, defaults to mean \eqn{\pm} SD for all numeric variables unless specified in
 #'   \code{force_ordinal}.
 #' @param print_normality Logical; if \code{TRUE}, includes Shapiro-Wilk P values as an
 #'   additional column in the output. Default is \code{FALSE}.
@@ -69,6 +73,7 @@
 #' \code{consider_normality} setting. The behavior for numeric variables follows this priority:
 #' \enumerate{
 #'   \item Variables in \code{force_ordinal}: Always use median [IQR]
+#'   \item When \code{consider_normality = "ROBUST"}: Three-gate decision (skewness, CLT, Shapiro-Wilk)
 #'   \item When \code{consider_normality = TRUE}: Use Shapiro-Wilk test to choose format
 #'   \item When \code{consider_normality = FALSE}: Default to mean +/- SD
 #' }
@@ -115,7 +120,7 @@
 #' @export
 ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
                   output_xlsx = NULL, output_docx = NULL,
-                  consider_normality = TRUE, print_normality = FALSE,
+                  consider_normality = "ROBUST", print_normality = FALSE,
                   round_intg = FALSE, smart_rename = TRUE, insert_subheads = TRUE,
                   factor_order = "levels", methods_doc = TRUE,
                   methods_filename = "TernTables_methods.docx", category_start = NULL,
@@ -267,16 +272,47 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
 
     # ---------- NUMERIC ----------
     x <- suppressWarnings(as.numeric(v))
-    # Always run Shapiro-Wilk for informational reporting regardless of consider_normality
+    # Always run Shapiro-Wilk (used for print_normality column and TRUE/ROBUST Gate 4)
     sw <- shapiro_p(x)
-    norm_tested <<- norm_tested + 1
-    if (is.na(sw) || sw < 0.05) norm_failed <<- norm_failed + 1
 
     # Check if variable is forced to be ordinal
     if (!is.null(force_ordinal) && var %in% force_ordinal) {
       # Force ordinal: use median/IQR regardless of consider_normality setting
+      norm_tested <<- norm_tested + 1
+      norm_failed <<- norm_failed + 1
       summary_str <- fmt_median_iqr(x)
+    } else if (consider_normality == "ROBUST") {
+      # ROBUST: three-gate decision tree applied to full variable vector
+      calc_skewness <- function(x) {
+        x <- x[!is.na(x)]
+        n <- length(x)
+        if (n < 3) return(NA_real_)
+        m <- mean(x); s <- stats::sd(x)
+        if (s == 0) return(NA_real_)
+        (sum((x - m)^3) / n) / s^3
+      }
+      n_obs    <- sum(!is.na(x))
+      skewness <- calc_skewness(x)
+      norm_tested <<- norm_tested + 1
+      if (n_obs < 3 || (!is.na(skewness) && abs(skewness) > 2)) {
+        # Gate 1 / Gate 2: too small or extreme skewness — non-parametric
+        norm_failed <<- norm_failed + 1
+        summary_str <- fmt_median_iqr(x)
+      } else if (n_obs >= 30) {
+        # Gate 3: CLT — parametric
+        summary_str <- fmt_mean_sd(x)
+      } else {
+        # Gate 4: Shapiro-Wilk
+        if (!is.na(sw) && sw > 0.05) {
+          summary_str <- fmt_mean_sd(x)
+        } else {
+          norm_failed <<- norm_failed + 1
+          summary_str <- fmt_median_iqr(x)
+        }
+      }
     } else if (isTRUE(consider_normality)) {
+      norm_tested <<- norm_tested + 1
+      if (is.na(sw) || sw < 0.05) norm_failed <<- norm_failed + 1
       # choose mean +- SD if normal; else median [IQR]
       if (!is.na(sw) && sw > 0.05) {
         summary_str <- fmt_mean_sd(x)
@@ -284,6 +320,8 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
         summary_str <- fmt_median_iqr(x)
       }
     } else {
+      norm_tested <<- norm_tested + 1
+      if (is.na(sw) || sw < 0.05) norm_failed <<- norm_failed + 1
       # Default behavior when consider_normality = FALSE: use mean +/- SD
       summary_str <- fmt_mean_sd(x)
     }
@@ -306,7 +344,12 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
     norm_passed <- norm_tested - norm_failed
     passed_pct  <- round((norm_passed / norm_tested) * 100, 1)
     cli::cli_rule(left = "Normality Assessment (Shapiro-Wilk) \u2014 ternD")
-    if (isTRUE(consider_normality)) {
+    if (consider_normality == "ROBUST") {
+      cli::cli_alert_info("{norm_passed} of {norm_tested} continuous variable{?s} routed to parametric ({passed_pct}%)")
+      cli::cli_bullets(c(
+        ">" = "Routing: skewness>2 \u2192 median [IQR]; all-n\u226530 (CLT) \u2192 mean \u00b1 SD; else Shapiro-Wilk"
+      ))
+    } else if (isTRUE(consider_normality)) {
       cli::cli_alert_info("{norm_passed} of {norm_tested} continuous variable{?s} normally distributed ({passed_pct}%)")
       cli::cli_bullets(c(
         ">" = "Normally distributed \u2192 mean \u00b1 SD",

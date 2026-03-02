@@ -21,16 +21,18 @@
 #'   If \code{"dynamic"} (default), uses Fisher's exact method when any expected cell count is < 5
 #'   (Cochran criterion), otherwise uses the Wald method. If \code{"wald"}, forces the Wald method
 #'   regardless of expected cell counts.
-#' @param consider_normality Logical or character; controls how continuous variables are tested and displayed.
-#'   If \code{TRUE} (default), runs the Shapiro-Wilk test per group for each numeric variable; a variable is treated
-#'   as normally distributed only if all groups pass (p > 0.05). Normal variables use mean \eqn{\pm} SD
-#'   and Welch t-test (2 groups) or Welch ANOVA (3+ groups); non-normal variables use median [IQR] and Wilcoxon
-#'   rank-sum (2 groups) or Kruskal-Wallis (3+ groups). When Shapiro-Wilk cannot be computed (n < 3 in
-#'   any group), that variable is treated as non-normal (conservative fail-safe).
-#'   If \code{FALSE}, all numeric variables are treated as normally distributed (mean \eqn{\pm} SD,
-#'   parametric tests) regardless of distribution, unless listed in \code{force_ordinal}.
-#'   If \code{"FORCE"}, all numeric variables are treated as non-normal (median [IQR], nonparametric tests)
-#'   regardless of Shapiro-Wilk results.
+#' @param consider_normality Character or logical; controls how continuous variables are routed to
+#'   parametric vs. non-parametric tests.
+#'   \code{"ROBUST"} (default) applies a three-gate decision consistent with standard biostatistical
+#'   practice: (1) any group n < 3 is a conservative fail-safe to non-parametric; (2) absolute skewness
+#'   > 2 in any group routes to non-parametric regardless of sample size (catches LOS, counts, etc.);
+#'   (3) all groups n \eqn{\geq} 30 routes to parametric via the Central Limit Theorem; (4) otherwise
+#'   Shapiro-Wilk p > 0.05 in all groups routes to parametric. Normal variables use mean \eqn{\pm} SD
+#'   and Welch t-test (2 groups) or Welch ANOVA (3+ groups); non-normal variables use median [IQR] and
+#'   Wilcoxon rank-sum (2 groups) or Kruskal-Wallis (3+ groups).
+#'   If \code{TRUE}, uses Shapiro-Wilk alone (p > 0.05 in all groups = normal). Conservative at large n.
+#'   If \code{FALSE}, all numeric variables are treated as normally distributed regardless of distribution.
+#'   If \code{"FORCE"}, all numeric variables are treated as non-normal (median [IQR], nonparametric tests).
 #' @param print_normality Logical; if \code{TRUE}, includes Shapiro-Wilk P values in the output. Default is \code{FALSE}.
 #' @param show_test Logical; if \code{TRUE}, includes the statistical test name as a column in the output. Default is \code{FALSE}.
 #' @param p_digits Integer; number of decimal places for P values (default 3).
@@ -116,7 +118,7 @@ ternG <- function(data,
                   output_docx = NULL,
                   OR_col = FALSE,
                   OR_method = "dynamic",
-                  consider_normality = TRUE,
+                  consider_normality = "ROBUST",
                   print_normality = FALSE,
                   show_test = FALSE,
                   p_digits = 3,
@@ -460,8 +462,51 @@ ternG <- function(data,
       
       # Force all to be treated as ordinal regardless of normality
       is_normal <- FALSE
+    } else if (consider_normality == "ROBUST") {
+      # ROBUST: three-gate decision tree
+      #   Gate 1 (fail-safe): any group n < 3 → non-parametric (handled above)
+      #   Gate 2: |skewness| > 2 in any group → non-parametric
+      #   Gate 3: all groups n >= 30 → CLT → parametric
+      #   Gate 4: small-sample fallback → Shapiro-Wilk
+      calc_skewness <- function(x) {
+        x <- x[!is.na(x)]
+        n <- length(x)
+        if (n < 3) return(NA_real_)
+        m <- mean(x)
+        s <- stats::sd(x)
+        if (s == 0) return(NA_real_)
+        (sum((x - m)^3) / n) / s^3
+      }
+      group_vals <- lapply(group_levels, function(g_lvl) {
+        g %>% filter(.data[[group_var]] == g_lvl) %>% pull(.data[[var]])
+      })
+      group_ns       <- sapply(group_vals, function(v) sum(!is.na(v)))
+      group_skewness <- sapply(group_vals, calc_skewness)
+
+      numeric_vars_tested <<- numeric_vars_tested + 1
+
+      if (any(abs(group_skewness) > 2, na.rm = TRUE)) {
+        # Gate 2: extreme skewness — non-parametric regardless of n
+        is_normal <- FALSE
+        numeric_vars_failed <<- numeric_vars_failed + 1
+      } else if (all(group_ns >= 30)) {
+        # Gate 3: CLT applies — parametric
+        is_normal <- TRUE
+      } else {
+        # Gate 4: at least one small group — use Shapiro-Wilk
+        sw_p_all <- tryCatch({
+          out <- lapply(seq_along(group_levels), function(i) {
+            x <- group_vals[[i]]
+            pval <- if (length(x) >= 3 && length(x) <= 5000) stats::shapiro.test(x)$p.value else NA_real_
+            setNames(pval, paste0("SW_p_", group_levels[i]))
+          })
+          do.call(c, out)
+        }, error = function(e) rep(NA_real_, n_levels))
+        is_normal <- all(!is.na(sw_p_all) & sw_p_all > 0.05)
+        if (!is_normal) numeric_vars_failed <<- numeric_vars_failed + 1
+      }
     } else if (isTRUE(consider_normality)) {
-      # Test normality and track results
+      # TRUE: Shapiro-Wilk only (conservative at large n)
       sw_p_all <- tryCatch({
         out <- lapply(group_levels, function(g_lvl) {
           x <- g %>% filter(.data[[group_var]] == g_lvl) %>% pull(.data[[var]])
@@ -471,8 +516,7 @@ ternG <- function(data,
         do.call(c, out)
       }, error = function(e) rep(NA, n_levels))
       is_normal <- all(!is.na(sw_p_all) & sw_p_all > 0.05)
-      
-      # Track normality results for reporting
+
       numeric_vars_tested <<- numeric_vars_tested + 1
       if (!is_normal) {
         numeric_vars_failed <<- numeric_vars_failed + 1
@@ -622,6 +666,13 @@ ternG <- function(data,
     if (consider_normality == "FORCE") {
       cli::cli_alert_info("{numeric_vars_passed} of {numeric_vars_tested} continuous variable{?s} normally distributed ({passed_pct}%)")
       cli::cli_alert_warning("consider_normality = 'FORCE': all continuous variables \u2192 median [IQR], tested with {nonparam_test}")
+    } else if (consider_normality == "ROBUST") {
+      cli::cli_alert_info("{numeric_vars_passed} of {numeric_vars_tested} continuous variable{?s} routed to parametric ({passed_pct}%)")
+      cli::cli_bullets(c(
+        ">" = "Routing: skewness>2 \u2192 non-param; all-n\u226530 \u2192 CLT parametric; else Shapiro-Wilk",
+        ">" = "Parametric   \u2192 mean \u00b1 SD, tested with {param_test}",
+        ">" = "Non-parametric \u2192 median [IQR], tested with {nonparam_test}"
+      ))
     } else if (isTRUE(consider_normality)) {
       cli::cli_alert_info("{numeric_vars_passed} of {numeric_vars_tested} continuous variable{?s} normally distributed ({passed_pct}%)")
       cli::cli_bullets(c(

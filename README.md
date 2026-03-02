@@ -112,10 +112,13 @@ Statistical tests applied automatically:
 | Ordinal (`force_ordinal`) | Wilcoxon rank-sum | Kruskal-Wallis |
 
 Fisher's exact is used when any expected cell count is < 5 (Cochran criterion).
-Normality is assessed with the Shapiro-Wilk test per group; a variable is treated
-as normally distributed only if all groups pass (p > 0.05). If any group has fewer
-than 3 observations, normality cannot be evaluated and the nonparametric test is
-used (conservative fail-safe).
+
+Normality routing uses `consider_normality = "ROBUST"` (default) — a three-gate
+decision: (1) absolute skewness > 2 in any group → non-parametric; (2) all
+groups n ≥ 30 → parametric via the Central Limit Theorem; (3) otherwise
+Shapiro-Wilk p > 0.05 in all groups → parametric. If any group has fewer than
+3 observations, the nonparametric test is used (conservative fail-safe).
+Set `consider_normality = TRUE` to use Shapiro-Wilk alone (original behaviour).
 
 ### `word_export()` — Format and export to Word
 

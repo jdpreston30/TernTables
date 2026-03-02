@@ -19,3 +19,6 @@
 ^development$
 ^test\.csv$
 ^.*\.csv$
+^statistical-review-request\.Rmd$
+^statistical-review-request\.html$
+^statistical-review-request\.md$

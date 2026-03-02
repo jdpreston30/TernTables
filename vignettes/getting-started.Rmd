@@ -162,9 +162,9 @@ Two-group comparison table exported to Word, with odds ratios and category secti
 The same `ternG()` function handles three or more groups automatically,
 switching from t-test/Wilcoxon to Welch ANOVA/Kruskal-Wallis as appropriate.
 Odds ratios are not available for 3+ group comparisons. `consider_normality`
-controls whether Shapiro-Wilk is used to choose between parametric and
-nonparametric tests; the default (`TRUE`) enables this, `FALSE` forces
-parametric tests throughout, and `"FORCE"` forces nonparametric throughout.
+controls normality routing; the default (`"ROBUST"`) applies the four-gate
+algorithm (skewness → CLT → Shapiro-Wilk). `FALSE` forces parametric tests
+throughout; `"FORCE"` forces nonparametric throughout.
 
 ```{r ternG-3group, results = "hide"}
 tbl_3group <- ternG(
@@ -174,7 +174,7 @@ tbl_3group <- ternG(
   group_order        = c("Observation", "Levamisole", "Levamisole + 5FU"),
   output_docx        = file.path(out_dir, "Tern_3_group.docx"),
   methods_filename   = file.path(out_dir, "TernTables_methods.docx"),
-  consider_normality = TRUE,
+  consider_normality = "ROBUST",
   category_start     = c(
     "Patient Demographics"  = "Age (yr)",
     "Surgical Findings"     = "Colonic Obstruction",
@@ -247,12 +247,14 @@ TernTables selects tests automatically based on variable type and normality:
 
 \*Fisher's exact is used when any expected cell count is < 5 (Cochran criterion).
 
-Normality is assessed with the Shapiro-Wilk test (p > 0.05 = normal) applied
-per group; a variable is treated as normally distributed only if all groups
-pass. If any group fails — or if a group has fewer than 3 observations and
-normality cannot be evaluated — the nonparametric test is used (conservative
-fail-safe). For 3+ group comparisons, omnibus *P* values are reported; pairwise
-post-hoc comparisons are not performed.
+Normality routing uses `consider_normality = "ROBUST"` (the default) — a
+three-gate decision applied per group: (1) absolute skewness > 2 in any group
+→ non-parametric regardless of sample size; (2) all groups n ≥ 30 → parametric
+via the Central Limit Theorem; (3) otherwise Shapiro-Wilk p > 0.05 in all
+groups → parametric. If any group has fewer than 3 observations the
+nonparametric test is used (conservative fail-safe). For 3+ group comparisons,
+omnibus *P* values are reported; pairwise post-hoc comparisons are not performed.
+Set `consider_normality = TRUE` to use Shapiro-Wilk alone (original behaviour).
 
 ---
 

@@ -11,7 +11,7 @@ ternD(
   force_ordinal = NULL,
   output_xlsx = NULL,
   output_docx = NULL,
-  consider_normality = TRUE,
+  consider_normality = "ROBUST",
   print_normality = FALSE,
   round_intg = FALSE,
   smart_rename = TRUE,
@@ -36,15 +36,19 @@ ternD(
 
 \item{force_ordinal}{Character vector of variables to treat as ordinal (i.e., use median [IQR]) 
 regardless of the \code{consider_normality} setting. This parameter takes priority over 
-normality testing when \code{consider_normality = TRUE}.}
+normality testing when \code{consider_normality = "ROBUST"} or \code{TRUE}.}
 
 \item{output_xlsx}{Optional Excel filename to export the table.}
 
 \item{output_docx}{Optional Word filename to export the table.}
 
-\item{consider_normality}{Logical; if \code{TRUE} (default), uses Shapiro-Wilk test to choose between
-mean +/- SD (for normal data) vs median [IQR] (for non-normal data) for numeric variables.
-If \code{FALSE}, defaults to mean +/- SD for all numeric variables unless specified in
+\item{consider_normality}{Character or logical; controls routing of continuous variables to
+mean \eqn{\pm} SD vs median [IQR].
+\code{"ROBUST"} (default) applies a three-gate decision: (1) absolute skewness > 2 routes to
+median [IQR] regardless of n; (2) n \eqn{\geq} 30 routes to mean \eqn{\pm} SD via the Central
+Limit Theorem; (3) otherwise Shapiro-Wilk p > 0.05 routes to mean \eqn{\pm} SD.
+If \code{TRUE}, uses Shapiro-Wilk alone (can be over-sensitive at large n).
+If \code{FALSE}, defaults to mean \eqn{\pm} SD for all numeric variables unless specified in
 \code{force_ordinal}.}
 
 \item{print_normality}{Logical; if \code{TRUE}, includes Shapiro-Wilk P values as an
@@ -116,15 +120,16 @@ A tibble with one row per variable (multi-row for factors), containing:
 }
 \description{
 Creates a descriptive summary table with a single "Total" column format.
-By default (\code{consider_normality = TRUE}), continuous variables are shown
-as mean +/- SD or median [IQR] based on Shapiro-Wilk testing. This can be
-overridden via \code{consider_normality} and \code{force_ordinal}.
+By default (\code{consider_normality = "ROBUST"}), continuous variables are shown
+as mean +/- SD or median [IQR] based on a three-gate decision (skewness, CLT, and Shapiro-Wilk).
+This can be overridden via \code{consider_normality} and \code{force_ordinal}.
 }
 \details{
 The function always returns a tibble with a single \code{Total (N = n)} column format, regardless of the
 \code{consider_normality} setting. The behavior for numeric variables follows this priority:
 \enumerate{
   \item Variables in \code{force_ordinal}: Always use median [IQR]
+  \item When \code{consider_normality = "ROBUST"}: Three-gate decision (skewness, CLT, Shapiro-Wilk)
   \item When \code{consider_normality = TRUE}: Use Shapiro-Wilk test to choose format
   \item When \code{consider_normality = FALSE}: Default to mean +/- SD
 }

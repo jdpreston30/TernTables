@@ -15,7 +15,7 @@ ternG(
   output_docx = NULL,
   OR_col = FALSE,
   OR_method = "dynamic",
-  consider_normality = TRUE,
+  consider_normality = "ROBUST",
   print_normality = FALSE,
   show_test = FALSE,
   p_digits = 3,
@@ -61,16 +61,18 @@ If \code{"dynamic"} (default), uses Fisher's exact method when any expected cell
 (Cochran criterion), otherwise uses the Wald method. If \code{"wald"}, forces the Wald method
 regardless of expected cell counts.}
 
-\item{consider_normality}{Logical or character; controls how continuous variables are tested and displayed.
-If \code{TRUE} (default), runs the Shapiro-Wilk test per group for each numeric variable; a variable is treated
-as normally distributed only if all groups pass (p > 0.05). Normal variables use mean \eqn{\pm} SD
-and Welch t-test (2 groups) or Welch ANOVA (3+ groups); non-normal variables use median [IQR] and Wilcoxon
-rank-sum (2 groups) or Kruskal-Wallis (3+ groups). When Shapiro-Wilk cannot be computed (n < 3 in
-any group), that variable is treated as non-normal (conservative fail-safe).
-If \code{FALSE}, all numeric variables are treated as normally distributed (mean \eqn{\pm} SD,
-parametric tests) regardless of distribution, unless listed in \code{force_ordinal}.
-If \code{"FORCE"}, all numeric variables are treated as non-normal (median [IQR], nonparametric tests)
-regardless of Shapiro-Wilk results.}
+\item{consider_normality}{Character or logical; controls how continuous variables are routed to
+parametric vs. non-parametric tests.
+\code{"ROBUST"} (default) applies a three-gate decision consistent with standard biostatistical
+practice: (1) any group n < 3 is a conservative fail-safe to non-parametric; (2) absolute skewness
+> 2 in any group routes to non-parametric regardless of sample size (catches LOS, counts, etc.);
+(3) all groups n \eqn{\geq} 30 routes to parametric via the Central Limit Theorem; (4) otherwise
+Shapiro-Wilk p > 0.05 in all groups routes to parametric. Normal variables use mean \eqn{\pm} SD
+and Welch t-test (2 groups) or Welch ANOVA (3+ groups); non-normal variables use median [IQR] and
+Wilcoxon rank-sum (2 groups) or Kruskal-Wallis (3+ groups).
+If \code{TRUE}, uses Shapiro-Wilk alone (p > 0.05 in all groups = normal). Conservative at large n.
+If \code{FALSE}, all numeric variables are treated as normally distributed regardless of distribution.
+If \code{"FORCE"}, all numeric variables are treated as non-normal (median [IQR], nonparametric tests).}
 
 \item{print_normality}{Logical; if \code{TRUE}, includes Shapiro-Wilk P values in the output. Default is \code{FALSE}.}
 
