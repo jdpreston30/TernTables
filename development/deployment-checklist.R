@@ -9,3 +9,12 @@ devtools::check()
 #!!! update cran-comments.md
 devtools::check_win_devel()
 devtools::submit_cran()
+
+
+{
+rmarkdown::render("statistical-review-request.Rmd")
+browseURL("statistical-review-request.html")
+}
+
+
+- welch's. or should we instead be testing equal variance and routing accordingly
