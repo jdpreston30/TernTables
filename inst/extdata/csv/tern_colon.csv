@@ -1,0 +1,930 @@
+ID,Recurrence,Treatment_Arm,Age_Years,Sex,Colonic_Obstruction,Bowel_Perforation,Positive_Lymph_Nodes_n,Over_4_Positive_Nodes,Tumor_Adherence,Tumor_Differentiation,Extent_of_Local_Spread
+1,Recurrence,Levamisole + 5FU,43,Male,N,N,5,Y,N,Moderate,Serosa
+2,No Recurrence,Levamisole + 5FU,63,Male,N,N,1,N,N,Moderate,Serosa
+3,Recurrence,Observation,71,Female,N,N,7,Y,Y,Moderate,Muscle
+4,Recurrence,Levamisole + 5FU,66,Female,Y,N,6,Y,N,Moderate,Serosa
+5,Recurrence,Observation,69,Male,N,N,22,Y,N,Moderate,Serosa
+6,Recurrence,Levamisole + 5FU,57,Female,N,N,9,Y,N,Moderate,Serosa
+7,Recurrence,Levamisole,77,Male,N,N,5,Y,N,Moderate,Serosa
+8,No Recurrence,Observation,54,Male,N,N,1,N,N,Moderate,Serosa
+9,No Recurrence,Levamisole,46,Male,N,N,2,N,Y,Moderate,Serosa
+10,No Recurrence,Levamisole + 5FU,68,Female,N,N,1,N,N,Moderate,Serosa
+11,No Recurrence,Levamisole,47,Female,N,N,1,N,Y,Moderate,Serosa
+12,No Recurrence,Levamisole + 5FU,52,Male,N,N,2,N,N,Poor,Serosa
+13,Recurrence,Observation,64,Male,N,N,1,N,N,Moderate,Serosa
+14,Recurrence,Levamisole,68,Male,Y,N,3,N,N,Moderate,Serosa
+15,No Recurrence,Observation,46,Male,Y,N,4,N,N,Moderate,Serosa
+16,Recurrence,Observation,68,Male,N,N,1,N,N,Moderate,Serosa
+17,Recurrence,Levamisole,62,Male,Y,N,6,Y,Y,Moderate,Serosa
+18,Recurrence,Levamisole,79,Male,Y,N,1,N,N,Moderate,Serosa
+19,Recurrence,Levamisole + 5FU,34,Female,Y,N,1,N,N,Moderate,Muscle
+20,No Recurrence,Levamisole,50,Female,N,N,1,N,Y,Moderate,Serosa
+21,No Recurrence,Observation,64,Male,Y,N,1,N,N,Moderate,Serosa
+22,Recurrence,Levamisole,56,Male,Y,N,4,N,N,Moderate,Serosa
+23,Recurrence,Levamisole,61,Female,N,N,4,N,N,Moderate,Serosa
+24,No Recurrence,Levamisole + 5FU,50,Female,N,N,1,N,N,Moderate,Muscle
+25,No Recurrence,Levamisole + 5FU,70,Female,N,N,4,N,N,Moderate,Serosa
+26,Recurrence,Observation,73,Male,N,N,1,N,N,Moderate,Serosa
+27,Recurrence,Observation,70,Female,N,N,13,Y,Y,Moderate,Serosa
+28,Recurrence,Levamisole,68,Female,N,N,1,N,N,Moderate,Serosa
+29,Recurrence,Observation,56,Female,Y,N,6,Y,N,Poor,Serosa
+30,Recurrence,Levamisole,80,Male,N,N,1,N,N,Poor,Serosa
+31,No Recurrence,Levamisole + 5FU,64,Female,N,N,1,N,N,Moderate,Submucosa
+32,No Recurrence,Levamisole + 5FU,33,Female,Y,N,3,N,N,Moderate,Serosa
+33,Recurrence,Observation,49,Female,N,N,2,N,N,Moderate,Serosa
+34,Recurrence,Observation,47,Male,N,N,3,N,N,Moderate,Serosa
+35,Recurrence,Levamisole + 5FU,56,Female,N,N,1,N,N,Moderate,Serosa
+36,No Recurrence,Levamisole + 5FU,72,Female,N,N,1,N,Y,Poor,Serosa
+37,Recurrence,Observation,79,Male,N,N,19,Y,N,Moderate,Serosa
+38,No Recurrence,Observation,64,Female,N,N,1,N,N,Poor,Serosa
+39,No Recurrence,Levamisole,61,Male,N,N,2,N,N,Poor,Serosa
+40,Recurrence,Levamisole,58,Male,N,N,7,Y,N,Moderate,Serosa
+41,Recurrence,Levamisole + 5FU,75,Male,N,N,2,N,N,Moderate,Serosa
+42,No Recurrence,Observation,39,Female,Y,N,1,N,N,Well,Serosa
+43,Recurrence,Observation,71,Male,Y,N,3,N,N,Moderate,Muscle
+44,No Recurrence,Levamisole,58,Female,Y,N,2,N,N,Moderate,Serosa
+45,No Recurrence,Levamisole + 5FU,40,Male,N,N,1,N,N,Well,Serosa
+46,No Recurrence,Observation,63,Female,N,Y,2,N,N,Moderate,Serosa
+47,No Recurrence,Levamisole + 5FU,59,Female,N,N,1,N,N,Poor,Submucosa
+48,No Recurrence,Levamisole,59,Female,Y,N,2,N,N,Well,Serosa
+49,No Recurrence,Levamisole + 5FU,59,Male,N,N,6,Y,N,Moderate,Serosa
+50,Recurrence,Levamisole,60,Male,N,N,5,Y,N,Poor,Serosa
+51,Recurrence,Observation,68,Female,N,N,2,N,N,Moderate,Serosa
+52,Recurrence,Levamisole + 5FU,70,Female,N,N,3,N,N,Moderate,Serosa
+53,No Recurrence,Observation,76,Male,N,N,2,N,N,Moderate,Serosa
+54,No Recurrence,Levamisole,45,Female,N,N,3,N,N,Moderate,Serosa
+55,No Recurrence,Levamisole + 5FU,61,Male,N,N,2,N,N,Moderate,Muscle
+56,Recurrence,Observation,76,Male,N,N,3,N,N,Well,Serosa
+57,Recurrence,Levamisole,53,Male,N,N,2,N,N,Moderate,Serosa
+58,No Recurrence,Levamisole + 5FU,63,Female,N,N,5,Y,N,Moderate,Serosa
+59,No Recurrence,Observation,65,Female,N,N,6,Y,N,Poor,Serosa
+60,No Recurrence,Observation,57,Female,Y,N,4,N,N,Poor,Serosa
+61,Recurrence,Levamisole,80,Male,N,Y,4,N,N,Moderate,Serosa
+62,No Recurrence,Levamisole,58,Male,N,N,1,N,N,Well,Muscle
+63,Recurrence,Observation,53,Female,N,N,15,Y,N,Poor,Serosa
+64,No Recurrence,Levamisole,53,Female,Y,N,1,N,N,,Serosa
+65,Recurrence,Observation,71,Female,N,N,1,N,N,Well,Serosa
+66,No Recurrence,Levamisole + 5FU,66,Female,N,N,2,N,N,Moderate,Serosa
+67,No Recurrence,Levamisole + 5FU,49,Male,N,N,6,Y,N,Poor,Serosa
+68,Recurrence,Observation,60,Male,N,N,10,Y,N,Moderate,Serosa
+69,No Recurrence,Observation,70,Female,N,N,3,N,N,Moderate,Submucosa
+70,Recurrence,Observation,40,Female,N,N,2,N,N,Moderate,Serosa
+71,Recurrence,Levamisole + 5FU,55,Female,N,N,1,N,N,Moderate,Serosa
+72,Recurrence,Levamisole + 5FU,56,Female,N,N,15,Y,N,Moderate,Serosa
+73,No Recurrence,Levamisole + 5FU,54,Male,N,N,9,Y,N,Moderate,Serosa
+74,Recurrence,Observation,49,Female,Y,N,5,Y,N,Poor,Serosa
+75,Recurrence,Levamisole,71,Female,N,N,7,Y,N,Moderate,Serosa
+76,No Recurrence,Observation,67,Female,N,N,4,N,N,Moderate,Serosa
+77,Recurrence,Levamisole,68,Female,N,N,5,Y,N,Moderate,Serosa
+78,No Recurrence,Levamisole + 5FU,63,Male,N,N,2,N,N,Moderate,Serosa
+79,Recurrence,Levamisole,50,Male,Y,N,1,N,Y,Moderate,Serosa
+80,Recurrence,Levamisole + 5FU,45,Female,N,N,7,Y,N,Moderate,Muscle
+81,No Recurrence,Levamisole,66,Male,N,N,1,N,N,Moderate,Muscle
+82,Recurrence,Observation,46,Female,N,N,1,N,N,Poor,Serosa
+83,No Recurrence,Levamisole,70,Male,N,N,3,N,N,,Muscle
+84,No Recurrence,Levamisole,63,Male,Y,N,2,N,N,Moderate,Muscle
+85,Recurrence,Levamisole + 5FU,45,Male,N,N,8,Y,N,Poor,Serosa
+86,No Recurrence,Levamisole,49,Female,N,N,1,N,N,Moderate,Serosa
+87,No Recurrence,Levamisole,62,Female,N,N,2,N,N,Moderate,Muscle
+88,Recurrence,Observation,59,Male,N,N,4,N,N,Moderate,Serosa
+89,No Recurrence,Levamisole + 5FU,80,Female,N,N,4,N,N,Well,Serosa
+90,Recurrence,Levamisole,73,Male,Y,N,4,N,N,,Serosa
+91,Recurrence,Observation,46,Male,N,N,11,Y,N,Moderate,Serosa
+92,Recurrence,Levamisole,64,Male,N,N,4,N,N,Moderate,Serosa
+93,No Recurrence,Levamisole,45,Male,N,N,9,Y,N,Moderate,Serosa
+94,No Recurrence,Levamisole + 5FU,26,Female,N,N,,Y,Y,Moderate,Contiguous Structures
+95,No Recurrence,Levamisole + 5FU,66,Male,N,N,1,N,N,Moderate,Serosa
+96,No Recurrence,Levamisole,67,Male,N,N,2,N,Y,Moderate,Contiguous Structures
+97,Recurrence,Observation,65,Female,N,N,20,Y,N,Moderate,Contiguous Structures
+98,No Recurrence,Levamisole + 5FU,74,Male,N,N,1,N,Y,Moderate,Serosa
+99,Recurrence,Levamisole,71,Male,N,N,,Y,Y,Moderate,Contiguous Structures
+100,Recurrence,Observation,58,Female,N,N,8,Y,Y,Moderate,Muscle
+101,Recurrence,Observation,59,Male,N,N,6,Y,N,Moderate,Serosa
+102,Recurrence,Levamisole,61,Male,N,N,5,Y,N,Poor,Serosa
+103,Recurrence,Levamisole + 5FU,49,Male,N,N,2,N,N,Moderate,Serosa
+104,Recurrence,Levamisole + 5FU,50,Female,N,N,6,Y,N,Moderate,Serosa
+105,Recurrence,Observation,75,Female,N,N,1,N,N,Moderate,Serosa
+106,Recurrence,Observation,68,Male,N,N,3,N,N,Poor,Serosa
+107,Recurrence,Levamisole,60,Female,N,N,10,Y,Y,Moderate,Serosa
+108,Recurrence,Levamisole + 5FU,65,Female,N,N,2,N,Y,Moderate,Serosa
+109,No Recurrence,Levamisole,74,Female,N,N,5,Y,N,Moderate,Serosa
+110,No Recurrence,Levamisole + 5FU,52,Female,N,N,3,N,N,Poor,Serosa
+111,No Recurrence,Levamisole + 5FU,64,Male,N,N,6,Y,Y,Moderate,Serosa
+112,Recurrence,Levamisole,47,Male,N,N,1,N,Y,Moderate,Serosa
+113,No Recurrence,Observation,45,Female,N,N,1,N,N,Moderate,Submucosa
+114,Recurrence,Observation,61,Male,Y,N,5,Y,Y,Poor,Serosa
+115,Recurrence,Levamisole,53,Male,N,N,2,N,N,Poor,Serosa
+116,Recurrence,Observation,60,Male,Y,N,5,Y,N,Moderate,Serosa
+117,No Recurrence,Levamisole + 5FU,60,Female,N,N,1,N,N,Moderate,Serosa
+118,No Recurrence,Levamisole,51,Female,N,N,5,Y,N,Moderate,Serosa
+119,No Recurrence,Levamisole + 5FU,60,Female,N,N,1,N,Y,Moderate,Serosa
+120,Recurrence,Observation,64,Female,N,N,1,N,N,Moderate,Serosa
+121,No Recurrence,Levamisole + 5FU,52,Female,N,N,1,N,N,Moderate,Serosa
+122,Recurrence,Levamisole,65,Female,N,N,2,N,N,Poor,Serosa
+123,No Recurrence,Levamisole + 5FU,70,Female,N,N,1,N,N,Moderate,Serosa
+124,No Recurrence,Observation,55,Male,N,N,2,N,N,Moderate,Serosa
+125,Recurrence,Levamisole + 5FU,71,Male,N,N,5,Y,N,Poor,Serosa
+126,No Recurrence,Observation,30,Male,N,N,1,N,N,Moderate,Muscle
+127,Recurrence,Observation,40,Female,N,N,3,N,N,Moderate,Serosa
+128,Recurrence,Observation,31,Male,Y,N,11,Y,N,Poor,Serosa
+129,Recurrence,Observation,53,Male,N,N,1,N,N,Moderate,Muscle
+130,Recurrence,Observation,67,Male,N,N,1,N,N,Moderate,Serosa
+131,Recurrence,Levamisole + 5FU,58,Female,N,N,1,N,N,Moderate,Serosa
+132,No Recurrence,Levamisole + 5FU,79,Female,Y,N,2,N,N,Poor,Serosa
+133,No Recurrence,Levamisole,55,Female,N,N,1,N,N,Poor,Muscle
+134,Recurrence,Observation,63,Female,N,N,2,N,Y,Moderate,Serosa
+135,No Recurrence,Levamisole + 5FU,55,Male,Y,N,2,N,N,Moderate,Serosa
+136,Recurrence,Levamisole,42,Male,Y,N,5,Y,N,Moderate,Serosa
+137,No Recurrence,Observation,56,Male,N,N,1,N,N,Moderate,Serosa
+138,Recurrence,Levamisole,64,Female,N,N,8,Y,N,Moderate,Serosa
+139,Recurrence,Levamisole,55,Male,Y,N,2,N,N,Moderate,Serosa
+140,Recurrence,Observation,25,Female,Y,N,7,Y,N,Moderate,Serosa
+141,No Recurrence,Levamisole + 5FU,59,Male,N,N,1,N,N,Moderate,Serosa
+142,Recurrence,Levamisole,28,Male,N,N,9,Y,N,Poor,Serosa
+143,No Recurrence,Levamisole + 5FU,49,Female,N,N,,N,N,Well,Serosa
+144,No Recurrence,Observation,52,Female,N,N,1,N,N,Moderate,Submucosa
+145,Recurrence,Observation,64,Female,N,N,5,Y,N,Poor,Serosa
+146,No Recurrence,Observation,33,Female,Y,N,1,N,Y,Well,Serosa
+147,Recurrence,Observation,76,Male,N,N,1,N,N,Moderate,Serosa
+148,Recurrence,Levamisole,38,Male,N,N,2,N,N,Well,Serosa
+149,Recurrence,Levamisole,53,Female,Y,Y,1,N,N,Moderate,Serosa
+150,No Recurrence,Observation,72,Female,Y,N,2,N,N,Moderate,Serosa
+151,No Recurrence,Levamisole,46,Male,N,N,1,N,N,Moderate,Serosa
+152,Recurrence,Levamisole + 5FU,69,Female,N,N,13,Y,N,Moderate,Serosa
+153,Recurrence,Observation,43,Male,Y,N,0,N,N,Poor,Serosa
+154,Recurrence,Levamisole + 5FU,72,Male,Y,N,2,N,Y,Moderate,Serosa
+155,No Recurrence,Levamisole + 5FU,73,Male,Y,N,2,N,N,Moderate,Serosa
+156,No Recurrence,Observation,68,Male,N,N,3,N,N,Moderate,Serosa
+157,Recurrence,Observation,52,Female,N,Y,6,Y,N,Well,Serosa
+158,Recurrence,Levamisole,73,Female,Y,N,2,N,N,Moderate,Serosa
+159,No Recurrence,Levamisole + 5FU,66,Male,Y,N,1,N,N,Moderate,Serosa
+160,No Recurrence,Observation,75,Female,N,N,2,N,N,Poor,Serosa
+161,Recurrence,Levamisole,43,Male,Y,N,6,Y,N,,Serosa
+162,Recurrence,Levamisole + 5FU,57,Female,N,N,1,N,N,Moderate,Serosa
+163,No Recurrence,Observation,74,Male,Y,N,6,Y,N,Moderate,Serosa
+164,No Recurrence,Levamisole,67,Female,N,N,1,N,N,Moderate,Serosa
+165,Recurrence,Levamisole + 5FU,66,Female,N,N,2,N,Y,Moderate,Serosa
+166,No Recurrence,Observation,57,Male,Y,N,3,N,N,Moderate,Serosa
+167,Recurrence,Levamisole + 5FU,81,Female,N,N,3,N,N,Moderate,Serosa
+168,Recurrence,Observation,50,Male,N,N,4,N,N,Poor,Serosa
+169,No Recurrence,Levamisole,62,Male,Y,Y,2,N,N,Moderate,Serosa
+170,No Recurrence,Levamisole + 5FU,48,Female,N,N,4,N,N,Well,Serosa
+171,No Recurrence,Levamisole + 5FU,45,Male,N,N,2,N,N,Moderate,Muscle
+172,Recurrence,Levamisole,46,Male,N,N,2,N,Y,Moderate,Serosa
+173,No Recurrence,Levamisole + 5FU,72,Female,N,N,2,N,N,Moderate,Serosa
+174,Recurrence,Observation,55,Female,N,N,4,N,N,Moderate,Serosa
+175,Recurrence,Levamisole,67,Male,Y,N,1,N,N,Moderate,Serosa
+176,No Recurrence,Levamisole + 5FU,41,Female,N,N,2,N,N,Moderate,Serosa
+177,No Recurrence,Levamisole + 5FU,56,Male,N,N,2,N,N,Moderate,Submucosa
+178,No Recurrence,Levamisole + 5FU,50,Male,N,N,4,N,N,Moderate,Submucosa
+179,No Recurrence,Levamisole + 5FU,65,Female,N,N,1,N,N,Well,Muscle
+180,Recurrence,Levamisole + 5FU,74,Male,N,N,1,N,Y,Moderate,Serosa
+181,No Recurrence,Observation,74,Female,N,N,2,N,N,Moderate,Serosa
+182,No Recurrence,Observation,58,Female,N,N,4,N,N,Moderate,Serosa
+183,No Recurrence,Levamisole,56,Female,N,N,4,N,N,Poor,Serosa
+184,No Recurrence,Observation,75,Female,N,N,1,N,N,Moderate,Muscle
+185,No Recurrence,Levamisole + 5FU,67,Male,N,N,4,N,N,Moderate,Serosa
+186,No Recurrence,Levamisole,58,Female,N,N,6,Y,N,Well,Serosa
+187,No Recurrence,Levamisole + 5FU,58,Female,N,N,2,N,N,Moderate,Serosa
+188,Recurrence,Levamisole,41,Male,N,N,33,Y,N,Poor,Serosa
+189,No Recurrence,Levamisole,72,Male,N,N,,Y,N,Moderate,Serosa
+190,Recurrence,Levamisole,48,Male,N,N,2,N,Y,,Serosa
+191,Recurrence,Levamisole + 5FU,69,Female,N,N,1,N,N,Moderate,Serosa
+192,Recurrence,Observation,57,Male,Y,N,1,N,Y,Moderate,Serosa
+193,Recurrence,Levamisole + 5FU,45,Female,Y,N,1,N,Y,Moderate,Serosa
+194,No Recurrence,Levamisole + 5FU,76,Female,N,N,4,N,N,Moderate,Serosa
+195,No Recurrence,Observation,59,Male,N,N,2,N,Y,Moderate,Serosa
+196,Recurrence,Observation,66,Female,N,N,1,N,N,Moderate,Serosa
+197,No Recurrence,Observation,65,Female,N,N,1,N,N,Poor,Muscle
+198,Recurrence,Levamisole,69,Male,N,N,1,N,N,Well,Serosa
+199,Recurrence,Levamisole + 5FU,32,Female,N,N,,Y,N,Poor,Serosa
+200,No Recurrence,Observation,56,Female,N,N,1,N,N,,Muscle
+201,Recurrence,Levamisole,71,Male,N,N,1,N,N,Well,Serosa
+202,Recurrence,Levamisole,75,Male,N,N,8,Y,N,,Serosa
+203,No Recurrence,Levamisole + 5FU,58,Male,N,N,7,Y,N,Poor,Serosa
+204,Recurrence,Observation,40,Female,N,N,4,N,N,Moderate,Serosa
+205,No Recurrence,Levamisole + 5FU,39,Female,N,N,2,N,N,Well,Submucosa
+206,No Recurrence,Levamisole,42,Female,N,N,4,N,N,Moderate,Serosa
+207,Recurrence,Levamisole + 5FU,53,Female,N,N,4,N,N,Well,Submucosa
+208,No Recurrence,Observation,43,Male,N,N,2,N,N,Moderate,Serosa
+209,Recurrence,Observation,51,Female,N,N,4,N,N,Moderate,Serosa
+210,No Recurrence,Levamisole,77,Male,N,N,2,N,N,Well,Serosa
+211,No Recurrence,Levamisole,67,Male,Y,N,1,N,N,Moderate,Serosa
+212,Recurrence,Observation,41,Male,N,N,7,Y,N,Moderate,Serosa
+213,No Recurrence,Levamisole + 5FU,63,Male,Y,Y,2,N,Y,Poor,Contiguous Structures
+214,No Recurrence,Levamisole,63,Male,N,N,3,N,Y,Moderate,Muscle
+215,No Recurrence,Levamisole + 5FU,63,Female,N,N,6,Y,N,Moderate,Serosa
+216,No Recurrence,Levamisole + 5FU,58,Female,Y,N,8,Y,N,Moderate,Serosa
+217,No Recurrence,Levamisole + 5FU,67,Female,N,N,4,N,N,Moderate,Contiguous Structures
+218,Recurrence,Levamisole + 5FU,55,Male,Y,N,7,Y,N,Moderate,Serosa
+219,Recurrence,Levamisole,63,Male,Y,N,5,Y,N,Poor,Serosa
+220,Recurrence,Levamisole,77,Male,N,N,1,N,Y,Moderate,Serosa
+221,No Recurrence,Levamisole,43,Male,Y,Y,4,N,Y,Poor,Serosa
+222,No Recurrence,Levamisole + 5FU,78,Female,N,N,2,N,N,Moderate,Muscle
+223,Recurrence,Observation,51,Female,N,N,5,Y,Y,Moderate,Serosa
+224,Recurrence,Observation,67,Male,Y,N,1,N,N,Moderate,Serosa
+225,No Recurrence,Levamisole,66,Male,N,N,1,N,N,Moderate,Serosa
+226,No Recurrence,Observation,64,Female,N,N,1,N,Y,Moderate,Contiguous Structures
+227,Recurrence,Observation,75,Female,Y,N,1,N,Y,Moderate,Serosa
+228,Recurrence,Levamisole,53,Male,N,N,1,N,N,Moderate,Serosa
+229,Recurrence,Levamisole,48,Male,Y,Y,2,N,N,Moderate,Serosa
+230,Recurrence,Observation,59,Female,N,N,1,N,Y,Moderate,Contiguous Structures
+231,Recurrence,Observation,60,Female,N,N,1,N,N,Moderate,Serosa
+232,No Recurrence,Observation,42,Male,N,N,2,N,N,Moderate,Serosa
+233,No Recurrence,Levamisole,60,Male,N,N,1,N,N,Moderate,Muscle
+234,No Recurrence,Levamisole + 5FU,58,Male,N,N,1,N,N,Well,Serosa
+235,No Recurrence,Levamisole + 5FU,59,Male,N,N,2,N,N,Moderate,Muscle
+236,Recurrence,Observation,70,Female,N,N,2,N,N,Moderate,Serosa
+237,No Recurrence,Levamisole + 5FU,75,Female,N,N,3,N,N,Moderate,Serosa
+238,No Recurrence,Levamisole + 5FU,73,Female,N,N,3,N,N,Moderate,Serosa
+239,Recurrence,Observation,76,Male,N,N,1,N,N,Moderate,Serosa
+240,Recurrence,Levamisole + 5FU,68,Female,N,N,3,N,N,Moderate,Serosa
+241,No Recurrence,Levamisole,61,Male,N,N,2,N,N,Moderate,Contiguous Structures
+242,No Recurrence,Levamisole + 5FU,76,Male,N,N,1,N,N,Moderate,Muscle
+243,Recurrence,Levamisole + 5FU,56,Female,N,Y,3,N,Y,Moderate,Serosa
+244,No Recurrence,Levamisole,55,Female,Y,N,2,N,N,,Serosa
+245,Recurrence,Observation,60,Female,Y,N,4,N,Y,Poor,Serosa
+246,Recurrence,Levamisole,72,Male,N,N,9,Y,N,Moderate,Serosa
+247,No Recurrence,Levamisole + 5FU,74,Female,Y,N,11,Y,N,Moderate,Serosa
+248,Recurrence,Levamisole + 5FU,62,Female,N,N,3,N,N,Moderate,Serosa
+249,Recurrence,Levamisole,76,Female,N,N,1,N,N,Well,Serosa
+250,No Recurrence,Levamisole + 5FU,72,Male,N,N,2,N,N,Moderate,Serosa
+251,Recurrence,Levamisole,57,Male,N,N,2,N,N,Poor,Serosa
+252,Recurrence,Observation,39,Female,N,N,1,N,N,Moderate,Contiguous Structures
+253,No Recurrence,Levamisole + 5FU,61,Male,N,N,1,N,N,Moderate,Serosa
+254,Recurrence,Observation,62,Female,N,N,5,Y,N,Poor,Serosa
+255,Recurrence,Levamisole,70,Male,N,N,2,N,N,Moderate,Serosa
+256,Recurrence,Observation,70,Female,N,N,5,N,N,Moderate,Serosa
+257,Recurrence,Levamisole,57,Female,Y,N,8,Y,N,Moderate,Serosa
+258,No Recurrence,Levamisole,65,Male,N,N,3,N,N,Moderate,Muscle
+259,No Recurrence,Levamisole,65,Female,N,N,1,N,N,Moderate,Serosa
+260,Recurrence,Observation,71,Female,N,N,15,Y,N,Moderate,Serosa
+261,Recurrence,Levamisole,70,Female,Y,N,3,N,N,Moderate,Serosa
+262,No Recurrence,Observation,36,Female,N,N,1,N,N,Moderate,Serosa
+263,No Recurrence,Levamisole,48,Male,N,N,2,N,N,Moderate,Submucosa
+264,No Recurrence,Levamisole,53,Male,N,N,1,N,N,Well,Serosa
+265,Recurrence,Levamisole + 5FU,54,Male,N,N,3,N,N,Moderate,Serosa
+266,No Recurrence,Levamisole,58,Male,N,N,3,N,N,Well,Serosa
+267,No Recurrence,Observation,67,Male,N,N,3,N,N,Moderate,Serosa
+268,Recurrence,Levamisole,59,Male,Y,N,2,N,N,Moderate,Serosa
+269,Recurrence,Observation,67,Female,N,N,4,Y,Y,Moderate,Serosa
+270,No Recurrence,Levamisole + 5FU,60,Female,Y,N,1,N,N,Poor,Serosa
+271,No Recurrence,Levamisole,70,Female,N,N,1,N,N,Moderate,Muscle
+272,Recurrence,Observation,76,Male,N,N,3,N,N,Well,Serosa
+273,Recurrence,Levamisole + 5FU,60,Male,Y,N,1,N,N,Well,Serosa
+274,Recurrence,Observation,67,Female,Y,N,12,Y,N,Well,Serosa
+275,Recurrence,Levamisole,53,Male,N,N,3,N,N,Moderate,Serosa
+276,No Recurrence,Levamisole + 5FU,76,Female,N,N,1,N,N,Well,Serosa
+277,Recurrence,Observation,74,Male,N,N,2,N,N,Moderate,Serosa
+278,No Recurrence,Observation,56,Female,Y,N,6,Y,N,Moderate,Contiguous Structures
+279,No Recurrence,Levamisole,65,Female,N,N,1,N,N,Moderate,Muscle
+280,Recurrence,Levamisole + 5FU,63,Male,N,N,2,N,N,Moderate,Serosa
+281,Recurrence,Observation,56,Male,N,N,2,N,N,Moderate,Serosa
+282,No Recurrence,Levamisole,70,Female,N,N,4,N,Y,Poor,Serosa
+283,No Recurrence,Levamisole + 5FU,48,Female,N,N,9,Y,N,Moderate,Serosa
+284,No Recurrence,Levamisole,45,Male,Y,N,2,N,N,Moderate,Serosa
+285,Recurrence,Levamisole,68,Female,N,N,8,Y,N,Moderate,Serosa
+286,No Recurrence,Levamisole,57,Female,N,N,1,N,N,Moderate,Muscle
+287,Recurrence,Levamisole + 5FU,70,Male,N,N,1,N,N,Moderate,Muscle
+288,No Recurrence,Levamisole + 5FU,39,Male,N,N,1,N,N,Moderate,Serosa
+289,Recurrence,Observation,46,Male,N,N,1,N,Y,Poor,Contiguous Structures
+290,No Recurrence,Observation,77,Female,Y,N,4,N,N,Moderate,Serosa
+291,No Recurrence,Levamisole + 5FU,59,Male,Y,N,1,N,N,Well,Serosa
+292,No Recurrence,Levamisole,58,Female,N,N,1,N,N,Moderate,Serosa
+293,Recurrence,Observation,56,Male,N,N,8,Y,N,Moderate,Serosa
+294,No Recurrence,Levamisole + 5FU,68,Male,N,N,2,N,N,,Serosa
+295,No Recurrence,Observation,57,Female,N,Y,1,N,Y,Moderate,Serosa
+296,Recurrence,Levamisole + 5FU,44,Female,N,N,3,N,N,Moderate,Serosa
+297,Recurrence,Levamisole + 5FU,56,Male,N,N,3,N,Y,Moderate,Serosa
+298,Recurrence,Observation,67,Male,N,N,4,N,N,Moderate,Serosa
+299,No Recurrence,Levamisole + 5FU,62,Male,N,N,6,Y,N,Moderate,Muscle
+300,Recurrence,Levamisole,68,Female,N,N,7,Y,N,Moderate,Serosa
+301,No Recurrence,Levamisole,61,Male,N,N,2,N,N,Moderate,Muscle
+302,Recurrence,Levamisole,44,Female,Y,N,5,Y,N,Moderate,Serosa
+303,Recurrence,Levamisole,52,Female,N,N,7,Y,N,Moderate,Serosa
+304,Recurrence,Levamisole,51,Male,Y,N,1,Y,N,Poor,Serosa
+305,No Recurrence,Observation,59,Female,N,N,9,Y,N,Moderate,Serosa
+306,No Recurrence,Levamisole + 5FU,61,Male,N,N,1,N,N,Poor,Serosa
+307,No Recurrence,Observation,57,Female,N,N,2,N,N,Poor,Serosa
+308,Recurrence,Levamisole + 5FU,65,Male,N,N,1,N,N,Moderate,Serosa
+309,No Recurrence,Levamisole,73,Female,Y,N,1,N,N,Moderate,Serosa
+310,Recurrence,Observation,69,Female,N,N,6,Y,N,Poor,Serosa
+311,No Recurrence,Levamisole + 5FU,63,Male,N,N,1,N,N,Moderate,Serosa
+312,No Recurrence,Levamisole,75,Male,N,N,2,N,N,Moderate,Muscle
+313,No Recurrence,Levamisole,64,Female,N,N,5,Y,N,Well,Serosa
+314,No Recurrence,Observation,56,Female,N,N,1,N,N,Well,Submucosa
+315,No Recurrence,Levamisole,69,Male,N,N,2,N,N,Moderate,Serosa
+316,Recurrence,Levamisole,64,Female,N,N,2,N,N,Moderate,Serosa
+317,Recurrence,Levamisole,74,Female,Y,N,2,N,N,Moderate,Serosa
+318,No Recurrence,Levamisole,72,Male,N,N,4,N,N,Moderate,Muscle
+319,No Recurrence,Levamisole,58,Male,Y,N,9,N,N,Moderate,Serosa
+320,No Recurrence,Levamisole + 5FU,74,Female,N,N,15,Y,Y,Poor,Contiguous Structures
+321,No Recurrence,Observation,61,Female,N,N,2,N,N,Well,Muscle
+322,Recurrence,Observation,74,Female,N,N,1,N,N,Moderate,Muscle
+323,No Recurrence,Levamisole + 5FU,64,Male,N,N,5,Y,N,Moderate,Serosa
+324,Recurrence,Levamisole + 5FU,71,Female,N,N,20,Y,N,Moderate,Serosa
+325,Recurrence,Observation,66,Female,N,N,1,N,Y,,Contiguous Structures
+326,No Recurrence,Observation,53,Female,Y,N,2,N,N,Well,Serosa
+327,No Recurrence,Levamisole,76,Female,Y,N,1,N,N,Moderate,Serosa
+328,Recurrence,Levamisole,75,Female,Y,N,3,N,Y,Moderate,Muscle
+329,No Recurrence,Levamisole + 5FU,64,Male,N,N,3,N,N,,Serosa
+330,Recurrence,Levamisole,65,Male,N,N,8,Y,N,Moderate,Serosa
+331,Recurrence,Observation,57,Female,N,N,5,Y,N,Moderate,Serosa
+332,No Recurrence,Levamisole,65,Male,N,N,1,N,Y,Poor,Serosa
+333,No Recurrence,Observation,53,Male,N,N,2,N,N,Moderate,Contiguous Structures
+334,Recurrence,Levamisole,74,Male,N,N,4,N,N,Moderate,Serosa
+335,No Recurrence,Levamisole + 5FU,74,Male,N,N,1,N,N,Moderate,Serosa
+336,Recurrence,Levamisole + 5FU,74,Female,N,N,1,N,Y,Poor,Serosa
+337,Recurrence,Levamisole + 5FU,48,Female,N,N,6,Y,N,Moderate,Serosa
+338,Recurrence,Levamisole,58,Male,N,N,,Y,N,Poor,Serosa
+339,Recurrence,Levamisole + 5FU,74,Female,N,N,3,N,N,Moderate,Serosa
+340,No Recurrence,Levamisole + 5FU,71,Female,N,N,1,N,N,Moderate,Serosa
+341,Recurrence,Observation,54,Female,N,N,2,N,N,Moderate,Serosa
+342,No Recurrence,Levamisole + 5FU,80,Male,N,N,4,N,N,Moderate,Muscle
+343,Recurrence,Levamisole,70,Male,N,N,8,Y,Y,Moderate,Serosa
+344,No Recurrence,Levamisole + 5FU,70,Male,Y,N,1,N,N,Moderate,Serosa
+345,Recurrence,Observation,70,Male,N,N,1,N,N,Poor,Serosa
+346,No Recurrence,Observation,71,Male,N,N,4,N,N,Moderate,Serosa
+347,Recurrence,Observation,59,Male,N,N,2,N,N,Moderate,Serosa
+348,Recurrence,Levamisole,47,Male,N,N,2,N,N,,Serosa
+349,No Recurrence,Levamisole,63,Male,N,N,2,N,N,Poor,Serosa
+350,Recurrence,Levamisole,69,Female,N,N,7,Y,N,Moderate,Serosa
+351,No Recurrence,Levamisole + 5FU,73,Female,N,N,1,N,N,Moderate,Serosa
+352,No Recurrence,Observation,67,Male,N,N,1,N,N,Moderate,Serosa
+353,No Recurrence,Levamisole + 5FU,55,Female,N,N,1,N,N,Moderate,Serosa
+354,No Recurrence,Observation,45,Male,N,N,2,N,N,Moderate,Serosa
+355,No Recurrence,Levamisole + 5FU,78,Female,Y,N,3,N,N,Moderate,Serosa
+356,Recurrence,Levamisole,80,Male,N,N,3,N,N,Moderate,Serosa
+357,No Recurrence,Observation,55,Male,N,N,8,Y,N,Moderate,Serosa
+358,No Recurrence,Levamisole + 5FU,64,Female,Y,N,,Y,N,Moderate,Serosa
+359,Recurrence,Levamisole,60,Female,N,Y,10,Y,N,Moderate,Serosa
+360,Recurrence,Levamisole + 5FU,74,Female,N,N,5,Y,N,Moderate,Serosa
+361,Recurrence,Levamisole,61,Female,N,N,1,N,N,Moderate,Serosa
+362,No Recurrence,Observation,64,Male,N,N,4,N,N,Moderate,Muscle
+363,Recurrence,Observation,48,Female,N,N,1,N,Y,Poor,Serosa
+364,Recurrence,Levamisole,76,Male,N,N,2,N,N,Moderate,Serosa
+365,Recurrence,Levamisole + 5FU,76,Female,N,N,,Y,N,Poor,Serosa
+366,No Recurrence,Levamisole,50,Female,N,N,4,N,N,Moderate,Serosa
+367,Recurrence,Levamisole,56,Male,N,N,3,N,N,Moderate,Contiguous Structures
+368,Recurrence,Levamisole + 5FU,42,Female,N,N,10,Y,N,Poor,Serosa
+369,Recurrence,Levamisole,72,Female,N,N,1,N,N,Moderate,Serosa
+370,Recurrence,Observation,68,Female,N,N,9,Y,Y,Moderate,Serosa
+371,No Recurrence,Levamisole,49,Male,N,N,1,N,N,Moderate,Muscle
+372,No Recurrence,Levamisole,64,Male,N,N,12,Y,N,Moderate,Serosa
+373,No Recurrence,Observation,70,Female,N,N,1,N,N,Well,Muscle
+374,Recurrence,Levamisole + 5FU,50,Male,N,N,2,N,Y,Moderate,Contiguous Structures
+375,No Recurrence,Observation,74,Male,N,N,3,N,Y,Poor,Serosa
+376,No Recurrence,Levamisole,37,Female,N,N,1,N,N,Moderate,Serosa
+377,No Recurrence,Levamisole + 5FU,75,Female,N,N,1,N,N,Poor,Serosa
+378,Recurrence,Observation,56,Female,N,N,2,N,N,Poor,Serosa
+379,No Recurrence,Levamisole + 5FU,74,Male,N,N,3,N,N,Well,Serosa
+380,Recurrence,Observation,63,Male,N,N,2,N,N,Moderate,Serosa
+381,No Recurrence,Levamisole,56,Male,N,N,2,N,N,Moderate,Muscle
+382,No Recurrence,Levamisole + 5FU,42,Male,N,N,13,Y,N,Moderate,Serosa
+383,Recurrence,Levamisole,63,Male,N,N,,Y,N,Moderate,Serosa
+384,Recurrence,Levamisole,62,Female,N,N,2,N,N,Moderate,Serosa
+385,No Recurrence,Levamisole + 5FU,33,Female,N,N,2,N,N,Moderate,Serosa
+386,Recurrence,Observation,50,Female,N,N,8,Y,N,Moderate,Serosa
+387,Recurrence,Levamisole,73,Male,N,N,6,Y,N,Poor,Serosa
+388,Recurrence,Levamisole + 5FU,61,Female,N,N,9,Y,N,Poor,Serosa
+389,Recurrence,Observation,70,Male,Y,Y,1,N,N,Moderate,Serosa
+390,Recurrence,Levamisole,38,Female,N,N,3,N,N,Moderate,Serosa
+391,Recurrence,Observation,64,Female,Y,N,3,N,N,Moderate,Serosa
+392,No Recurrence,Levamisole,39,Female,N,N,2,N,N,Moderate,Serosa
+393,No Recurrence,Levamisole + 5FU,47,Female,N,N,1,N,N,Moderate,Serosa
+394,Recurrence,Observation,76,Male,N,N,13,Y,Y,Poor,Serosa
+395,No Recurrence,Observation,65,Male,N,N,2,N,N,Moderate,Serosa
+396,Recurrence,Levamisole,43,Female,Y,N,4,Y,N,Moderate,Serosa
+397,No Recurrence,Levamisole,72,Male,N,N,1,N,N,Moderate,Serosa
+398,No Recurrence,Observation,33,Male,N,N,2,N,N,Moderate,Serosa
+399,No Recurrence,Levamisole + 5FU,66,Male,N,N,7,Y,N,Moderate,Serosa
+400,No Recurrence,Levamisole + 5FU,74,Female,N,N,2,N,N,Moderate,Serosa
+401,No Recurrence,Levamisole + 5FU,54,Male,N,N,1,N,N,Moderate,Serosa
+402,Recurrence,Observation,44,Male,N,N,14,Y,N,Moderate,Serosa
+403,Recurrence,Observation,75,Male,Y,N,27,Y,N,Moderate,Muscle
+404,No Recurrence,Levamisole,58,Male,N,N,6,Y,N,Moderate,Serosa
+405,No Recurrence,Levamisole,48,Male,N,N,6,Y,N,Well,Muscle
+406,Recurrence,Levamisole + 5FU,64,Female,N,N,1,N,N,Moderate,Serosa
+407,No Recurrence,Levamisole,49,Male,N,N,1,N,N,Well,Serosa
+408,No Recurrence,Observation,55,Female,N,N,1,Y,N,Moderate,Serosa
+409,No Recurrence,Levamisole + 5FU,60,Male,N,N,3,N,N,Moderate,Serosa
+410,No Recurrence,Observation,67,Male,N,N,2,N,N,Moderate,Serosa
+411,No Recurrence,Levamisole + 5FU,79,Male,N,N,1,N,N,Moderate,Muscle
+412,No Recurrence,Levamisole,57,Male,N,N,1,N,N,Moderate,Serosa
+413,No Recurrence,Observation,22,Female,N,N,3,N,N,Moderate,Serosa
+414,Recurrence,Observation,59,Male,Y,N,4,N,N,Well,Serosa
+415,No Recurrence,Levamisole + 5FU,66,Female,Y,N,1,N,N,Well,Serosa
+416,Recurrence,Levamisole,54,Male,N,N,2,N,Y,Moderate,Contiguous Structures
+417,No Recurrence,Observation,58,Male,N,N,1,N,N,Moderate,Muscle
+418,No Recurrence,Observation,36,Female,Y,N,7,Y,N,Moderate,Serosa
+419,Recurrence,Observation,52,Male,N,N,4,N,N,Moderate,Serosa
+420,Recurrence,Observation,61,Female,N,N,1,N,N,Moderate,Serosa
+421,No Recurrence,Levamisole,76,Female,N,N,2,N,N,Well,Serosa
+422,Recurrence,Levamisole,58,Female,N,N,6,Y,Y,Well,Serosa
+423,No Recurrence,Levamisole,52,Male,N,N,5,Y,N,Well,Serosa
+424,No Recurrence,Observation,72,Male,N,N,1,N,N,Moderate,Serosa
+425,No Recurrence,Levamisole,74,Male,N,N,1,N,N,Well,Serosa
+426,Recurrence,Observation,62,Male,N,N,6,Y,N,Moderate,Muscle
+427,No Recurrence,Observation,46,Female,N,N,1,N,Y,Moderate,Serosa
+428,No Recurrence,Observation,66,Male,N,N,1,N,N,Moderate,Serosa
+429,Recurrence,Levamisole + 5FU,52,Male,N,N,5,Y,N,Moderate,Serosa
+430,Recurrence,Levamisole + 5FU,38,Female,N,N,24,Y,N,,Serosa
+431,Recurrence,Observation,61,Male,N,N,1,N,N,Moderate,Serosa
+432,No Recurrence,Observation,60,Female,N,N,1,N,N,Well,Serosa
+433,Recurrence,Levamisole,68,Female,N,N,2,N,Y,Well,Serosa
+434,Recurrence,Levamisole,53,Female,N,N,6,Y,N,Moderate,Serosa
+435,No Recurrence,Levamisole + 5FU,58,Male,N,N,1,N,N,Moderate,Serosa
+436,No Recurrence,Observation,64,Male,N,N,4,N,N,Moderate,Serosa
+437,No Recurrence,Observation,68,Male,Y,N,3,N,Y,Moderate,Serosa
+438,Recurrence,Observation,62,Male,N,N,6,Y,Y,Moderate,Contiguous Structures
+439,Recurrence,Observation,70,Male,N,N,1,N,N,Well,Serosa
+440,No Recurrence,Levamisole + 5FU,57,Male,N,N,1,N,N,Moderate,Serosa
+441,No Recurrence,Levamisole + 5FU,66,Female,N,N,1,N,Y,Moderate,Contiguous Structures
+442,Recurrence,Levamisole,59,Female,N,N,11,Y,N,Moderate,Serosa
+443,No Recurrence,Levamisole,75,Male,N,N,3,N,N,Well,Serosa
+444,No Recurrence,Levamisole + 5FU,77,Male,N,N,2,N,N,Moderate,Serosa
+445,Recurrence,Levamisole,57,Male,N,N,6,Y,N,Moderate,Serosa
+446,Recurrence,Observation,72,Male,N,N,2,N,N,Well,Muscle
+447,Recurrence,Levamisole + 5FU,64,Female,Y,N,3,N,N,Moderate,Serosa
+448,No Recurrence,Levamisole + 5FU,33,Male,N,N,2,N,N,Poor,Serosa
+449,Recurrence,Levamisole + 5FU,62,Female,N,N,2,N,N,Moderate,Serosa
+450,Recurrence,Levamisole + 5FU,70,Male,N,N,1,N,N,Moderate,Serosa
+451,No Recurrence,Levamisole,55,Female,Y,N,4,N,N,Well,Serosa
+452,No Recurrence,Observation,32,Male,Y,N,11,Y,Y,Moderate,Serosa
+453,No Recurrence,Observation,64,Female,Y,N,2,N,N,Moderate,Muscle
+454,No Recurrence,Observation,48,Female,N,N,1,N,N,Moderate,Contiguous Structures
+455,Recurrence,Levamisole,68,Male,N,N,3,N,Y,Moderate,Serosa
+456,Recurrence,Levamisole + 5FU,59,Female,N,N,1,N,N,Moderate,Serosa
+457,Recurrence,Observation,68,Male,N,N,9,Y,Y,Poor,Serosa
+458,Recurrence,Levamisole,50,Female,N,N,1,N,Y,Well,Serosa
+459,Recurrence,Observation,41,Female,Y,N,4,N,N,Moderate,Serosa
+460,No Recurrence,Levamisole,69,Female,N,N,1,N,Y,Moderate,Serosa
+461,No Recurrence,Levamisole + 5FU,46,Male,N,N,2,N,N,Well,Muscle
+462,No Recurrence,Observation,43,Male,N,N,1,N,N,Moderate,Serosa
+463,Recurrence,Levamisole + 5FU,68,Male,N,N,3,N,N,Poor,Serosa
+464,Recurrence,Levamisole,73,Male,N,N,3,N,N,Moderate,Serosa
+465,Recurrence,Levamisole + 5FU,66,Female,N,N,4,N,Y,Poor,Contiguous Structures
+466,No Recurrence,Observation,60,Female,N,N,1,N,Y,Moderate,Serosa
+467,No Recurrence,Levamisole + 5FU,74,Male,N,N,2,N,N,Moderate,Serosa
+468,Recurrence,Levamisole,68,Male,N,N,1,N,N,Well,Serosa
+469,No Recurrence,Levamisole + 5FU,60,Female,Y,N,1,N,N,Moderate,Serosa
+470,No Recurrence,Observation,71,Male,N,N,1,N,Y,Moderate,Contiguous Structures
+471,No Recurrence,Observation,76,Male,N,N,2,N,N,Moderate,Submucosa
+472,Recurrence,Observation,57,Male,N,N,8,Y,N,Poor,Muscle
+473,Recurrence,Levamisole,33,Female,N,N,7,Y,N,Poor,Serosa
+474,Recurrence,Levamisole,54,Male,N,N,4,N,N,Moderate,Serosa
+475,Recurrence,Observation,68,Male,N,N,13,Y,N,Moderate,Serosa
+476,Recurrence,Observation,70,Female,N,N,6,Y,N,Poor,Muscle
+477,No Recurrence,Observation,66,Male,N,N,5,Y,N,Moderate,Serosa
+478,Recurrence,Levamisole,45,Female,Y,N,3,N,N,Moderate,Serosa
+479,No Recurrence,Levamisole,61,Female,N,N,2,N,N,Moderate,Serosa
+480,No Recurrence,Observation,74,Female,N,N,1,N,Y,Poor,Serosa
+481,Recurrence,Observation,47,Male,Y,Y,4,N,Y,Moderate,Serosa
+482,Recurrence,Levamisole + 5FU,58,Female,Y,N,5,Y,N,Poor,Serosa
+483,Recurrence,Observation,73,Male,N,N,1,N,N,Moderate,Serosa
+484,Recurrence,Levamisole,61,Male,N,N,17,Y,N,Moderate,Serosa
+485,Recurrence,Observation,44,Female,N,N,4,N,N,Moderate,Serosa
+486,Recurrence,Levamisole + 5FU,56,Male,N,N,1,Y,N,Moderate,Serosa
+487,Recurrence,Levamisole,66,Female,N,N,7,Y,N,Moderate,Serosa
+488,Recurrence,Observation,30,Female,N,N,6,Y,N,Poor,Serosa
+489,No Recurrence,Levamisole + 5FU,67,Female,N,N,10,Y,Y,Moderate,Serosa
+490,No Recurrence,Levamisole,74,Female,N,N,2,N,N,Moderate,Serosa
+491,No Recurrence,Levamisole,74,Female,N,N,1,N,Y,Poor,Serosa
+492,Recurrence,Observation,56,Male,N,N,4,N,N,Moderate,Serosa
+493,No Recurrence,Levamisole + 5FU,60,Female,N,N,2,N,N,Moderate,Serosa
+494,Recurrence,Levamisole,54,Female,Y,N,2,N,Y,Poor,Muscle
+495,No Recurrence,Levamisole + 5FU,74,Female,N,N,3,N,N,Moderate,Muscle
+496,Recurrence,Levamisole + 5FU,45,Female,N,N,3,N,N,Moderate,Serosa
+497,Recurrence,Levamisole + 5FU,81,Female,N,N,1,N,N,Moderate,Serosa
+498,Recurrence,Levamisole + 5FU,73,Male,Y,N,1,N,N,Moderate,Serosa
+499,Recurrence,Levamisole,71,Male,Y,N,1,N,N,Moderate,Serosa
+500,No Recurrence,Levamisole + 5FU,70,Male,N,N,3,N,N,,Serosa
+501,No Recurrence,Levamisole + 5FU,66,Male,N,N,1,N,N,Moderate,Serosa
+502,Recurrence,Levamisole + 5FU,71,Female,N,N,,Y,N,Moderate,Serosa
+503,No Recurrence,Observation,48,Male,N,N,1,Y,N,Poor,Muscle
+504,Recurrence,Levamisole + 5FU,55,Female,N,N,4,N,N,Moderate,Serosa
+505,No Recurrence,Levamisole + 5FU,72,Female,N,N,2,N,N,Poor,Muscle
+506,No Recurrence,Levamisole,57,Male,N,N,3,N,N,,Serosa
+507,Recurrence,Levamisole + 5FU,57,Male,N,N,11,Y,N,Poor,Serosa
+508,No Recurrence,Observation,38,Male,N,N,2,N,N,Well,Serosa
+509,Recurrence,Levamisole,52,Male,Y,N,0,N,N,Moderate,Serosa
+510,Recurrence,Observation,57,Male,N,N,1,N,N,Moderate,Serosa
+511,Recurrence,Levamisole,33,Female,N,N,2,N,N,Moderate,Serosa
+512,No Recurrence,Observation,39,Female,N,N,2,N,N,Moderate,Muscle
+513,No Recurrence,Levamisole,61,Male,N,N,1,N,N,Moderate,Serosa
+514,No Recurrence,Levamisole + 5FU,71,Female,N,N,1,N,N,Poor,Serosa
+515,No Recurrence,Levamisole,58,Male,N,N,4,N,N,Moderate,Serosa
+516,Recurrence,Levamisole + 5FU,66,Female,N,N,7,Y,N,Poor,Serosa
+517,Recurrence,Observation,59,Female,N,N,4,N,N,Moderate,Muscle
+518,No Recurrence,Levamisole + 5FU,43,Female,Y,N,1,N,N,Moderate,Serosa
+519,No Recurrence,Observation,66,Male,N,N,3,N,N,Moderate,Serosa
+520,No Recurrence,Observation,48,Female,N,N,1,N,N,Moderate,Serosa
+521,Recurrence,Levamisole + 5FU,68,Male,N,N,1,N,N,Moderate,Serosa
+522,No Recurrence,Observation,72,Female,N,N,,Y,N,Moderate,Serosa
+523,Recurrence,Levamisole + 5FU,77,Female,N,N,10,Y,N,Poor,Contiguous Structures
+524,No Recurrence,Levamisole + 5FU,68,Female,Y,N,1,N,N,Moderate,Serosa
+525,Recurrence,Observation,44,Female,N,N,1,N,Y,Moderate,Contiguous Structures
+526,No Recurrence,Levamisole + 5FU,63,Female,N,N,1,N,N,Moderate,Serosa
+527,No Recurrence,Levamisole,66,Male,N,N,1,N,N,Moderate,Serosa
+528,Recurrence,Levamisole,50,Male,N,N,3,N,N,Poor,Serosa
+529,No Recurrence,Levamisole,72,Male,N,N,1,N,N,Moderate,Serosa
+530,Recurrence,Levamisole + 5FU,40,Male,N,N,5,Y,N,Well,Serosa
+531,No Recurrence,Levamisole,49,Male,N,N,10,Y,N,Moderate,Serosa
+532,No Recurrence,Levamisole + 5FU,56,Female,N,N,2,N,N,Poor,Serosa
+533,No Recurrence,Observation,61,Male,N,N,2,N,N,Moderate,Muscle
+534,Recurrence,Observation,65,Male,N,N,6,Y,N,Moderate,Serosa
+535,No Recurrence,Levamisole + 5FU,65,Male,N,N,2,N,N,Moderate,Muscle
+536,Recurrence,Levamisole,72,Female,N,N,1,N,N,Well,Submucosa
+537,Recurrence,Levamisole + 5FU,68,Female,N,N,1,N,Y,Moderate,Serosa
+538,Recurrence,Observation,59,Female,N,N,4,N,N,Moderate,Serosa
+539,No Recurrence,Levamisole + 5FU,59,Male,N,N,4,N,N,Moderate,Serosa
+540,No Recurrence,Levamisole + 5FU,71,Female,Y,N,6,Y,N,Moderate,Serosa
+541,No Recurrence,Levamisole,49,Male,N,N,8,Y,N,Moderate,Serosa
+542,No Recurrence,Levamisole + 5FU,70,Male,N,N,3,N,N,Moderate,Serosa
+543,No Recurrence,Levamisole + 5FU,55,Male,N,N,7,Y,N,Poor,Serosa
+544,Recurrence,Levamisole,46,Female,N,Y,7,Y,N,Moderate,Serosa
+545,Recurrence,Observation,77,Male,N,N,1,N,N,Moderate,Serosa
+546,No Recurrence,Levamisole + 5FU,57,Male,N,N,4,N,N,Moderate,Serosa
+547,Recurrence,Observation,68,Male,N,N,1,N,N,Moderate,Serosa
+548,Recurrence,Levamisole,62,Male,N,N,1,N,Y,Moderate,Serosa
+549,Recurrence,Observation,44,Male,N,N,7,Y,N,Poor,Serosa
+550,No Recurrence,Levamisole,58,Female,N,N,1,N,Y,Moderate,Serosa
+551,No Recurrence,Levamisole + 5FU,75,Female,N,N,2,N,N,Well,Serosa
+552,No Recurrence,Observation,70,Female,Y,N,7,Y,N,Moderate,Serosa
+553,No Recurrence,Observation,82,Male,N,N,6,Y,N,Moderate,Serosa
+554,Recurrence,Levamisole + 5FU,61,Female,N,N,3,N,N,Moderate,Serosa
+555,Recurrence,Observation,52,Male,N,N,2,N,N,Moderate,Serosa
+556,Recurrence,Levamisole + 5FU,47,Male,N,N,7,Y,N,Poor,Serosa
+557,Recurrence,Levamisole,61,Female,N,N,7,Y,N,Poor,Serosa
+558,Recurrence,Levamisole + 5FU,39,Male,N,N,9,Y,N,Moderate,Serosa
+559,Recurrence,Levamisole,69,Female,N,N,3,N,N,Moderate,Muscle
+560,No Recurrence,Levamisole,55,Male,N,N,7,Y,N,Poor,Serosa
+561,No Recurrence,Observation,56,Female,Y,N,1,Y,N,Moderate,Serosa
+562,No Recurrence,Observation,80,Male,N,N,1,N,N,Poor,Serosa
+563,No Recurrence,Levamisole,43,Male,N,N,4,N,N,Moderate,Serosa
+564,No Recurrence,Levamisole,83,Male,N,N,2,N,N,Moderate,Serosa
+565,Recurrence,Observation,85,Female,N,N,1,N,N,Well,Serosa
+566,No Recurrence,Levamisole + 5FU,61,Male,N,N,1,N,N,Moderate,Serosa
+567,Recurrence,Levamisole,47,Female,N,N,9,Y,N,Moderate,Contiguous Structures
+568,No Recurrence,Levamisole + 5FU,76,Female,N,N,1,N,N,Moderate,Serosa
+569,No Recurrence,Levamisole + 5FU,58,Male,N,N,1,N,N,Moderate,Serosa
+570,No Recurrence,Observation,59,Male,N,N,2,N,N,Moderate,Muscle
+571,Recurrence,Levamisole,60,Female,N,N,1,N,N,Moderate,Serosa
+572,Recurrence,Levamisole,32,Male,N,N,2,N,N,Moderate,Serosa
+573,Recurrence,Observation,56,Male,N,N,1,N,N,,Contiguous Structures
+574,No Recurrence,Levamisole,75,Male,N,N,2,N,N,Moderate,Serosa
+575,No Recurrence,Levamisole + 5FU,62,Male,N,N,3,N,N,Well,Serosa
+576,Recurrence,Observation,69,Female,N,N,12,Y,N,Moderate,Serosa
+577,Recurrence,Levamisole,72,Male,N,N,4,N,Y,Moderate,Serosa
+578,No Recurrence,Observation,54,Female,N,N,1,N,N,Moderate,Serosa
+579,No Recurrence,Levamisole + 5FU,72,Male,N,N,1,N,N,Moderate,Serosa
+580,No Recurrence,Levamisole + 5FU,27,Female,N,N,1,N,N,Moderate,Serosa
+581,Recurrence,Levamisole + 5FU,62,Female,N,N,4,N,N,Moderate,Contiguous Structures
+582,Recurrence,Levamisole,39,Female,N,N,2,N,N,Moderate,Submucosa
+583,Recurrence,Levamisole + 5FU,60,Female,N,N,4,N,N,Moderate,Serosa
+584,Recurrence,Levamisole + 5FU,55,Male,Y,N,5,Y,N,Poor,Serosa
+585,No Recurrence,Observation,64,Male,N,N,1,N,N,Moderate,Serosa
+586,No Recurrence,Levamisole,68,Female,N,N,12,Y,N,Poor,Serosa
+587,Recurrence,Observation,65,Female,N,N,2,N,N,Moderate,Serosa
+588,Recurrence,Levamisole + 5FU,66,Female,Y,N,3,N,N,Well,Serosa
+589,No Recurrence,Levamisole,39,Male,N,N,2,N,N,Poor,Serosa
+590,Recurrence,Levamisole,54,Male,N,N,,Y,Y,Moderate,Serosa
+591,Recurrence,Observation,34,Male,Y,N,1,N,N,Moderate,Serosa
+592,No Recurrence,Levamisole,74,Female,N,N,4,N,N,Moderate,Serosa
+593,Recurrence,Observation,81,Female,Y,N,3,N,Y,Moderate,Serosa
+594,Recurrence,Levamisole + 5FU,38,Male,N,N,1,N,N,Moderate,Serosa
+595,No Recurrence,Levamisole,59,Female,N,N,3,N,N,Moderate,Serosa
+596,No Recurrence,Levamisole,62,Female,N,N,1,N,N,Moderate,Serosa
+597,No Recurrence,Levamisole + 5FU,61,Male,Y,N,5,Y,N,Well,Muscle
+598,No Recurrence,Observation,46,Male,Y,N,2,N,N,Moderate,Serosa
+599,No Recurrence,Levamisole + 5FU,55,Male,N,N,1,N,N,Moderate,Serosa
+600,No Recurrence,Observation,57,Male,N,N,5,Y,N,Moderate,Serosa
+601,Recurrence,Levamisole,38,Female,N,N,3,N,N,Moderate,Serosa
+602,Recurrence,Levamisole,69,Female,N,N,19,Y,Y,Moderate,Serosa
+603,No Recurrence,Observation,79,Female,N,N,6,Y,Y,Moderate,Muscle
+604,No Recurrence,Levamisole + 5FU,71,Female,N,N,2,N,N,Moderate,Serosa
+605,No Recurrence,Levamisole,74,Male,N,N,1,N,N,Poor,Serosa
+606,Recurrence,Levamisole + 5FU,30,Female,Y,N,12,Y,N,Moderate,Serosa
+607,No Recurrence,Observation,72,Female,N,N,1,N,N,Poor,Serosa
+608,Recurrence,Levamisole,68,Female,Y,N,3,N,N,Moderate,Serosa
+609,Recurrence,Levamisole + 5FU,66,Male,Y,N,,Y,N,Poor,Submucosa
+610,Recurrence,Observation,63,Male,N,N,4,N,N,Moderate,Serosa
+611,No Recurrence,Levamisole + 5FU,52,Female,N,N,1,N,Y,Moderate,Serosa
+612,Recurrence,Levamisole,64,Male,N,N,4,N,N,Moderate,Serosa
+613,Recurrence,Levamisole + 5FU,68,Male,N,N,1,N,N,Moderate,Serosa
+614,No Recurrence,Levamisole,74,Male,N,N,2,N,N,Moderate,Serosa
+615,Recurrence,Levamisole + 5FU,32,Male,N,N,2,N,N,Moderate,Serosa
+616,Recurrence,Levamisole,60,Female,Y,N,6,Y,N,Moderate,Serosa
+617,No Recurrence,Observation,39,Female,N,N,8,Y,N,Moderate,Serosa
+618,Recurrence,Observation,76,Female,N,N,5,Y,Y,Moderate,Serosa
+619,Recurrence,Levamisole + 5FU,62,Male,N,N,14,Y,N,Poor,Serosa
+620,Recurrence,Levamisole,41,Female,N,N,2,N,Y,Moderate,Serosa
+621,Recurrence,Levamisole + 5FU,35,Male,N,N,2,N,Y,Moderate,Serosa
+622,No Recurrence,Observation,59,Female,N,N,1,N,N,Moderate,Serosa
+623,No Recurrence,Observation,52,Male,N,N,2,N,N,Moderate,Serosa
+624,No Recurrence,Levamisole + 5FU,65,Male,N,N,1,N,N,Moderate,Serosa
+625,No Recurrence,Levamisole + 5FU,61,Male,N,N,3,N,N,Poor,Serosa
+626,No Recurrence,Observation,61,Male,N,N,8,N,N,Well,Serosa
+627,Recurrence,Observation,59,Male,N,N,1,N,N,Well,Serosa
+628,No Recurrence,Levamisole + 5FU,59,Male,N,N,2,N,N,,Serosa
+629,Recurrence,Levamisole + 5FU,71,Female,N,N,5,Y,N,Moderate,Muscle
+630,No Recurrence,Observation,39,Male,N,N,4,N,N,Poor,Contiguous Structures
+631,Recurrence,Observation,65,Male,N,N,7,Y,N,Poor,Serosa
+632,Recurrence,Levamisole,34,Female,Y,N,3,N,N,Well,Serosa
+633,No Recurrence,Observation,51,Male,Y,N,4,N,N,Moderate,Serosa
+634,No Recurrence,Observation,55,Female,N,N,3,N,N,Moderate,Serosa
+635,No Recurrence,Levamisole + 5FU,65,Male,N,Y,3,N,N,Poor,Serosa
+636,No Recurrence,Levamisole + 5FU,71,Female,N,N,,Y,N,Well,Serosa
+637,Recurrence,Levamisole,68,Female,Y,N,1,N,N,Moderate,Serosa
+638,Recurrence,Levamisole,59,Female,N,N,1,N,N,Moderate,Serosa
+639,Recurrence,Levamisole,66,Male,N,N,2,N,N,Poor,Serosa
+640,No Recurrence,Observation,62,Male,N,N,2,N,N,Moderate,Muscle
+641,Recurrence,Levamisole + 5FU,40,Female,N,N,8,Y,N,Moderate,Serosa
+642,Recurrence,Levamisole,64,Male,N,N,3,N,N,Poor,Serosa
+643,Recurrence,Levamisole + 5FU,40,Male,Y,N,2,N,N,Poor,Serosa
+644,Recurrence,Levamisole,70,Male,N,N,9,Y,N,Moderate,Serosa
+645,Recurrence,Levamisole,66,Male,N,N,1,N,Y,,Contiguous Structures
+646,No Recurrence,Levamisole + 5FU,73,Male,Y,N,1,N,Y,Moderate,Muscle
+647,Recurrence,Levamisole,69,Male,N,N,1,N,N,Well,Serosa
+648,Recurrence,Observation,58,Male,N,N,1,N,N,Moderate,Serosa
+649,Recurrence,Levamisole + 5FU,55,Female,N,N,6,Y,N,Moderate,Serosa
+650,Recurrence,Levamisole,53,Female,N,N,6,Y,Y,Moderate,Serosa
+651,No Recurrence,Levamisole,52,Male,N,N,2,N,N,Moderate,Serosa
+652,Recurrence,Observation,62,Female,N,N,3,N,N,Moderate,Serosa
+653,Recurrence,Levamisole,61,Male,N,N,2,N,Y,Moderate,Serosa
+654,No Recurrence,Levamisole + 5FU,69,Female,N,N,3,N,N,Moderate,Serosa
+655,Recurrence,Levamisole + 5FU,41,Female,Y,N,3,N,N,Moderate,Serosa
+656,Recurrence,Observation,64,Male,N,N,3,N,N,Moderate,Serosa
+657,Recurrence,Levamisole + 5FU,59,Female,N,N,3,N,N,Poor,Serosa
+658,No Recurrence,Levamisole,65,Female,N,N,1,N,N,Well,Muscle
+659,Recurrence,Observation,66,Male,N,N,3,N,N,Moderate,Serosa
+660,No Recurrence,Levamisole,60,Male,N,N,2,N,N,Moderate,Serosa
+661,No Recurrence,Levamisole + 5FU,43,Male,N,N,1,N,Y,Moderate,Serosa
+662,Recurrence,Observation,74,Male,N,N,1,N,N,Poor,Serosa
+663,No Recurrence,Levamisole + 5FU,67,Male,N,N,2,N,N,Poor,Muscle
+664,No Recurrence,Levamisole,46,Male,Y,N,1,N,N,Moderate,Serosa
+665,No Recurrence,Levamisole + 5FU,47,Male,N,N,3,N,N,Moderate,Muscle
+666,Recurrence,Observation,66,Male,Y,N,4,N,N,Moderate,Serosa
+667,No Recurrence,Levamisole + 5FU,36,Female,Y,N,6,Y,N,Moderate,Serosa
+668,Recurrence,Observation,62,Male,Y,N,2,N,N,Poor,Serosa
+669,Recurrence,Levamisole,69,Female,N,N,2,N,N,Moderate,Serosa
+670,Recurrence,Observation,76,Female,N,N,3,N,N,Well,Serosa
+671,Recurrence,Levamisole,36,Male,Y,N,2,N,N,Poor,Serosa
+672,No Recurrence,Observation,73,Male,N,N,3,N,Y,,Muscle
+673,No Recurrence,Observation,72,Male,N,N,5,Y,N,Moderate,Muscle
+674,No Recurrence,Levamisole,61,Male,N,N,1,N,N,Moderate,Muscle
+675,No Recurrence,Observation,58,Male,N,N,2,N,N,Moderate,Serosa
+676,No Recurrence,Levamisole + 5FU,52,Female,Y,N,3,N,N,Well,Serosa
+677,Recurrence,Observation,66,Male,N,N,2,N,N,Moderate,Contiguous Structures
+678,Recurrence,Levamisole,43,Female,N,N,7,Y,N,Moderate,Serosa
+679,No Recurrence,Levamisole + 5FU,60,Male,N,N,1,N,N,Moderate,Muscle
+680,No Recurrence,Observation,61,Female,N,N,4,N,N,Moderate,Serosa
+681,No Recurrence,Levamisole,61,Male,N,N,3,N,N,Moderate,Muscle
+682,No Recurrence,Levamisole + 5FU,46,Male,N,N,1,N,N,Moderate,Submucosa
+683,No Recurrence,Levamisole,73,Male,N,N,1,N,N,Moderate,Serosa
+684,Recurrence,Observation,65,Female,Y,N,3,N,N,Moderate,Serosa
+685,No Recurrence,Levamisole + 5FU,61,Female,Y,N,1,N,N,Moderate,Serosa
+686,Recurrence,Levamisole,65,Male,N,N,15,Y,N,Poor,Serosa
+687,Recurrence,Observation,68,Male,N,N,2,N,N,Moderate,Serosa
+688,No Recurrence,Levamisole + 5FU,63,Male,N,N,1,N,N,Moderate,Serosa
+689,No Recurrence,Levamisole,72,Male,Y,N,4,N,N,Poor,Serosa
+690,Recurrence,Levamisole + 5FU,74,Female,N,Y,2,N,N,Moderate,Serosa
+691,Recurrence,Levamisole,45,Female,N,N,9,Y,N,Moderate,Serosa
+692,Recurrence,Levamisole,66,Female,N,N,1,N,N,Well,Serosa
+693,Recurrence,Observation,38,Male,Y,N,2,N,N,,Contiguous Structures
+694,Recurrence,Observation,46,Female,N,Y,2,N,Y,Poor,Contiguous Structures
+695,No Recurrence,Levamisole + 5FU,51,Female,N,N,1,N,N,Moderate,Serosa
+696,Recurrence,Levamisole + 5FU,65,Male,N,N,3,N,N,Moderate,Contiguous Structures
+697,Recurrence,Observation,55,Male,N,N,2,N,N,Moderate,Serosa
+698,Recurrence,Observation,58,Male,N,N,4,N,N,Moderate,Serosa
+699,No Recurrence,Levamisole + 5FU,65,Male,N,N,1,N,N,Moderate,Serosa
+700,No Recurrence,Levamisole + 5FU,46,Female,Y,N,2,N,N,Well,Serosa
+701,No Recurrence,Levamisole,57,Female,N,N,1,N,N,Moderate,Serosa
+702,No Recurrence,Observation,67,Male,N,N,1,N,Y,Moderate,Serosa
+703,No Recurrence,Levamisole,75,Female,N,N,1,N,N,Moderate,Serosa
+704,Recurrence,Levamisole,64,Male,N,N,5,Y,Y,Moderate,Serosa
+705,No Recurrence,Levamisole,63,Male,N,N,2,N,N,Moderate,Serosa
+706,No Recurrence,Levamisole,64,Male,N,N,3,Y,N,Moderate,Serosa
+707,No Recurrence,Observation,59,Male,N,N,1,N,N,Moderate,Serosa
+708,No Recurrence,Levamisole,78,Female,N,N,3,N,N,Moderate,Serosa
+709,Recurrence,Levamisole + 5FU,63,Male,N,N,2,N,N,Well,Submucosa
+710,Recurrence,Observation,57,Male,N,N,4,N,N,Well,Serosa
+711,Recurrence,Observation,52,Male,N,N,3,N,N,Moderate,Serosa
+712,Recurrence,Observation,50,Female,N,N,3,N,N,Moderate,Serosa
+713,Recurrence,Observation,36,Male,Y,N,3,N,N,Moderate,Serosa
+714,No Recurrence,Levamisole + 5FU,50,Female,N,N,4,N,N,Poor,Serosa
+715,No Recurrence,Observation,53,Male,N,N,1,N,N,Moderate,Serosa
+716,No Recurrence,Levamisole + 5FU,48,Male,N,N,7,Y,N,Moderate,Serosa
+717,Recurrence,Observation,55,Female,N,N,2,N,N,Moderate,Serosa
+718,No Recurrence,Levamisole + 5FU,47,Male,N,N,2,N,N,Moderate,Muscle
+719,No Recurrence,Levamisole,74,Female,N,N,1,N,Y,Moderate,Serosa
+720,No Recurrence,Levamisole + 5FU,53,Male,Y,Y,3,N,N,Moderate,Serosa
+721,Recurrence,Observation,55,Male,N,N,7,Y,N,Moderate,Serosa
+722,No Recurrence,Levamisole,53,Male,N,N,4,N,N,Moderate,Muscle
+723,Recurrence,Observation,67,Male,N,Y,4,N,N,Moderate,Contiguous Structures
+724,Recurrence,Levamisole,56,Male,N,N,3,N,N,Moderate,Serosa
+725,Recurrence,Levamisole + 5FU,30,Female,Y,N,1,N,Y,Moderate,Serosa
+726,Recurrence,Levamisole,56,Female,N,N,8,Y,N,Well,Serosa
+727,No Recurrence,Levamisole + 5FU,46,Male,Y,N,3,N,N,Moderate,Serosa
+728,Recurrence,Levamisole,60,Male,N,N,1,N,N,Well,Muscle
+729,No Recurrence,Observation,60,Female,N,N,1,N,N,Moderate,Muscle
+730,Recurrence,Observation,57,Male,Y,N,9,Y,N,Poor,Serosa
+731,No Recurrence,Levamisole + 5FU,42,Female,N,N,1,N,N,Poor,Serosa
+732,No Recurrence,Observation,58,Male,N,N,2,N,N,Moderate,Serosa
+733,No Recurrence,Observation,53,Female,N,N,1,N,N,Poor,Serosa
+734,No Recurrence,Levamisole + 5FU,73,Male,N,N,1,N,Y,Moderate,Serosa
+735,No Recurrence,Observation,73,Male,N,N,7,Y,N,Moderate,Serosa
+736,Recurrence,Observation,57,Male,N,N,,Y,N,Moderate,Serosa
+737,No Recurrence,Levamisole + 5FU,77,Female,N,N,1,N,N,Poor,Serosa
+738,No Recurrence,Observation,60,Male,N,N,2,N,N,,Serosa
+739,No Recurrence,Levamisole,74,Male,N,N,8,Y,N,Moderate,Serosa
+740,No Recurrence,Levamisole + 5FU,70,Male,N,N,3,N,N,Moderate,Muscle
+741,No Recurrence,Observation,53,Female,N,N,5,Y,N,Moderate,Serosa
+742,Recurrence,Levamisole + 5FU,68,Female,N,N,8,Y,Y,Moderate,Contiguous Structures
+743,Recurrence,Levamisole,59,Male,Y,N,2,N,N,Moderate,Serosa
+744,No Recurrence,Levamisole,29,Male,Y,N,3,N,N,Moderate,Serosa
+745,No Recurrence,Observation,57,Female,N,N,2,N,N,Moderate,Muscle
+746,No Recurrence,Observation,61,Male,N,N,4,N,N,Moderate,Muscle
+747,No Recurrence,Observation,68,Male,Y,N,3,N,N,Moderate,Serosa
+748,Recurrence,Levamisole + 5FU,49,Male,N,N,11,Y,N,Moderate,Serosa
+749,No Recurrence,Levamisole,70,Female,N,N,2,N,N,Moderate,Serosa
+750,No Recurrence,Observation,53,Male,Y,N,2,N,N,Moderate,Serosa
+751,Recurrence,Levamisole + 5FU,57,Female,Y,N,2,N,N,Poor,Serosa
+752,No Recurrence,Levamisole,76,Male,N,N,1,N,N,Moderate,Serosa
+753,No Recurrence,Levamisole,59,Male,N,N,2,N,Y,Moderate,Muscle
+754,No Recurrence,Levamisole + 5FU,56,Male,N,N,1,N,N,Moderate,Muscle
+755,Recurrence,Levamisole + 5FU,38,Male,N,N,7,Y,N,Moderate,Serosa
+756,Recurrence,Levamisole,61,Female,N,N,10,Y,N,Poor,Serosa
+757,Recurrence,Observation,49,Male,N,N,2,N,N,Moderate,Serosa
+758,Recurrence,Observation,69,Female,N,N,12,Y,N,Moderate,Serosa
+759,No Recurrence,Observation,53,Male,N,N,1,N,N,Moderate,Serosa
+760,Recurrence,Levamisole + 5FU,72,Female,N,N,6,Y,N,Poor,Serosa
+761,No Recurrence,Levamisole,57,Female,N,N,3,N,N,Moderate,Serosa
+762,Recurrence,Levamisole,73,Male,N,N,1,N,Y,Moderate,Contiguous Structures
+763,Recurrence,Levamisole + 5FU,58,Female,N,N,2,N,Y,Well,Serosa
+764,Recurrence,Levamisole + 5FU,69,Male,N,N,5,Y,N,Moderate,Serosa
+765,No Recurrence,Observation,69,Female,Y,N,3,N,N,Poor,Serosa
+766,Recurrence,Levamisole + 5FU,47,Female,N,N,5,Y,N,Moderate,Serosa
+767,Recurrence,Levamisole,80,Female,N,Y,2,N,N,Well,Muscle
+768,No Recurrence,Levamisole + 5FU,67,Male,N,N,2,N,N,Moderate,Serosa
+769,No Recurrence,Levamisole,54,Female,N,N,1,N,N,Moderate,Serosa
+770,No Recurrence,Levamisole + 5FU,63,Male,N,N,7,Y,Y,Poor,Serosa
+771,Recurrence,Levamisole,65,Female,Y,N,,Y,N,Poor,Serosa
+772,No Recurrence,Levamisole + 5FU,65,Female,N,Y,3,N,Y,Moderate,Serosa
+773,Recurrence,Observation,48,Female,Y,N,2,N,N,Moderate,Serosa
+774,No Recurrence,Observation,52,Male,N,N,2,N,N,Moderate,Serosa
+775,No Recurrence,Observation,67,Male,N,N,1,N,Y,Well,Serosa
+776,Recurrence,Levamisole,70,Female,N,Y,5,Y,Y,Well,Serosa
+777,Recurrence,Levamisole,51,Female,Y,N,6,Y,Y,Poor,Serosa
+778,Recurrence,Levamisole + 5FU,32,Female,N,N,14,Y,N,Poor,Muscle
+779,No Recurrence,Levamisole + 5FU,63,Male,N,N,7,Y,Y,Poor,Serosa
+780,No Recurrence,Observation,81,Female,N,N,1,N,Y,Moderate,Serosa
+781,Recurrence,Observation,66,Male,N,N,7,Y,N,Moderate,Contiguous Structures
+782,Recurrence,Levamisole + 5FU,60,Female,N,Y,4,N,Y,Poor,Serosa
+783,Recurrence,Observation,81,Female,Y,N,1,N,N,Well,Serosa
+784,Recurrence,Observation,66,Male,Y,N,4,N,Y,Moderate,Serosa
+785,No Recurrence,Levamisole,78,Male,N,N,2,N,Y,Poor,Serosa
+786,No Recurrence,Levamisole,46,Female,N,N,3,N,N,Moderate,Serosa
+787,Recurrence,Observation,57,Female,N,N,,Y,N,Moderate,Serosa
+788,No Recurrence,Levamisole + 5FU,57,Female,N,N,3,N,N,Moderate,Submucosa
+789,Recurrence,Levamisole + 5FU,67,Female,N,N,2,N,N,Poor,Serosa
+790,Recurrence,Levamisole,68,Male,N,N,9,Y,N,Moderate,Serosa
+791,Recurrence,Levamisole + 5FU,38,Female,N,N,2,N,N,Moderate,Serosa
+792,No Recurrence,Levamisole + 5FU,70,Female,N,N,3,N,N,Moderate,Serosa
+793,No Recurrence,Observation,66,Male,N,N,2,N,N,Moderate,Serosa
+794,Recurrence,Levamisole,63,Male,N,N,8,Y,N,Moderate,Serosa
+795,No Recurrence,Levamisole + 5FU,72,Male,N,N,5,Y,N,Moderate,Muscle
+796,Recurrence,Observation,61,Male,Y,N,1,N,Y,Well,Serosa
+797,Recurrence,Levamisole + 5FU,46,Male,N,N,3,N,N,Moderate,Serosa
+798,No Recurrence,Levamisole + 5FU,36,Female,Y,N,3,N,N,Moderate,Serosa
+799,No Recurrence,Observation,69,Female,N,N,1,N,N,Moderate,Muscle
+800,No Recurrence,Levamisole + 5FU,75,Female,N,N,1,N,N,Moderate,Serosa
+801,Recurrence,Levamisole,64,Female,N,N,12,Y,N,Moderate,Serosa
+802,Recurrence,Levamisole,77,Male,N,N,1,N,N,Moderate,Serosa
+803,Recurrence,Observation,51,Female,N,N,7,Y,N,Moderate,Muscle
+804,No Recurrence,Observation,36,Male,N,N,6,Y,N,Moderate,Serosa
+805,Recurrence,Observation,56,Male,N,N,7,Y,N,Moderate,Serosa
+806,Recurrence,Levamisole,63,Female,N,N,2,N,N,Moderate,Serosa
+807,Recurrence,Levamisole,64,Male,N,N,2,N,N,Moderate,Serosa
+808,No Recurrence,Levamisole,44,Male,N,N,1,N,N,Moderate,Serosa
+809,Recurrence,Levamisole,73,Male,Y,N,7,Y,N,Moderate,Serosa
+810,Recurrence,Levamisole,54,Male,Y,N,1,N,N,Moderate,Contiguous Structures
+811,Recurrence,Levamisole,44,Male,N,N,2,N,N,Moderate,Muscle
+812,No Recurrence,Levamisole,30,Male,N,Y,9,Y,N,Moderate,Serosa
+813,Recurrence,Levamisole + 5FU,65,Female,N,N,7,Y,N,Moderate,Serosa
+814,No Recurrence,Observation,68,Female,Y,N,2,N,N,Moderate,Serosa
+815,No Recurrence,Observation,56,Female,N,N,2,N,N,,Submucosa
+816,Recurrence,Observation,62,Male,N,N,5,Y,N,Poor,Serosa
+817,Recurrence,Levamisole,36,Female,N,N,7,Y,N,Well,Muscle
+818,No Recurrence,Levamisole + 5FU,57,Male,N,N,2,N,N,Well,Serosa
+819,Recurrence,Levamisole + 5FU,31,Male,Y,N,,Y,N,Well,Serosa
+820,Recurrence,Levamisole,39,Male,N,N,11,Y,N,Moderate,Serosa
+821,Recurrence,Observation,53,Male,N,N,3,N,N,Moderate,Serosa
+822,Recurrence,Levamisole,60,Male,Y,N,14,Y,N,Moderate,Contiguous Structures
+823,No Recurrence,Observation,65,Female,Y,N,1,N,N,Moderate,Serosa
+824,No Recurrence,Levamisole + 5FU,61,Female,N,N,1,N,N,Moderate,Serosa
+825,No Recurrence,Levamisole,77,Female,Y,N,3,N,Y,Moderate,Serosa
+826,Recurrence,Observation,48,Female,Y,N,5,Y,N,Moderate,Serosa
+827,Recurrence,Observation,77,Male,N,N,3,N,N,Well,Serosa
+828,No Recurrence,Levamisole,69,Male,N,N,10,Y,N,Poor,Serosa
+829,Recurrence,Levamisole + 5FU,36,Female,N,N,17,Y,N,Poor,Serosa
+830,Recurrence,Levamisole + 5FU,64,Female,N,N,4,N,Y,Moderate,Serosa
+831,No Recurrence,Levamisole + 5FU,70,Male,N,N,1,N,N,Moderate,Muscle
+832,No Recurrence,Levamisole + 5FU,74,Female,N,N,3,N,N,Well,Serosa
+833,Recurrence,Levamisole + 5FU,63,Male,N,N,9,Y,N,Poor,Serosa
+834,Recurrence,Levamisole,52,Female,N,N,10,Y,N,Poor,Serosa
+835,Recurrence,Levamisole,54,Female,N,N,3,N,N,Moderate,Serosa
+836,No Recurrence,Levamisole + 5FU,54,Female,Y,N,4,N,N,Moderate,Serosa
+837,Recurrence,Levamisole,41,Female,Y,N,1,N,N,Well,Serosa
+838,Recurrence,Observation,61,Female,N,N,4,N,N,Moderate,Serosa
+839,Recurrence,Levamisole + 5FU,34,Female,Y,N,10,Y,N,Poor,Serosa
+840,Recurrence,Observation,59,Female,Y,N,3,N,N,Moderate,Serosa
+841,No Recurrence,Levamisole + 5FU,57,Female,N,N,3,N,N,Moderate,Serosa
+842,Recurrence,Observation,39,Female,N,N,6,Y,N,Moderate,Muscle
+843,Recurrence,Observation,74,Male,N,N,3,N,N,Poor,Serosa
+844,No Recurrence,Levamisole,45,Male,Y,N,3,N,N,Moderate,Serosa
+845,No Recurrence,Levamisole + 5FU,66,Female,N,N,1,N,N,Moderate,Serosa
+846,No Recurrence,Levamisole,60,Male,N,N,2,N,N,Moderate,Serosa
+847,No Recurrence,Levamisole + 5FU,73,Male,N,N,1,N,N,Moderate,Serosa
+848,No Recurrence,Observation,76,Female,N,N,1,N,N,Poor,Muscle
+849,No Recurrence,Levamisole,79,Female,Y,N,1,N,N,Moderate,Serosa
+850,Recurrence,Levamisole,47,Male,Y,N,4,N,N,Moderate,Serosa
+851,Recurrence,Observation,60,Male,N,N,9,Y,N,Moderate,Serosa
+852,No Recurrence,Levamisole,62,Female,N,N,3,N,N,Moderate,Serosa
+853,Recurrence,Observation,18,Male,Y,N,4,N,Y,Poor,Muscle
+854,No Recurrence,Levamisole,75,Female,N,N,5,Y,N,Moderate,Serosa
+855,No Recurrence,Levamisole,56,Female,N,N,3,N,N,Well,Serosa
+856,Recurrence,Levamisole + 5FU,70,Male,Y,N,5,Y,N,Moderate,Muscle
+857,No Recurrence,Levamisole + 5FU,54,Female,N,N,3,N,N,,Muscle
+858,Recurrence,Observation,64,Female,N,N,1,N,N,Moderate,Serosa
+859,No Recurrence,Levamisole,63,Female,N,N,1,N,N,Moderate,Serosa
+860,No Recurrence,Levamisole,52,Female,Y,N,2,N,N,Well,Serosa
+861,Recurrence,Levamisole + 5FU,71,Female,N,N,11,Y,Y,Moderate,Serosa
+862,Recurrence,Levamisole + 5FU,54,Female,N,N,1,N,N,Well,Serosa
+863,Recurrence,Levamisole,27,Female,N,N,1,N,N,Poor,Muscle
+864,No Recurrence,Observation,68,Male,N,N,10,Y,Y,Moderate,Serosa
+865,Recurrence,Observation,49,Female,N,N,2,N,N,Moderate,Serosa
+866,Recurrence,Observation,61,Male,N,N,2,N,Y,Moderate,Contiguous Structures
+867,No Recurrence,Levamisole + 5FU,40,Male,N,N,16,Y,N,Moderate,Serosa
+868,Recurrence,Levamisole + 5FU,38,Male,N,N,3,N,N,Well,Serosa
+869,No Recurrence,Observation,56,Female,N,N,2,N,N,Moderate,Muscle
+870,Recurrence,Levamisole + 5FU,79,Male,Y,N,1,N,N,Moderate,Serosa
+871,Recurrence,Observation,55,Female,N,N,13,Y,N,Poor,Serosa
+872,No Recurrence,Observation,59,Female,N,N,1,N,N,Moderate,Submucosa
+873,Recurrence,Levamisole,36,Male,N,N,4,N,Y,Moderate,Serosa
+874,No Recurrence,Levamisole + 5FU,63,Female,Y,N,2,N,N,Moderate,Serosa
+875,Recurrence,Observation,27,Male,N,Y,12,Y,Y,Moderate,Serosa
+876,Recurrence,Levamisole,66,Female,N,N,2,N,Y,Moderate,Muscle
+877,Recurrence,Levamisole,63,Male,N,N,3,N,N,Moderate,Serosa
+878,Recurrence,Levamisole,64,Male,N,N,2,N,N,Moderate,Muscle
+879,No Recurrence,Observation,78,Female,N,N,1,N,N,Moderate,Serosa
+880,No Recurrence,Levamisole + 5FU,66,Female,Y,N,2,N,N,Moderate,Serosa
+881,No Recurrence,Observation,64,Female,N,N,3,N,N,Poor,Serosa
+882,No Recurrence,Observation,68,Male,N,N,2,N,N,Moderate,Serosa
+883,No Recurrence,Levamisole + 5FU,35,Male,N,N,2,N,Y,Moderate,Serosa
+884,Recurrence,Levamisole + 5FU,64,Male,N,N,2,N,Y,Poor,Serosa
+885,Recurrence,Levamisole,60,Female,N,N,2,N,N,Moderate,Muscle
+886,No Recurrence,Observation,55,Female,Y,N,1,N,N,Moderate,Serosa
+887,Recurrence,Observation,39,Male,N,N,6,Y,N,Moderate,Serosa
+888,No Recurrence,Levamisole + 5FU,67,Male,N,N,3,N,N,Moderate,Serosa
+889,No Recurrence,Levamisole,55,Male,Y,N,3,N,N,Poor,Serosa
+890,Recurrence,Levamisole,61,Male,N,N,8,Y,N,Moderate,Serosa
+891,Recurrence,Levamisole,67,Female,N,N,6,Y,N,Moderate,Serosa
+892,No Recurrence,Levamisole,62,Male,N,N,1,N,N,Moderate,Serosa
+893,Recurrence,Levamisole + 5FU,52,Female,N,N,4,N,N,Moderate,Serosa
+894,Recurrence,Levamisole,80,Male,N,N,1,N,N,Moderate,Serosa
+895,No Recurrence,Observation,51,Female,N,N,11,Y,N,Moderate,Serosa
+896,No Recurrence,Observation,74,Male,N,N,1,N,N,Poor,Submucosa
+897,Recurrence,Observation,70,Male,Y,Y,4,N,Y,Moderate,Serosa
+898,No Recurrence,Levamisole + 5FU,73,Male,N,N,4,N,N,Moderate,Serosa
+899,No Recurrence,Levamisole,56,Female,N,N,3,N,N,Poor,Contiguous Structures
+900,Recurrence,Observation,70,Female,Y,N,15,Y,N,Moderate,Serosa
+901,No Recurrence,Levamisole,68,Male,N,N,12,Y,N,Moderate,Serosa
+902,Recurrence,Levamisole,51,Male,N,N,2,N,Y,Poor,Serosa
+903,No Recurrence,Levamisole + 5FU,56,Female,N,N,3,N,N,Moderate,Serosa
+904,Recurrence,Observation,71,Male,N,N,10,Y,N,Well,Serosa
+905,Recurrence,Observation,63,Female,N,N,2,N,N,Well,Serosa
+906,Recurrence,Levamisole,82,Male,N,N,3,N,N,Moderate,Serosa
+907,No Recurrence,Observation,68,Female,N,N,12,Y,N,Poor,Serosa
+908,No Recurrence,Observation,55,Female,N,N,2,N,N,Moderate,Serosa
+909,No Recurrence,Levamisole + 5FU,71,Male,N,N,1,N,N,Moderate,Serosa
+910,Recurrence,Levamisole,68,Female,N,N,12,Y,Y,Moderate,Serosa
+911,Recurrence,Levamisole,60,Male,N,N,13,Y,N,Moderate,Serosa
+912,No Recurrence,Levamisole,72,Male,N,N,3,N,N,Well,Serosa
+913,No Recurrence,Levamisole + 5FU,69,Male,Y,Y,3,N,Y,Moderate,Serosa
+914,Recurrence,Observation,46,Female,Y,N,3,N,N,Moderate,Muscle
+915,No Recurrence,Levamisole,42,Female,N,N,6,Y,N,Well,Serosa
+916,Recurrence,Observation,37,Female,N,N,8,Y,N,Moderate,Serosa
+917,Recurrence,Observation,71,Female,N,N,5,Y,N,Poor,Serosa
+918,Recurrence,Levamisole,50,Male,N,N,7,Y,N,Moderate,Muscle
+919,Recurrence,Levamisole,70,Female,Y,N,1,N,Y,Moderate,Muscle
+920,No Recurrence,Levamisole + 5FU,70,Female,N,N,5,Y,Y,Moderate,Muscle
+921,Recurrence,Levamisole,58,Male,Y,N,3,N,N,Moderate,Contiguous Structures
+922,Recurrence,Levamisole + 5FU,70,Female,N,N,1,N,N,Moderate,Serosa
+923,No Recurrence,Levamisole + 5FU,55,Male,Y,N,2,N,N,Poor,Serosa
+924,No Recurrence,Observation,64,Male,Y,N,2,N,Y,Poor,Serosa
+925,No Recurrence,Levamisole + 5FU,71,Male,N,N,4,N,Y,Moderate,Serosa
+926,No Recurrence,Levamisole,72,Female,N,N,1,N,N,Moderate,Serosa
+927,Recurrence,Levamisole,76,Male,N,N,1,N,Y,Poor,Serosa
+928,No Recurrence,Levamisole + 5FU,48,Female,Y,N,4,Y,N,Moderate,Serosa
+929,No Recurrence,Levamisole,66,Female,Y,N,1,N,N,Moderate,Serosa

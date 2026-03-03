@@ -13,6 +13,8 @@
 ##   inst/extdata/xlsx/tern_colon_phi.xlsx
 ##   inst/extdata/csv/tern_colon_unnamed.csv  — unnamed column hard stop demo
 ##   inst/extdata/xlsx/tern_colon_unnamed.xlsx
+##   inst/extdata/csv/tern_colon.csv          — clean dataset (no messiness)
+##   inst/extdata/xlsx/tern_colon.xlsx
 ##
 ## Synthetic modifications in tern_colon_messy (NOT present in original data):
 ##   - String NA injection: "NA", "na", "Na", "unk" inserted in Sex and Tumor_Differentiation
@@ -215,13 +217,13 @@ dir.create("inst/extdata/csv",  showWarnings = FALSE, recursive = TRUE)
 dir.create("inst/extdata/xlsx", showWarnings = FALSE, recursive = TRUE)
 
 readr::write_csv(
-  tern_colon_messy,
+  tern_colon_messy |> dplyr::relocate(ID, Recurrence, Treatment_Arm),
   file = "inst/extdata/csv/tern_colon_messy.csv",
   na   = ""   # write NA as blank cell, as a real export would look
 )
 
 writexl::write_xlsx(
-  tern_colon_messy,
+  tern_colon_messy |> dplyr::relocate(ID, Recurrence, Treatment_Arm),
   path = "inst/extdata/xlsx/tern_colon_messy.xlsx"
 )
 
@@ -302,3 +304,27 @@ writexl::write_xlsx(unnamed_demo, path = "inst/extdata/xlsx/tern_colon_unnamed.x
 
 message("inst/extdata/csv/tern_colon_unnamed.csv and xlsx/tern_colon_unnamed.xlsx written successfully.")
 message(paste0("Rows: ", nrow(unnamed_demo), "  |  Columns: ", ncol(unnamed_demo)))
+
+# ------------------------------------------------------------------------------
+# CLEAN EXPORT: tern_colon (no synthetic messiness)
+#   inst/extdata/csv/tern_colon.csv
+#   inst/extdata/xlsx/tern_colon.xlsx
+#   Purpose: provide a ready-to-use clean copy of the bundled dataset in
+#   CSV and XLSX formats — useful for the web app and for users who want to
+#   follow the vignette with their own upload workflow via ternP().
+#   `base` is identical to the `tern_colon` object built in tern_colon.R.
+# ------------------------------------------------------------------------------
+
+readr::write_csv(
+  base |> mutate(across(everything(), as.character)) |> dplyr::relocate(ID, Recurrence, Treatment_Arm),
+  file = "inst/extdata/csv/tern_colon.csv",
+  na   = ""
+)
+
+writexl::write_xlsx(
+  base |> mutate(across(everything(), as.character)) |> dplyr::relocate(ID, Recurrence, Treatment_Arm),
+  path = "inst/extdata/xlsx/tern_colon.xlsx"
+)
+
+message("inst/extdata/csv/tern_colon.csv and xlsx/tern_colon.xlsx written successfully.")
+message(paste0("Rows: ", nrow(base), "  |  Columns: ", ncol(base)))
