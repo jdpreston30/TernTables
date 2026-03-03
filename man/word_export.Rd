@@ -13,7 +13,8 @@ word_export(
   manual_italic_indent = NULL,
   manual_underline = NULL,
   table_caption = NULL,
-  table_footnote = NULL
+  table_footnote = NULL,
+  line_break_header = getOption("TernTables.line_break_header", TRUE)
 )
 }
 \arguments{
@@ -45,6 +46,12 @@ Default is \code{NULL} (no caption).}
 \item{table_footnote}{Optional character string to display as a footnote below the table in the Word
 document. Rendered as size 6 Arial italic. A double-bar border is applied above and below the
 footnote row. Default is \code{NULL} (no footnote).}
+
+\item{line_break_header}{Logical; if \code{TRUE} (default), column headers are wrapped with
+\code{\\n} -- group names break on spaces, sample size counts move to a second line, and
+the first column header includes a category hierarchy label. Set to \code{FALSE} to suppress
+all header line breaks. Can also be set package-wide via
+\code{options(TernTables.line_break_header = FALSE)}.}
 }
 \value{
 Invisibly returns the path to the written Word file.

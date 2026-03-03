@@ -20,6 +20,11 @@
 #' @param table_footnote Optional character string to display as a footnote below the table in the Word
 #'   document. Rendered as size 6 Arial italic. A double-bar border is applied above and below the
 #'   footnote row. Default is \code{NULL} (no footnote).
+#' @param line_break_header Logical; if \code{TRUE} (default), column headers are wrapped with
+#'   \code{\\n} -- group names break on spaces, sample size counts move to a second line, and
+#'   the first column header includes a category hierarchy label. Set to \code{FALSE} to suppress
+#'   all header line breaks. Can also be set package-wide via
+#'   \code{options(TernTables.line_break_header = FALSE)}.
 #' @return Invisibly returns the path to the written Word file.
 #' @examples
 #' \dontrun{
@@ -35,7 +40,7 @@
 #' )
 #' }
 #' @export
-word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, category_start = NULL, manual_italic_indent = NULL, manual_underline = NULL, table_caption = NULL, table_footnote = NULL) {
+word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, category_start = NULL, manual_italic_indent = NULL, manual_underline = NULL, table_caption = NULL, table_footnote = NULL, line_break_header = getOption("TernTables.line_break_header", TRUE)) {
   # Keep the table as-is
   modified_tbl <- tbl
 
@@ -103,46 +108,59 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
   # Modify column headers to add symbols and line breaks
   original_colnames <- colnames(modified_tbl)
   new_colnames <- original_colnames
-  
-  # Replace first column header with category hierarchy
-  new_colnames[1] <- "Category\n   Variable"
-  
-  # Add line breaks for sample sizes and multi-word group names
-  for (i in 2:length(new_colnames)) {
-    if (!new_colnames[i] %in% c("P", "test", "OR", "OR_method") && !grepl("^Total", new_colnames[i])) {
-      col <- new_colnames[i]
-      # Insert \n before the (n = ...) count suffix
-      col <- gsub(" \\(n = ", "\n(n = ", col)
-      # For multi-word group names, replace any remaining spaces in the label
-      # portion (before the count suffix) with \n so they wrap automatically
-      if (grepl("\n", col, fixed = TRUE)) {
-        parts <- strsplit(col, "\n", fixed = TRUE)[[1]]
-        # Keep "+ word" together: only break spaces in the portion before " + "
-        if (grepl(" \\+ ", parts[1])) {
-          plus_pos <- regexpr(" \\+ ", parts[1])
-          pre  <- substr(parts[1], 1, plus_pos - 1)
-          post <- paste0("+ ", substr(parts[1], plus_pos + 3, nchar(parts[1])))
-          parts[1] <- paste0(gsub(" ", "\n", pre), "\n", post)
+
+  if (line_break_header) {
+    # Replace first column header with category hierarchy
+    new_colnames[1] <- "Category\n   Variable"
+
+    # Add line breaks for sample sizes and multi-word group names
+    for (i in 2:length(new_colnames)) {
+      if (!new_colnames[i] %in% c("P", "test", "OR", "OR_method") && !grepl("^Total", new_colnames[i])) {
+        col <- new_colnames[i]
+        # Insert \n before the (n = ...) count suffix
+        col <- gsub(" \\(n = ", "\n(n = ", col)
+        # For multi-word group names, replace any remaining spaces in the label
+        # portion (before the count suffix) with \n so they wrap automatically
+        if (grepl("\n", col, fixed = TRUE)) {
+          parts <- strsplit(col, "\n", fixed = TRUE)[[1]]
+          # Keep "+ word" together: only break spaces in the portion before " + "
+          if (grepl(" \\+ ", parts[1])) {
+            plus_pos <- regexpr(" \\+ ", parts[1])
+            pre  <- substr(parts[1], 1, plus_pos - 1)
+            post <- paste0("+ ", substr(parts[1], plus_pos + 3, nchar(parts[1])))
+            parts[1] <- paste0(gsub(" ", "\n", pre), "\n", post)
+          } else {
+            parts[1] <- gsub(" ", "\n", parts[1])
+          }
+          col <- paste(parts, collapse = "\n")
         } else {
-          parts[1] <- gsub(" ", "\n", parts[1])
+          # Keep "+ word" together: only break spaces before " + "
+          if (grepl(" \\+ ", col)) {
+            plus_pos <- regexpr(" \\+ ", col)
+            pre  <- substr(col, 1, plus_pos - 1)
+            post <- paste0("+ ", substr(col, plus_pos + 3, nchar(col)))
+            col  <- paste0(gsub(" ", "\n", pre), "\n", post)
+          } else {
+            col <- gsub(" ", "\n", col)
+          }
         }
-        col <- paste(parts, collapse = "\n")
-      } else {
-        # Keep "+ word" together: only break spaces before " + "
-        if (grepl(" \\+ ", col)) {
-          plus_pos <- regexpr(" \\+ ", col)
-          pre  <- substr(col, 1, plus_pos - 1)
-          post <- paste0("+ ", substr(col, plus_pos + 3, nchar(col)))
-          col  <- paste0(gsub(" ", "\n", pre), "\n", post)
-        } else {
-          col <- gsub(" ", "\n", col)
-        }
+        new_colnames[i] <- col
+      } else if (new_colnames[i] == "P") {
+        new_colnames[i] <- "P value"
+      } else if (grepl("^Total", new_colnames[i])) {
+        # Total column already has line break from ternG, no change needed
       }
-      new_colnames[i] <- col
-    } else if (new_colnames[i] == "P") {
-      new_colnames[i] <- "P value"
-    } else if (grepl("^Total", new_colnames[i])) {
-      # Total column already has line break from ternG, no change needed
+    }
+  } else {
+    # line_break_header = FALSE: keep group names as-is (no word-splitting),
+    # but still move (n = ...) count onto its own line and rename P column.
+    new_colnames[1] <- "Variable"
+    for (i in 2:length(new_colnames)) {
+      if (!new_colnames[i] %in% c("P", "test", "OR", "OR_method") && !grepl("^Total", new_colnames[i])) {
+        new_colnames[i] <- gsub(" \\(n = ", "\n(n = ", new_colnames[i])
+      } else if (new_colnames[i] == "P") {
+        new_colnames[i] <- "P value"
+      }
     }
   }
   colnames(modified_tbl) <- new_colnames
@@ -168,9 +186,7 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
     align(align = "left", j = 1, part = "header") %>%
     align(align = "center", j = 2:ncol(modified_tbl), part = "header") %>%
     border_remove() %>%
-    border(border.left  = fp_border(color = "#cdcdcd", width = 0.75), part = "header") %>%
-    border(border.right = fp_border(color = "#cdcdcd", width = 0.75), part = "header") %>%
-    border(i = 1, border.bottom = fp_border(color = "black", width = 1.0), part = "header") %>%
+    border(border.bottom = fp_border(color = "black", width = 0.75), part = "header") %>%
     padding(padding.top = 0, padding.bottom = 1, part = "body") %>%
     padding(padding.left = 0, padding.right = 6, part = "body") %>%
     padding(padding.left = 3, padding.right = 6, part = "header")

@@ -31,6 +31,9 @@ dir.create(screenshots_dir, recursive = TRUE, showWarnings = FALSE)
 # Vignette writes Word docs to tables/
 options(TernTables.vignette_outdir = tables_dir)
 
+# Suppress header line-breaks for cleaner LibreOffice PDF -> PNG screenshots
+options(TernTables.line_break_header = FALSE)
+
 # HTML renders to run-vignette root
 rmarkdown::render(
   input       = file.path(pkg_root, "vignettes", "getting-started.Rmd"),

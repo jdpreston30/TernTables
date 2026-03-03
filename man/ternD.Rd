@@ -24,7 +24,8 @@ ternD(
   manual_italic_indent = NULL,
   manual_underline = NULL,
   table_caption = NULL,
-  table_footnote = NULL
+  table_footnote = NULL,
+  line_break_header = getOption("TernTables.line_break_header", TRUE)
 )
 }
 \arguments{
@@ -109,6 +110,11 @@ Example: \code{"Table 1. Patient demographics."}}
 \item{table_footnote}{Optional character string for a footnote to display below the table in the
 Word document. Rendered as size 6 Arial italic with a double-bar border above and below.
 Default is \code{NULL} (no footnote).}
+
+\item{line_break_header}{Logical; if \code{TRUE} (default), column headers are wrapped with
+\code{\\n} -- the first column header includes a category hierarchy label, and the sample
+size appears on a second line. Set to \code{FALSE} to suppress all header line breaks.
+Can also be set package-wide via \code{options(TernTables.line_break_header = FALSE)}.}
 }
 \value{
 A tibble with one row per variable (multi-row for factors), containing:

@@ -71,6 +71,11 @@
 #' @param table_footnote Optional character string for a footnote to display below the table in the
 #'   Word document. Rendered as size 6 Arial italic with a double-bar border above and below.
 #'   Default is \code{NULL} (no footnote).
+#' @param line_break_header Logical; if \code{TRUE} (default), column headers are wrapped with
+#'   \code{\\n} -- group names break on spaces, sample size counts move to a second line, and
+#'   the first column header reads \code{"Category / Variable"}. Set to \code{FALSE} to suppress
+#'   all header line breaks. Can also be set package-wide via
+#'   \code{options(TernTables.line_break_header = FALSE)}.
 #' @param indent_info_column Logical; if \code{FALSE} (default), the internal \code{.indent} helper column
 #'   is dropped from the returned tibble. Set to \code{TRUE} to retain it -- this is necessary when you
 #'   intend to post-process the tibble and later pass it to \code{word_export} directly, as
@@ -134,7 +139,8 @@ ternG <- function(data,
                   manual_underline = NULL,
                   indent_info_column = FALSE,
                   show_total = TRUE,
-                  table_caption = NULL, table_footnote = NULL) {
+                  table_caption = NULL, table_footnote = NULL,
+                  line_break_header = getOption("TernTables.line_break_header", TRUE)) {
 
   # Helper function for proper rounding (0.5 always rounds up)
   round_up_half <- function(x, digits = 0) {
@@ -715,7 +721,7 @@ ternG <- function(data,
   out_tbl_with_indent <- out_tbl
 
   # Export to Word AFTER smart_rename so docx gets clean names
-  if (!is.null(output_docx)) word_export(out_tbl, output_docx, round_intg = round_intg, font_size = table_font_size, category_start = category_start, manual_italic_indent = manual_italic_indent, manual_underline = manual_underline, table_caption = table_caption, table_footnote = table_footnote)
+  if (!is.null(output_docx)) word_export(out_tbl, output_docx, round_intg = round_intg, font_size = table_font_size, category_start = category_start, manual_italic_indent = manual_italic_indent, manual_underline = manual_underline, table_caption = table_caption, table_footnote = table_footnote, line_break_header = line_break_header)
 
   if (!indent_info_column) out_tbl <- dplyr::select(out_tbl, -dplyr::any_of(".indent"))
 

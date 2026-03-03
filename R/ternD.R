@@ -67,6 +67,10 @@
 #' @param table_footnote Optional character string for a footnote to display below the table in the
 #'   Word document. Rendered as size 6 Arial italic with a double-bar border above and below.
 #'   Default is \code{NULL} (no footnote).
+#' @param line_break_header Logical; if \code{TRUE} (default), column headers are wrapped with
+#'   \code{\\n} -- the first column header includes a category hierarchy label, and the sample
+#'   size appears on a second line. Set to \code{FALSE} to suppress all header line breaks.
+#'   Can also be set package-wide via \code{options(TernTables.line_break_header = FALSE)}.
 #'
 #' @details
 #' The function always returns a tibble with a single \code{Total (N = n)} column format, regardless of the
@@ -125,7 +129,8 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
                   factor_order = "levels", methods_doc = TRUE,
                   methods_filename = "TernTables_methods.docx", category_start = NULL,
                   table_font_size = 9, manual_italic_indent = NULL, manual_underline = NULL,
-                  table_caption = NULL, table_footnote = NULL) {
+                  table_caption = NULL, table_footnote = NULL,
+                  line_break_header = getOption("TernTables.line_break_header", TRUE)) {
   stopifnot(is.data.frame(data))
   
   # Store total N for column header
@@ -401,7 +406,8 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
                                          manual_italic_indent = manual_italic_indent,
                                          manual_underline = manual_underline,
                                          table_caption = table_caption,
-                                         table_footnote = table_footnote)
+                                         table_footnote = table_footnote,
+                                         line_break_header = line_break_header)
   if (methods_doc) write_methods_doc(out_tbl, methods_filename, source = "ternD")
 
   out_tbl <- dplyr::select(out_tbl, -dplyr::any_of(".indent"))

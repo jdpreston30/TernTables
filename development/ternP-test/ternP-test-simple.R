@@ -66,3 +66,6 @@ write_cleaning_doc(
 
 # Typing the object later re-displays the summary on demand:
 # result_clean
+
+
+

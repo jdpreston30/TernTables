@@ -32,7 +32,8 @@ ternG(
   indent_info_column = FALSE,
   show_total = TRUE,
   table_caption = NULL,
-  table_footnote = NULL
+  table_footnote = NULL,
+  line_break_header = getOption("TernTables.line_break_header", TRUE)
 )
 }
 \arguments{
@@ -133,6 +134,12 @@ Example: \code{"Table 2. Comparison of recurrence vs. no recurrence."}}
 \item{table_footnote}{Optional character string for a footnote to display below the table in the
 Word document. Rendered as size 6 Arial italic with a double-bar border above and below.
 Default is \code{NULL} (no footnote).}
+
+\item{line_break_header}{Logical; if \code{TRUE} (default), column headers are wrapped with
+\code{\\n} -- group names break on spaces, sample size counts move to a second line, and
+the first column header reads \code{"Category / Variable"}. Set to \code{FALSE} to suppress
+all header line breaks. Can also be set package-wide via
+\code{options(TernTables.line_break_header = FALSE)}.}
 }
 \value{
 A tibble with one row per variable (multi-row for multi-level factors), showing summary statistics by group,
