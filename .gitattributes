@@ -1,0 +1,4 @@
+# Tell GitHub Linguist to exclude generated/rendered HTML from language stats.
+# The files remain in the repo — they are just not counted toward the language breakdown.
+vignettes/*.html        linguist-generated=true
+development/**/*.html   linguist-generated=true

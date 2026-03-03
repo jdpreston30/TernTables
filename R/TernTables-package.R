@@ -31,5 +31,13 @@
 #' See \code{vignette("getting-started", package = "TernTables")} for a
 #' walkthrough using the bundled \code{\link{tern_colon}} dataset.
 #'
+#' @section Web application:
+#' TernTables is available as a free point-and-click web application at
+#' \url{https://tern-tables.com/} — no R installation required. Upload a
+#' CSV or XLSX file, configure the analysis through a simple interface, and
+#' download a publication-ready Word table. The web application is powered
+#' by this R package; all statistical methods and outputs are identical to
+#' calling \code{ternG()}, \code{ternD()}, and \code{ternP()} directly.
+#'
 #' @keywords internal
 "_PACKAGE"

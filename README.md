@@ -1,5 +1,8 @@
 # TernTables
 
+[![Web App](https://img.shields.io/badge/Web%20App-tern--tables.com-blue?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMnM0LjQ4IDEwIDEwIDEwIDEwLTQuNDggMTAtMTBTMTcuNTIgMiAxMiAyem0tMSAxNy45M1Y0LjA3YzMuOTUuNDkgNyAzLjg1IDcgNy45M3MtMy4wNSA3LjQ0LTcgNy45M3oiLz48L3N2Zz4=)](https://tern-tables.com/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/jdpreston30/TernTables/blob/main/LICENSE)
+
 Clinical researchers spend a disproportionate amount of time on the mechanics of generating summary tables: choosing the right test, formatting *P* values, cleaning variable names, writing the methods paragraph, and wrestling with Word. For descriptive statistics and standard univariate comparisons, this work is largely procedural — it follows well-established rules — yet it consistently becomes a bottleneck that slows down manuscript preparation.
 
 **TernTables** handles that procedural layer automatically. Variable type detection, statistical test selection, *P* value formatting, Word document export, and methods text generation are all handled in a single function call. The output tables are ready to paste directly into a submission.
@@ -15,6 +18,20 @@ ratios), and three-group comparisons are all supported, for continuous,
 binary, and categorical variables. Numeric variables can be designated as
 ordinal via `force_ordinal`, bypassing normality testing in favour of
 median/IQR and nonparametric tests.
+
+---
+
+## Try It Without Writing Code
+
+TernTables is available as a **free, point-and-click web application** at **[tern-tables.com](https://tern-tables.com/)** — no R installation required. Upload a CSV or XLSX file, configure your analysis through a simple interface, and download a publication-ready Word table in minutes.
+
+The web application is powered directly by this R package. The statistical methods, test selection logic (including ROBUST normality routing), and Word output format are identical to calling `ternG()`, `ternD()`, and `ternP()` in R.
+
+The web app is transparent by design: a built-in side panel displays the exact R commands being executed in the background as you work, and the full script can be downloaded at the end of your session. Every analysis produced on the web app is therefore fully auditable and reproducible — the downloaded script runs as-is in R and produces identical output. This makes it suitable for sharing with statistical reviewers, co-authors, or IRB documentation, and serves as a practical entry point for researchers who want to transition to scripted R workflows.
+
+For batch processing, custom formatting, or programmatic integration with other analyses, the R package (this repository) is the canonical reference.
+
+---
 
 ## Installation
 
@@ -209,6 +226,10 @@ The tibble can also be:
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/jdpreston30/TernTables/blob/main/LICENSE)
 
 This project is licensed under the MIT License.
+
+---
+
+**Web Application:** [tern-tables.com](https://tern-tables.com/) — the full TernTables workflow in a point-and-click interface, powered by this package.
 
 ---
 

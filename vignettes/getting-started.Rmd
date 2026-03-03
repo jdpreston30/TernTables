@@ -48,6 +48,16 @@ normality by Shapiro-Wilk per group, Fisher's exact triggered by the Cochran
 (1954) expected-cell criterion, and odds ratios reported as unadjusted with
 the first factor level of the grouping variable as the reference. The auto-generated methods paragraph covers the statistical approach used and is suitable as a starting draft for a manuscript methods section.
 
+> **No R required?** TernTables is available as a free point-and-click web
+> application at [tern-tables.com](https://tern-tables.com/). Upload a CSV
+> or XLSX, configure your table, and download a formatted Word document —
+> all without writing a line of code. The web app is powered by this package,
+> so the statistical methods, normality routing, and Word output are identical.
+> A built-in side panel shows the R commands running in the background and
+> the full script can be downloaded at the end of your session, making every
+> analysis fully transparent and reproducible. For scripted or reproducible
+> workflows, the R package (this vignette) remains the canonical reference.
+
 ## Example Dataset
 
 ```{r load-data}
@@ -339,6 +349,27 @@ write_methods_doc(
   filename = file.path(out_dir, "Tern_methods.docx")
 )
 ```
+
+---
+
+## Web Application
+
+The full TernTables workflow — preprocessing, descriptive tables, two-group
+and three-group comparisons, Word export, and methods paragraphs — is
+available as a **free, no-code web application** at
+[tern-tables.com](https://tern-tables.com/). No R or package installation is
+required. The web app is powered by the same TernTables R package described
+in this vignette; all statistical methods and outputs are identical.
+
+The web app is transparent by design. A built-in side panel displays the
+exact R commands being executed in the background as you work, and the full
+script can be downloaded at the end of your session. The downloaded script
+runs as-is in R and produces identical output — making every analysis fully
+auditable and reproducible. This is suitable for submission to statistical
+reviewers, inclusion in supplemental materials, or IRB documentation, and
+provides a natural learning path for researchers who want to transition to
+scripted R workflows. This repository remains the canonical reference for
+the underlying implementation.
 
 ---
 

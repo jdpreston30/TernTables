@@ -373,6 +373,18 @@ reported as unadjusted with the first factor level of the grouping
 variable as the reference. The auto-generated methods paragraph covers
 the statistical approach used and is suitable as a starting draft for a
 manuscript methods section.</p>
+<blockquote>
+<p><strong>No R required?</strong> TernTables is available as a free
+point-and-click web application at <a href="https://tern-tables.com/">tern-tables.com</a>. Upload a CSV or
+XLSX, configure your table, and download a formatted Word document — all
+without writing a line of code. The web app is powered by this package,
+so the statistical methods, normality routing, and Word output are
+identical. A built-in side panel shows the R commands running in the
+background and the full script can be downloaded at the end of your
+session, making every analysis fully transparent and reproducible. For
+scripted or reproducible workflows, the R package (this vignette)
+remains the canonical reference.</p>
+</blockquote>
 </div>
 <div id="example-dataset" class="section level2">
 <h2>Example Dataset</h2>
@@ -726,6 +738,27 @@ it, standard boilerplate is used.</p>
 <span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>  <span class="at">tbl      =</span> tbl_2group,</span>
 <span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>  <span class="at">filename =</span> <span class="fu">file.path</span>(out_dir, <span class="st">&quot;Tern_methods.docx&quot;</span>)</span>
 <span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>)</span></code></pre></div>
+<hr />
+</div>
+<div id="web-application" class="section level2">
+<h2>Web Application</h2>
+<p>The full TernTables workflow — preprocessing, descriptive tables,
+two-group and three-group comparisons, Word export, and methods
+paragraphs — is available as a <strong>free, no-code web
+application</strong> at <a href="https://tern-tables.com/">tern-tables.com</a>. No R or package
+installation is required. The web app is powered by the same TernTables
+R package described in this vignette; all statistical methods and
+outputs are identical.</p>
+<p>The web app is transparent by design. A built-in side panel displays
+the exact R commands being executed in the background as you work, and
+the full script can be downloaded at the end of your session. The
+downloaded script runs as-is in R and produces identical output — making
+every analysis fully auditable and reproducible. This is suitable for
+submission to statistical reviewers, inclusion in supplemental
+materials, or IRB documentation, and provides a natural learning path
+for researchers who want to transition to scripted R workflows. This
+repository remains the canonical reference for the underlying
+implementation.</p>
 <hr />
 </div>
 <div id="references" class="section level2">

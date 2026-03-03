@@ -43,6 +43,25 @@ See \code{vignette("getting-started", package = "TernTables")} for a
 walkthrough using the bundled \code{\link{tern_colon}} dataset.
 }
 
+\section{Web application}{
+
+TernTables is available as a free point-and-click web application at
+\url{https://tern-tables.com/} — no R installation required. Upload a
+CSV or XLSX file, configure the analysis through a simple interface, and
+download a publication-ready Word table. The web application is powered
+by this R package; all statistical methods and outputs are identical to
+calling \code{ternG()}, \code{ternD()}, and \code{ternP()} directly.
+}
+
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://tern-tables.com/}
+  \item \url{https://github.com/jdpreston30/TernTables}
+  \item Report bugs at \url{https://github.com/jdpreston30/TernTables/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Joshua D. Preston \email{joshua.preston@emory.edu} (\href{https://orcid.org/0000-0001-9834-3017}{ORCID})
 
