@@ -1,0 +1,31 @@
+ID,Age_Years,Sex,Colonic_Obstruction,Bowel_Perforation,,Positive_Lymph_Nodes_n,Over_4_Positive_Nodes,Tumor_Adherence,Tumor_Differentiation,Extent_of_Local_Spread,Recurrence,Treatment_Arm
+1,43,Male,N,N,Y,5,Y,N,Moderate,Serosa,Recurrence,Levamisole + 5FU
+2,63,Male,N,N,N,1,N,N,Moderate,Serosa,No Recurrence,Levamisole + 5FU
+3,71,Female,N,N,N,7,Y,Y,Moderate,Muscle,Recurrence,Observation
+4,66,Female,Y,N,N,6,Y,N,Moderate,Serosa,Recurrence,Levamisole + 5FU
+5,69,Male,N,N,Y,22,Y,N,Moderate,Serosa,Recurrence,Observation
+6,57,Female,N,N,Y,9,Y,N,Moderate,Serosa,Recurrence,Levamisole + 5FU
+7,77,Male,N,N,N,5,Y,N,Moderate,Serosa,Recurrence,Levamisole
+8,54,Male,N,N,N,1,N,N,Moderate,Serosa,No Recurrence,Observation
+9,46,Male,N,N,Y,2,N,Y,Moderate,Serosa,No Recurrence,Levamisole
+10,68,Female,N,N,Y,1,N,N,Moderate,Serosa,No Recurrence,Levamisole + 5FU
+11,47,Female,N,N,Y,1,N,Y,Moderate,Serosa,No Recurrence,Levamisole
+12,52,Male,N,N,Y,2,N,N,Poor,Serosa,No Recurrence,Levamisole + 5FU
+13,64,Male,N,N,N,1,N,N,Moderate,Serosa,Recurrence,Observation
+14,68,Male,Y,N,N,3,N,N,Moderate,Serosa,Recurrence,Levamisole
+15,46,Male,Y,N,Y,4,N,N,Moderate,Serosa,No Recurrence,Observation
+16,68,Male,N,N,Y,1,N,N,Moderate,Serosa,Recurrence,Observation
+17,62,Male,Y,N,Y,6,Y,Y,Moderate,Serosa,Recurrence,Levamisole
+18,79,Male,Y,N,Y,1,N,N,Moderate,Serosa,Recurrence,Levamisole
+19,34,Female,Y,N,N,1,N,N,Moderate,Muscle,Recurrence,Levamisole + 5FU
+20,50,Female,N,N,N,1,N,Y,Moderate,Serosa,No Recurrence,Levamisole
+21,64,Male,Y,N,Y,1,N,N,Moderate,Serosa,No Recurrence,Observation
+22,56,Male,Y,N,Y,4,N,N,Moderate,Serosa,Recurrence,Levamisole
+23,61,Female,N,N,N,4,N,N,Moderate,Serosa,Recurrence,Levamisole
+24,50,Female,N,N,Y,1,N,N,Moderate,Muscle,No Recurrence,Levamisole + 5FU
+25,70,Female,N,N,N,4,N,N,Moderate,Serosa,No Recurrence,Levamisole + 5FU
+26,73,Male,N,N,N,1,N,N,Moderate,Serosa,Recurrence,Observation
+27,70,Female,N,N,Y,13,Y,Y,Moderate,Serosa,Recurrence,Observation
+28,68,Female,N,N,Y,1,N,N,Moderate,Serosa,Recurrence,Levamisole
+29,56,Female,Y,N,Y,6,Y,N,Poor,Serosa,Recurrence,Observation
+30,80,Male,N,N,Y,1,N,N,Poor,Serosa,Recurrence,Levamisole

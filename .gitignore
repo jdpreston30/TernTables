@@ -17,6 +17,9 @@ hx.txt
 # Private test data — NEVER commit
 test.csv
 *.csv
+# Un-ignore bundled example data in inst/extdata (needed for package build)
+!inst/extdata/**/*.csv
+!inst/extdata/**/*.xlsx
 
 # Statistical review document — collaborator-facing only, not for repo or package
 statistical-review-request.Rmd

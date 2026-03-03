@@ -12,4 +12,3 @@ source("development/run-vignette/run-vignette.R")
 #!!! update cran-comments.md
 devtools::check_win_devel()
 devtools::submit_cran()
-

@@ -77,6 +77,67 @@ Key variables used in these examples:
 
 ---
 
+## Preprocessing Raw Data (`ternP`)
+
+If your source is a raw CSV or XLSX file — rather than an already-clean R
+object — use `ternP()` to standardize it before passing it to `ternG()` or
+`ternD()`. It handles the messiness most commonly introduced by manual data
+entry or spreadsheet workflows:
+
+| Transformation | What it fixes |
+|---|---|
+| String NA conversion | `"NA"`, `"na"`, `"Na"`, `"unk"` → `NA` |
+| Whitespace trimming | Leading/trailing spaces in character columns |
+| Empty column removal | 100% `NA` columns silently dropped |
+| Blank row removal | Rows where every cell is `NA` |
+| Case normalization | `"fEMALE"` / `"Female"` unified to title case |
+
+`ternP()` also applies two **hard stops** before any cleaning takes place:
+it errors immediately if any column name matches a protected health information
+(PHI) pattern (e.g. `MRN`, `DOB`, `FirstName`), or if any unnamed column
+contains data.
+
+```{r ternP-run, eval = FALSE}
+# Load a messy CSV shipped with the package
+path <- system.file("extdata/csv", "tern_colon_messy.csv",
+                    package = "TernTables")
+raw    <- readr::read_csv(path, show_col_types = FALSE)
+result <- ternP(raw)
+# The print method fires automatically, summarising every transformation applied.
+```
+
+The printed summary identifies each transformation and shows the final
+dimensions of the cleaned data. If the data was already clean, a single
+"No transformations required" line appears.
+
+Three items are returned in the result object:
+
+```{r ternP-access, eval = FALSE}
+result$clean_data    # Cleaned, analysis-ready tibble
+result$sparse_rows   # Rows with >50% NA (retained, not removed — review these)
+result$feedback      # Named list; NULL elements mean no action was taken
+```
+
+To write a Word document recording the cleaning steps, call
+`write_cleaning_doc()`. It is fully dynamic — only paragraphs for triggered
+transformations are written, so the document is concise for already-clean data.
+
+```{r ternP-doc, eval = FALSE}
+write_cleaning_doc(result,
+                   filename = file.path(out_dir, "cleaning_summary.docx"))
+```
+
+Once preprocessing is complete, pass `result$clean_data` directly to `ternD()`
+or `ternG()`:
+
+```{r ternP-handoff, eval = FALSE}
+tbl <- ternG(result$clean_data,
+             exclude_vars = c("ID"),
+             group_var    = "Recurrence")
+```
+
+---
+
 ## Descriptive Table (`ternD`)
 
 Use `ternD()` for a single cohort with no group comparisons — the standard

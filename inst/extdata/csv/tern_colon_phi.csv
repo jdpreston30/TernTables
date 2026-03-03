@@ -1,0 +1,31 @@
+fake_MRN,fake_firstname,fake_lastname,fake_DOB,ID,Age_Years,Sex,Colonic_Obstruction,Bowel_Perforation,Positive_Lymph_Nodes_n,Over_4_Positive_Nodes,Tumor_Adherence,Tumor_Differentiation,Extent_of_Local_Spread,Recurrence,Treatment_Arm
+690411,Robert,Rodriguez,07/26/1994,1,43,Male,N,N,5,Y,N,Moderate,Serosa,Recurrence,Levamisole + 5FU
+472845,Patricia,Martinez,09/17/1980,2,63,Male,N,N,1,N,N,Moderate,Serosa,No Recurrence,Levamisole + 5FU
+776502,Robert,Johnson,08/15/1952,3,71,Female,N,N,7,Y,Y,Moderate,Muscle,Recurrence,Observation
+702640,Michael,Williams,06/22/1959,4,66,Female,Y,N,6,Y,N,Moderate,Serosa,Recurrence,Levamisole + 5FU
+296276,Jennifer,Lopez,03/01/1974,5,69,Male,N,N,22,Y,N,Moderate,Serosa,Recurrence,Observation
+703253,Mary,Garcia,06/06/1972,6,57,Female,N,N,9,Y,N,Moderate,Serosa,Recurrence,Levamisole + 5FU
+409284,William,Johnson,06/14/1984,7,77,Male,N,N,5,Y,N,Moderate,Serosa,Recurrence,Levamisole
+652315,Susan,Brown,12/11/1946,8,54,Male,N,N,1,N,N,Moderate,Serosa,No Recurrence,Observation
+345321,Robert,Hernandez,01/11/1946,9,46,Male,N,N,2,N,Y,Moderate,Serosa,No Recurrence,Levamisole
+159412,Linda,Martinez,05/13/1946,10,68,Female,N,N,1,N,N,Moderate,Serosa,No Recurrence,Levamisole + 5FU
+508100,Barbara,Jones,07/20/1958,11,47,Female,N,N,1,N,Y,Moderate,Serosa,No Recurrence,Levamisole
+122785,Jennifer,Garcia,10/04/1986,12,52,Male,N,N,2,N,N,Poor,Serosa,No Recurrence,Levamisole + 5FU
+285861,Patricia,Johnson,08/23/1969,13,64,Male,N,N,1,N,N,Moderate,Serosa,Recurrence,Observation
+239211,David,Rodriguez,06/22/1989,14,68,Male,Y,N,3,N,N,Moderate,Serosa,Recurrence,Levamisole
+494962,Patricia,Hernandez,03/01/1980,15,46,Male,Y,N,4,N,N,Moderate,Serosa,No Recurrence,Observation
+634521,James,Davis,03/31/1943,16,68,Male,N,N,1,N,N,Moderate,Serosa,Recurrence,Observation
+490884,Mary,Smith,09/25/1966,17,62,Male,Y,N,6,Y,Y,Moderate,Serosa,Recurrence,Levamisole
+248761,Jennifer,Jones,04/19/1992,18,79,Male,Y,N,1,N,N,Moderate,Serosa,Recurrence,Levamisole
+727120,John,Johnson,07/10/1966,19,34,Female,Y,N,1,N,N,Moderate,Muscle,Recurrence,Levamisole + 5FU
+374196,Barbara,Johnson,06/07/1974,20,50,Female,N,N,1,N,Y,Moderate,Serosa,No Recurrence,Levamisole
+967778,John,Miller,11/10/1987,21,64,Male,Y,N,1,N,N,Moderate,Serosa,No Recurrence,Observation
+854616,Michael,Martinez,02/27/1964,22,56,Male,Y,N,4,N,N,Moderate,Serosa,Recurrence,Levamisole
+608234,William,Miller,06/21/1965,23,61,Female,N,N,4,N,N,Moderate,Serosa,Recurrence,Levamisole
+444297,Michael,Hernandez,12/18/1949,24,50,Female,N,N,1,N,N,Moderate,Muscle,No Recurrence,Levamisole + 5FU
+359218,William,Johnson,08/11/1981,25,70,Female,N,N,4,N,N,Moderate,Serosa,No Recurrence,Levamisole + 5FU
+656786,Mary,Johnson,06/17/1940,26,73,Male,N,N,1,N,N,Moderate,Serosa,Recurrence,Observation
+176114,Jennifer,Jones,12/10/1991,27,70,Female,N,N,13,Y,Y,Moderate,Serosa,Recurrence,Observation
+283387,Robert,Johnson,03/19/1975,28,68,Female,N,N,1,N,N,Moderate,Serosa,Recurrence,Levamisole
+287533,James,Lopez,10/13/1962,29,56,Female,Y,N,6,Y,N,Poor,Serosa,Recurrence,Observation
+863398,Robert,Davis,07/12/1952,30,80,Male,N,N,1,N,N,Poor,Serosa,Recurrence,Levamisole

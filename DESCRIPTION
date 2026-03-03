@@ -1,7 +1,7 @@
 Package: TernTables
 Type: Package
 Title: Publication-Ready Summary Tables and Statistical Testing for Clinical Research
-Version: 1.5.0.9000
+Version: 1.6.0.9000
 Authors@R: c(
     person("Joshua D.", "Preston",
            email = "joshua.preston@emory.edu",

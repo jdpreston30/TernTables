@@ -8,6 +8,8 @@ The time savings come entirely from automating the administrative work (formatti
 
 For analyses that go beyond descriptive statistics and standard group comparisons, a biostatistician remains the right resource. TernTables is designed to free up that time for the work that actually requires it.
 
+Raw data from CSV or XLSX files can be standardized with `ternP()` before analysis — string NA values, whitespace, blank rows, capitalization inconsistencies, and PHI column names are all handled automatically with full preprocessing feedback.
+
 Descriptive summaries (Table 1), two-group comparisons (with optional odds
 ratios), and three-group comparisons are all supported, for continuous,
 binary, and categorical variables. Numeric variables can be designated as
@@ -52,6 +54,32 @@ data(tern_colon)
 ```
 
 ## Functions
+
+### `ternP()` — Preprocess raw data
+
+Cleans a raw CSV or XLSX file before passing it to `ternG()` or `ternD()`. Converts string NA values (`"NA"`, `"na"`, `"Na"`, `"unk"`), trims whitespace, drops 100% empty columns, removes blank rows, and normalizes capitalization inconsistencies. Hard stops with a descriptive error if any column name matches a PHI pattern (e.g. `MRN`, `DOB`, `FirstName`) or if any unnamed column contains data.
+
+```r
+raw    <- readr::read_csv("my_data.csv", show_col_types = FALSE)
+result <- ternP(raw)
+
+# Prints a cleaning summary automatically:
+# ✔ No transformations required. Data passed through unchanged.
+# ─────────────────────────────────────────────────────────────
+# ℹ Cleaned data: 929 rows × 14 columns.
+
+result$clean_data    # analysis-ready tibble → pass to ternG() or ternD()
+result$sparse_rows   # rows with >50% missing, retained but flagged
+result$feedback      # named list of what changed (NULL = no action)
+```
+
+### `write_cleaning_doc()` — Data cleaning audit document
+
+Writes a Word document recording every transformation applied by `ternP()`. Only paragraphs for triggered transformations are included; if the data was already clean, a single sentence stating that is written instead. Suitable for data management logs, IRB documentation, or supplemental materials.
+
+```r
+write_cleaning_doc(result, filename = "cleaning_summary.docx")
+```
 
 ### `ternD()` — Descriptive summary table
 

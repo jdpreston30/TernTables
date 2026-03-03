@@ -7,7 +7,7 @@
 #' @importFrom stats chisq.test median na.omit quantile sd setNames
 #' @importFrom utils globalVariables
 #' @importFrom magrittr %>%
-#' @importFrom stringr str_extract
+#' @importFrom stringr str_extract str_trim str_to_lower str_to_title
 NULL
 
 utils::globalVariables(c(".", "test"))
