@@ -16,7 +16,7 @@ writeLines(con = child_script, text = sprintf('
 pkg_root        <- %s
 outdir          <- %s
 tables_dir      <- file.path(outdir, "tables")
-screenshots_dir <- file.path(outdir, "screenshots", "raw")
+screenshots_dir <- file.path(outdir, "screenshots")
 libreoffice     <- %s
 
 # Install from source in this clean session (no loaded namespace to conflict)

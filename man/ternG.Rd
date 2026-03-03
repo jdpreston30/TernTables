@@ -64,7 +64,7 @@ regardless of expected cell counts.}
 
 \item{consider_normality}{Character or logical; controls how continuous variables are routed to
 parametric vs. non-parametric tests.
-\code{"ROBUST"} (default) applies a three-gate decision consistent with standard biostatistical
+\code{"ROBUST"} (default) applies a four-gate decision consistent with standard biostatistical
 practice: (1) any group n < 3 is a conservative fail-safe to non-parametric; (2) absolute skewness
 > 2 in any group routes to non-parametric regardless of sample size (catches LOS, counts, etc.);
 (3) all groups n \eqn{\geq} 30 routes to parametric via the Central Limit Theorem; (4) otherwise

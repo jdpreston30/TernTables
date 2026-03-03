@@ -45,9 +45,10 @@ normality testing when \code{consider_normality = "ROBUST"} or \code{TRUE}.}
 
 \item{consider_normality}{Character or logical; controls routing of continuous variables to
 mean \eqn{\pm} SD vs median [IQR].
-\code{"ROBUST"} (default) applies a three-gate decision: (1) absolute skewness > 2 routes to
-median [IQR] regardless of n; (2) n \eqn{\geq} 30 routes to mean \eqn{\pm} SD via the Central
-Limit Theorem; (3) otherwise Shapiro-Wilk p > 0.05 routes to mean \eqn{\pm} SD.
+\code{"ROBUST"} (default) applies a four-gate decision: (1) n < 3 \eqn{\rightarrow} non-parametric
+(conservative fail-safe); (2) absolute skewness > 2 \eqn{\rightarrow} non-parametric regardless of n;
+(3) n \eqn{\geq} 30 \eqn{\rightarrow} parametric via the Central Limit Theorem;
+(4) otherwise Shapiro-Wilk p > 0.05 \eqn{\rightarrow} parametric.
 If \code{TRUE}, uses Shapiro-Wilk alone (can be over-sensitive at large n).
 If \code{FALSE}, defaults to mean \eqn{\pm} SD for all numeric variables unless specified in
 \code{force_ordinal}.}
@@ -127,7 +128,7 @@ A tibble with one row per variable (multi-row for factors), containing:
 \description{
 Creates a descriptive summary table with a single "Total" column format.
 By default (\code{consider_normality = "ROBUST"}), continuous variables are shown
-as mean +/- SD or median [IQR] based on a three-gate decision (skewness, CLT, and Shapiro-Wilk).
+as mean +/- SD or median [IQR] based on a four-gate decision (n < 3 fail-safe, skewness, CLT, and Shapiro-Wilk).
 This can be overridden via \code{consider_normality} and \code{force_ordinal}.
 }
 \details{
@@ -135,7 +136,7 @@ The function always returns a tibble with a single \code{Total (N = n)} column f
 \code{consider_normality} setting. The behavior for numeric variables follows this priority:
 \enumerate{
   \item Variables in \code{force_ordinal}: Always use median [IQR]
-  \item When \code{consider_normality = "ROBUST"}: Three-gate decision (skewness, CLT, Shapiro-Wilk)
+  \item When \code{consider_normality = "ROBUST"}: Four-gate decision (n<3 fail-safe, skewness, CLT, Shapiro-Wilk)
   \item When \code{consider_normality = TRUE}: Use Shapiro-Wilk test to choose format
   \item When \code{consider_normality = FALSE}: Default to mean +/- SD
 }

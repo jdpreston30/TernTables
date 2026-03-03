@@ -163,8 +163,9 @@ tbl_descriptive <- ternD(
 tbl_descriptive
 ```
 
-Continuous variables show mean ± SD or median [IQR] depending on normality
-(Shapiro-Wilk, p > 0.05 = normal). Columns whose values are exactly Y/N,
+Continuous variables show mean ± SD or median [IQR] based on the four-gate
+ROBUST normality algorithm (skewness check, CLT at n ≥ 30, Shapiro-Wilk for
+small samples). Columns whose values are exactly Y/N,
 YES/NO, or numeric 0/1 are detected as binary and shown as a single n (%) row
 (the positive/yes count). All other categorical variables — including two-level
 variables like Male/Female — are shown with each level as an indented sub-row.

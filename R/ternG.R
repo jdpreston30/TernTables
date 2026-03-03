@@ -23,7 +23,7 @@
 #'   regardless of expected cell counts.
 #' @param consider_normality Character or logical; controls how continuous variables are routed to
 #'   parametric vs. non-parametric tests.
-#'   \code{"ROBUST"} (default) applies a three-gate decision consistent with standard biostatistical
+#'   \code{"ROBUST"} (default) applies a four-gate decision consistent with standard biostatistical
 #'   practice: (1) any group n < 3 is a conservative fail-safe to non-parametric; (2) absolute skewness
 #'   > 2 in any group routes to non-parametric regardless of sample size (catches LOS, counts, etc.);
 #'   (3) all groups n \eqn{\geq} 30 routes to parametric via the Central Limit Theorem; (4) otherwise
@@ -469,8 +469,8 @@ ternG <- function(data,
       # Force all to be treated as ordinal regardless of normality
       is_normal <- FALSE
     } else if (consider_normality == "ROBUST") {
-      # ROBUST: three-gate decision tree
-      #   Gate 1 (fail-safe): any group n < 3 → non-parametric (handled above)
+      # ROBUST: four-gate decision tree
+      #   Gate 1 (fail-safe): any group n < 3 → non-parametric (explicit)
       #   Gate 2: |skewness| > 2 in any group → non-parametric
       #   Gate 3: all groups n >= 30 → CLT → parametric
       #   Gate 4: small-sample fallback → Shapiro-Wilk
@@ -491,7 +491,11 @@ ternG <- function(data,
 
       numeric_vars_tested <<- numeric_vars_tested + 1
 
-      if (any(abs(group_skewness) > 2, na.rm = TRUE)) {
+      if (any(group_ns < 3)) {
+        # Gate 1: any group too small to test — non-parametric (conservative fail-safe)
+        is_normal <- FALSE
+        numeric_vars_failed <<- numeric_vars_failed + 1
+      } else if (any(abs(group_skewness) > 2, na.rm = TRUE)) {
         # Gate 2: extreme skewness — non-parametric regardless of n
         is_normal <- FALSE
         numeric_vars_failed <<- numeric_vars_failed + 1

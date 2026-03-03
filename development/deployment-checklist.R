@@ -1,14 +1,11 @@
-#* ANY NEW DEPLOYMENT
-# Required for GitHub commits
-rmarkdown::render("vignettes/getting-started.Rmd")
+# GitHub commits
 devtools::document()
-devtools::check()
-
-# Optional for GitHub commits
 Rscript -e "devtools::build_manual(pkg = '.', path = 'development/manual')"
 source("development/run-vignette/run-vignette.R")
+rmarkdown::render("vignettes/getting-started.Rmd")
+devtools::check()
 
-# Run these in addition for CRAN submission
+# CRAN submission
 #!!! update cran-comments.md
 devtools::check_win_devel()
 devtools::submit_cran()
