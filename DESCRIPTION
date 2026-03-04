@@ -1,7 +1,7 @@
 Package: TernTables
 Type: Package
 Title: Publication-Ready Summary Tables and Statistical Testing for Clinical Research
-Version: 1.6.1
+Version: 1.6.2
 Authors@R: c(
     person("Joshua D.", "Preston",
            email = "joshua.preston@emory.edu",
@@ -29,7 +29,9 @@ Description: Generates publication-ready summary tables for clinical research,
     and applying appropriate statistical tests (Welch t-test, Wilcoxon rank-sum, 
     Welch ANOVA, Kruskal-Wallis, Chi-squared, or Fisher's exact test). Results are 
     formatted as 'tibble' objects and can be exported to Word or Excel using 
-    the 'officer', 'flextable', and 'writexl' packages.
+    the 'officer', 'flextable', and 'writexl' packages. Optional pairwise
+    post-hoc testing for three-group comparisons (Games-Howell and Dunn's
+    test) is available via the 'rstatix' package.
 License: MIT + file LICENSE
 URL: https://tern-tables.com/, https://github.com/jdpreston30/TernTables
 BugReports: https://github.com/jdpreston30/TernTables/issues
@@ -49,7 +51,9 @@ Imports:
     writexl
 Suggests: 
     knitr,
+    multcompView,
     rmarkdown,
+    rstatix,
     survival,
     testthat (>= 3.0.0)
 VignetteBuilder: knitr

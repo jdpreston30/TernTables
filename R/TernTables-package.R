@@ -41,3 +41,11 @@
 #'
 #' @keywords internal
 "_PACKAGE"
+
+.onLoad <- function(libname, pkgname) {
+  op     <- options()
+  op_tern <- list(TernTables.seed = 42L)
+  toset  <- !(names(op_tern) %in% names(op))
+  if (any(toset)) options(op_tern[toset])
+  invisible()
+}

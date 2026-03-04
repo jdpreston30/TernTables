@@ -197,9 +197,13 @@ knitr::include_graphics("figures/tern_descriptive.png")
 ## Two-Group Comparison (`ternG` — 2 levels)
 
 Use `ternG()` to compare variables between two groups. Set `OR_col = TRUE` to
-add odds ratios with 95% CI for binary variables (Fisher's exact or Wald,
-chosen automatically based on expected cell counts). Pass `output_docx` to
-write the Word table directly; `output_xlsx` exports the tibble to Excel.
+add odds ratios with 95% CI for binary variables (Y/N, YES/NO, 0/1) and
+two-level categorical variables such as Male/Female. For two-level categoricals
+displayed with sub-rows, the reference level (factor level 1 or alphabetical
+first) shows `1.00 (ref.)`; the non-reference level shows the computed OR with
+95% CI. Fisher's exact or Wald is chosen automatically based on expected cell
+counts. Pass `output_docx` to write the Word table directly; `output_xlsx`
+exports the tibble to Excel.
 
 ```{r ternG-2group, results = "hide"}
 tbl_2group <- ternG(
@@ -238,6 +242,15 @@ controls normality routing; the default (`"ROBUST"`) applies the four-gate
 algorithm (skewness → CLT → Shapiro-Wilk). `FALSE` forces parametric tests
 throughout; `"FORCE"` forces nonparametric throughout.
 
+Set `post_hoc = TRUE` to run pairwise post-hoc tests automatically when the
+omnibus *P* < 0.05. The test is matched to the omnibus test used: **Games-Howell**
+follows Welch ANOVA (parametric path); **Dunn’s test with Holm correction**
+follows Kruskal-Wallis (non-parametric and ordinal path). Results are appended
+to each cell as compact letter display (CLD) superscripts — groups sharing a
+letter are not significantly different after correction. Categorical variables
+never receive post-hoc testing. When `post_hoc = TRUE` and at least one test
+fires, an explanatory footnote is added automatically to the Word output.
+
 ```{r ternG-3group, results = "hide"}
 tbl_3group <- ternG(
   data               = tern_colon,
@@ -247,6 +260,7 @@ tbl_3group <- ternG(
   output_docx        = file.path(out_dir, "Tern_3_group.docx"),
   methods_filename   = file.path(out_dir, "TernTables_methods.docx"),
   consider_normality = "ROBUST",
+  post_hoc           = TRUE,
   category_start     = c(
     "Patient Demographics"  = "Age (yr)",
     "Surgical Findings"     = "Colonic Obstruction",
@@ -310,14 +324,14 @@ automatically when combining tables with `ternB()`.
 
 TernTables selects tests automatically based on variable type and normality:
 
-| Variable type | Test (2 groups) | Test (3+ groups) |
-|---|---|---|
-| Continuous, normal | Welch's *t*-test | Welch ANOVA |
-| Continuous, non-normal | Wilcoxon rank-sum | Kruskal-Wallis |
-| Binary / Categorical | Fisher's exact or Chi-squared\* | Fisher's exact or Chi-squared\* |
-| Ordinal (`force_ordinal`) | Wilcoxon rank-sum | Kruskal-Wallis |
+| Variable type | Test (2 groups) | Test (3+ groups) | Post-hoc (3+ groups, `post_hoc = TRUE`, omnibus *p* < 0.05) |
+|---|---|---|---|
+| Continuous, normal | Welch's *t*-test | Welch ANOVA | Games-Howell |
+| Continuous, non-normal | Wilcoxon rank-sum | Kruskal-Wallis | Dunn's + Holm |
+| Binary / Categorical | Fisher's exact or Chi-squared\* | Fisher's exact or Chi-squared\* | — |
+| Ordinal (`force_ordinal`) | Wilcoxon rank-sum | Kruskal-Wallis | Dunn's + Holm |
 
-\*Fisher's exact is used when any expected cell count is < 5 (Cochran criterion).
+\*Fisher's exact is used when any expected cell count is < 5 (Cochran criterion). If the exact algorithm cannot complete (workspace limit exceeded for large tables), Fisher's exact with Monte Carlo simulation (B = 10,000; seed fixed via `getOption("TernTables.seed")`, default 42) is used automatically.
 
 Normality routing uses `consider_normality = "ROBUST"` (the default) — a
 three-gate decision applied per group: (1) absolute skewness > 2 in any group
@@ -325,7 +339,12 @@ three-gate decision applied per group: (1) absolute skewness > 2 in any group
 via the Central Limit Theorem; (3) otherwise Shapiro-Wilk p > 0.05 in all
 groups → parametric. If any group has fewer than 3 observations the
 nonparametric test is used (conservative fail-safe). For 3+ group comparisons,
-omnibus *P* values are reported; pairwise post-hoc comparisons are not performed.
+omnibus *P* values are reported. When `post_hoc = TRUE`, pairwise comparisons
+are performed automatically for continuous and ordinal variables when omnibus
+*P* < 0.05, using the test paired to the omnibus (Games-Howell or Dunn's +
+Holm). CLD superscript letters are appended to cell values; groups sharing a
+letter are not significantly different. Categorical variables never receive
+post-hoc testing. `post_hoc` defaults to `FALSE`.
 Set `consider_normality = TRUE` to use Shapiro-Wilk alone (original behaviour).
 
 ---

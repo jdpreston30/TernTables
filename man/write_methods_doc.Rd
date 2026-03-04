@@ -9,7 +9,8 @@ write_methods_doc(
   filename,
   n_levels = 2,
   OR_col = FALSE,
-  source = "ternG"
+  source = "ternG",
+  post_hoc = FALSE
 )
 }
 \arguments{
@@ -25,6 +26,12 @@ when generating a generic document.}
 
 \item{source}{Character; \code{"ternG"} or \code{"ternD"}. Controls which
 section is populated with dynamic test information. Default \code{"ternG"}.}
+
+\item{post_hoc}{Logical; whether pairwise post-hoc testing was requested
+(\code{post_hoc = TRUE} in \code{ternG}). When \code{TRUE} and
+\code{n_levels >= 3}, the three-group methods paragraph is updated to
+describe the post-hoc test pairing (Games-Howell or Dunn's + Holm).
+Default \code{FALSE}.}
 }
 \value{
 Invisibly returns the path to the written Word file.

@@ -17,6 +17,11 @@
 #' @param OR_col Logical; whether odds ratios were calculated. Default \code{FALSE}.
 #' @param source Character; \code{"ternG"} or \code{"ternD"}. Controls which
 #'   section is populated with dynamic test information. Default \code{"ternG"}.
+#' @param post_hoc Logical; whether pairwise post-hoc testing was requested
+#'   (\code{post_hoc = TRUE} in \code{ternG}). When \code{TRUE} and
+#'   \code{n_levels >= 3}, the three-group methods paragraph is updated to
+#'   describe the post-hoc test pairing (Games-Howell or Dunn's + Holm).
+#'   Default \code{FALSE}.
 #' @return Invisibly returns the path to the written Word file.
 #' @examples
 #' \dontrun{
@@ -26,7 +31,7 @@
 #' }
 #' @export
 write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
-                              source = "ternG") {
+                              source = "ternG", post_hoc = FALSE) {
 
   # ── Detect tests used (only meaningful when called from ternG) ─────────────
   tests_used <- character(0)
@@ -38,8 +43,9 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
   has_anova    <- any(grepl("ANOVA",        tests_used, ignore.case = TRUE))
   has_wilcoxon <- any(grepl("Wilcoxon",    tests_used, ignore.case = TRUE))
   has_kruskal  <- any(grepl("Kruskal",     tests_used, ignore.case = TRUE))
-  has_fisher   <- any(grepl("Fisher",      tests_used, ignore.case = TRUE))
-  has_chisq    <- any(grepl("Chi-squared", tests_used, ignore.case = TRUE))
+  has_fisher     <- any(grepl("Fisher",      tests_used, ignore.case = TRUE))
+  has_fisher_sim <- any(grepl("simulated",   tests_used, ignore.case = TRUE))
+  has_chisq      <- any(grepl("Chi-squared", tests_used, ignore.case = TRUE))
 
   # ── Shared descriptive sentence ─────────────────────────────────────────────
   # Phrasing varies slightly: grouped analyses reference "comparison groups";
@@ -66,8 +72,8 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
   )
 
   # ── Helper: categorical comparison sentence ──────────────────────────────────
-  cat_sentence <- function(f, c) {
-    if (f && c) {
+  cat_sentence <- function(f, c, s = FALSE) {
+    base <- if (f && c) {
       "Categorical variables were compared using Chi-squared tests, or Fisher's exact tests when any expected cell count was less than 5 (Cochran criterion). "
     } else if (f) {
       "Categorical variables were compared using Fisher's exact tests. "
@@ -76,11 +82,17 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
     } else {
       "Categorical variables were compared using Chi-squared tests, or Fisher's exact tests when any expected cell count was less than 5 (Cochran criterion). "
     }
+    if (s) base <- paste0(base,
+      "Where the exact algorithm was computationally infeasible (workspace limit exceeded), ",
+      "a Monte Carlo simulation (B\u00a0=\u00a010,000 replicates) was used in place of exact enumeration; ",
+      "seed was fixed (\u2009\u2009getOption(\"TernTables.seed\"), default 42) to ensure reproducibility. ")
+    base
   }
 
   or_sentence  <- if (OR_col) paste0(
-    "For binary categorical variables, unadjusted odds ratios (OR) with 95% confidence intervals (CI) were calculated, ",
-    "with the first group serving as the reference category. ",
+    "For binary categorical variables and two-level categorical variables (e.g. Male/Female), ",
+    "unadjusted odds ratios (OR) with 95% confidence intervals (CI) were calculated, ",
+    "with the reference level (factor level 1, or alphabetical first for non-factors) serving as the reference category. ",
     "Where all expected cell counts were five or greater, OR and 95% CI were derived using the Wald method. ",
     "Where any expected cell count was less than five (Cochran criterion), OR and 95% CI were derived from Fisher's exact test. "
   ) else ""
@@ -100,7 +112,7 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
     } else {
       "Normally distributed continuous variables were compared using Welch's independent samples t-test; non-normally distributed variables were compared using the Wilcoxon rank-sum test. "
     }
-    sec2_body <- paste0(desc_sentence, " ", s2_cont, cat_sentence(has_fisher, has_chisq), or_sentence, sig_sentence)
+    sec2_body <- paste0(desc_sentence, " ", s2_cont, cat_sentence(has_fisher, has_chisq, has_fisher_sim), or_sentence, sig_sentence)
   } else {
     sec2_body <- paste0(
       desc_sentence, " ",
@@ -122,8 +134,20 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
     } else {
       "Normally distributed continuous variables were compared using Welch's one-way ANOVA; non-normally distributed variables were compared using the Kruskal-Wallis test. "
     }
-    omnibus_note <- "Omnibus P values are reported; pairwise post-hoc comparisons were not performed. "
-    sec3_body <- paste0(desc_sentence, " ", s3_cont, omnibus_note, cat_sentence(has_fisher, has_chisq), sig_sentence)
+    omnibus_note <- if (post_hoc) {
+      paste0(
+        "Omnibus P values are reported. ",
+        "For variables with a significant omnibus P value (p\u2009<\u20090.05), pairwise post-hoc comparisons were performed: ",
+        "normally distributed variables were compared using the Games-Howell test; ",
+        "non-normally distributed and ordinal variables were compared using Dunn\u2019s test with Holm correction for multiple comparisons. ",
+        "Results are presented using compact letter display (CLD) notation \u2014 superscript letters appended to cell values \u2014 ",
+        "whereby groups sharing a superscript letter are not significantly different from each other. ",
+        "Categorical variables were not included in post-hoc comparisons. "
+      )
+    } else {
+      "Omnibus P values are reported; pairwise post-hoc comparisons were not performed. "
+    }
+    sec3_body <- paste0(desc_sentence, " ", s3_cont, omnibus_note, cat_sentence(has_fisher, has_chisq, has_fisher_sim), sig_sentence)
   } else {
     sec3_body <- paste0(
       desc_sentence, " ",

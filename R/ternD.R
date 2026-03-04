@@ -36,10 +36,15 @@
 #'   variables whose values are not Y/N, YES/NO, or 1/0 (e.g. Male/Female) use the hierarchical
 #'   sub-row format, showing both levels as indented rows.
 #'   If \code{FALSE}, all categorical variables use a single-row flat format. Default is \code{TRUE}.
-#' @param factor_order Character; controls the ordering of factor levels in the output. If
-#'   \code{"levels"} (default), respects the original factor level ordering as defined in the data;
-#'   if the variable is not a factor, falls back to frequency ordering. If \code{"frequency"},
-#'   orders levels by decreasing frequency (most common first).
+#' @param factor_order Character; controls the ordering of factor levels in the output.
+#'   \code{"mixed"} (default) applies level-aware ordering for two-level categorical variables and
+#'   frequency ordering for variables with three or more levels: for any factor, factor level order
+#'   is always respected regardless of the number of levels; for non-factor two-level variables,
+#'   levels are sorted alphabetically; for non-factor variables with three or more levels, levels
+#'   are sorted by decreasing frequency.
+#'   \code{"levels"} respects the original factor level ordering for all variables; if the variable
+#'   is not a factor, falls back to frequency ordering.
+#'   \code{"frequency"} orders all levels by decreasing frequency (most common first).
 #' @param methods_doc Logical; if \code{TRUE} (default), generates a methods document
 #'   describing the statistical presentation used. The document contains boilerplate
 #'   text for all three table types so the relevant section can be copied directly
@@ -127,7 +132,7 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
                   output_xlsx = NULL, output_docx = NULL,
                   consider_normality = "ROBUST", print_normality = FALSE,
                   round_intg = FALSE, smart_rename = TRUE, insert_subheads = TRUE,
-                  factor_order = "levels", methods_doc = TRUE,
+                  factor_order = "mixed", methods_doc = TRUE,
                   methods_filename = "TernTables_methods.docx", category_start = NULL,
                   table_font_size = 9, manual_italic_indent = NULL, manual_underline = NULL,
                   table_caption = NULL, table_footnote = NULL,
@@ -200,14 +205,21 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
       }
       pct <- round(100 * prop.table(tab))
       
-      # Sort levels by frequency (descending order - most common first) or respect factor levels
-      if (factor_order == "levels" && is.factor(v)) {
-        # Respect original factor level ordering
+      # Sort levels: respect factor levels, frequency, or mixed (alphabetical for 2-level, frequency for 3+)
+      if ((factor_order == "levels" || factor_order == "mixed") && is.factor(v)) {
+        # Factor: always respect original factor level ordering
         sorted_levels <- levels(v)
-        # Filter to only include levels that actually appear in the data
         sorted_levels <- sorted_levels[sorted_levels %in% names(tab)]
+      } else if (factor_order == "mixed") {
+        # Non-factor: 2-level → alphabetical; 3+ → frequency
+        available <- names(tab)
+        if (length(available) == 2) {
+          sorted_levels <- sort(available)
+        } else {
+          sorted_levels <- names(sort(tab, decreasing = TRUE))
+        }
       } else {
-        # Default: sort by frequency (descending order)
+        # "levels" non-factor fallback or "frequency": sort by frequency
         sorted_levels <- names(sort(tab, decreasing = TRUE))
       }
       

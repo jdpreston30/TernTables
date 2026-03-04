@@ -72,7 +72,11 @@ checks before the data is passed to \code{\link{ternG}} or
 \code{ternP()} stops with a descriptive error if:
 \itemize{
   \item Any column name matches a protected health information (PHI) pattern
-    (e.g. \code{MRN}, \code{DOB}, \code{FirstName}).
+    (e.g. \code{MRN}, \code{DOB}, \code{FirstName}). De-identified research
+    identifiers such as \code{patient_id}, \code{subject_id}, and
+    \code{participant_id} are explicitly excluded, as are clinical-event
+    dates (admission date, discharge date, visit date, etc.). Only
+    personal-identity dates such as DOB and DOD are flagged.
   \item Any column with a blank or whitespace-only header contains data.
     Completely empty unnamed columns are silently dropped and do not trigger
     this error.

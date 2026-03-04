@@ -116,7 +116,7 @@ tbl_descriptive <- ternD(
 
 ### `ternG()` — Grouped comparison table
 
-Use `ternG()` to compare variables between two or more groups. Set `OR_col = TRUE` to add unadjusted odds ratios with 95% CI for binary variables in two-group comparisons (Fisher's exact or Wald method, chosen automatically based on expected cell counts; Cochran criterion).
+Use `ternG()` to compare variables between two or more groups. Set `OR_col = TRUE` to add unadjusted odds ratios with 95% CI for any two-level variable in two-group comparisons — including binary variables (Y/N, 0/1) and two-level categoricals such as Male/Female or Present/Absent. The reference level (factor level 1, or alphabetical first for non-factors) shows `1.00 (ref.)`; the non-reference level shows the computed OR with 95% CI. Fisher's exact or Wald method is chosen automatically based on expected cell counts (Cochran criterion). Odds ratios are not available for 3+ groups.
 
 **Two-group comparison:**
 
@@ -131,7 +131,7 @@ tbl_2group <- ternG(
 )
 ```
 
-**Three-group comparison:**
+**Three-group comparison with post-hoc testing:**
 
 ```r
 tbl_3group <- ternG(
@@ -140,23 +140,23 @@ tbl_3group <- ternG(
   group_var          = "Treatment_Arm",
   group_order        = c("Observation", "Levamisole", "Levamisole + 5FU"),
   consider_normality = TRUE,
+  post_hoc           = TRUE,
   output_docx        = "three_group.docx"
 )
 ```
 
-Omnibus *P* values are reported for 3+ group comparisons; pairwise post-hoc
-comparisons are not performed. Odds ratios are not available for 3+ groups.
+Omnibus *P* values are reported for 3+ group comparisons. When `post_hoc = TRUE` and the omnibus *P* < 0.05, pairwise post-hoc tests are run automatically for continuous and ordinal variables: Games-Howell following Welch ANOVA, and Dunn's test with Holm correction following Kruskal-Wallis. Results appear as compact letter display (CLD) superscripts appended to each cell value — groups sharing a letter are not significantly different. Categorical variables never receive post-hoc testing. Odds ratios are not available for 3+ groups.
 
 Statistical tests applied automatically:
 
-| Variable type | 2 groups | 3+ groups |
-|---|---|---|
-| Continuous, normal | Welch's *t*-test | Welch ANOVA |
-| Continuous, non-normal | Wilcoxon rank-sum | Kruskal-Wallis |
-| Binary / Categorical | Fisher's exact or Chi-squared | Fisher's exact or Chi-squared |
-| Ordinal (`force_ordinal`) | Wilcoxon rank-sum | Kruskal-Wallis |
+| Variable type | 2 groups | 3+ groups | Post-hoc (3+ groups, `post_hoc = TRUE`, omnibus *p* < 0.05) |
+|---|---|---|---|
+| Continuous, normal | Welch's *t*-test | Welch ANOVA | Games-Howell |
+| Continuous, non-normal | Wilcoxon rank-sum | Kruskal-Wallis | Dunn's + Holm |
+| Binary / Categorical | Fisher's exact or Chi-squared | Fisher's exact or Chi-squared | — |
+| Ordinal (`force_ordinal`) | Wilcoxon rank-sum | Kruskal-Wallis | Dunn's + Holm |
 
-Fisher's exact is used when any expected cell count is < 5 (Cochran criterion).
+Fisher's exact is used when any expected cell count is < 5 (Cochran criterion). If the exact algorithm cannot complete (workspace limit exceeded for large tables), Fisher's exact with Monte Carlo simulation (B = 10,000; seed fixed via `getOption("TernTables.seed")`, default 42) is used automatically.
 
 Normality routing uses `consider_normality = "ROBUST"` (default) — a three-gate
 decision: (1) absolute skewness > 2 in any group → non-parametric; (2) all

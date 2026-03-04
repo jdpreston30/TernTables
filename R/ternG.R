@@ -14,7 +14,11 @@
 #' @param group_order Optional character vector to specify a custom group level order.
 #' @param output_xlsx Optional filename to export the table as an Excel file.
 #' @param output_docx Optional filename to export the table as a Word document.
-#' @param OR_col Logical; if \code{TRUE}, adds odds ratios with 95\% CI for binary categorical variables.
+#' @param OR_col Logical; if \code{TRUE}, adds odds ratios with 95\% CI for binary categorical variables
+#'   (Y/N, YES/NO, or numeric 0/1) and two-level categorical variables (e.g. Male/Female). For
+#'   two-level categoricals displayed with sub-rows, the reference level (factor level 1, or
+#'   alphabetical first for non-factors) shows \code{"1.00 (ref.)"}; the non-reference level
+#'   shows the computed OR with 95\% CI. Variables with three or more levels show \code{"-"}.
 #'   Only valid when \code{group_var} has exactly 2 levels; an error is raised for 3+ group comparisons.
 #'   Default is \code{FALSE}.
 #' @param OR_method Character; controls how odds ratios are calculated when \code{OR_col = TRUE}.
@@ -45,7 +49,15 @@
 #'   variables whose values are not Y/N, YES/NO, or 1/0 (e.g. Male/Female) use the hierarchical
 #'   sub-row format, showing both levels as indented rows.
 #'   If \code{FALSE}, all categorical variables use a single-row flat format. Default is \code{TRUE}.
-#' @param factor_order Character; controls the ordering of factor levels in the output. If \code{"levels"} (default), respects the original factor level ordering as defined in the data; if the variable is not a factor, falls back to frequency ordering. If \code{"frequency"}, orders levels by decreasing frequency (most common first).
+#' @param factor_order Character; controls the ordering of factor levels in the output.
+#'   \code{"mixed"} (default) applies level-aware ordering for two-level categorical variables and
+#'   frequency ordering for variables with three or more levels: for any factor, factor level order
+#'   is always respected regardless of the number of levels; for non-factor two-level variables
+#'   (e.g. Male/Female), levels are sorted alphabetically; for non-factor variables with three or
+#'   more levels, levels are sorted by decreasing frequency.
+#'   \code{"levels"} respects the original factor level ordering for all variables; if the variable
+#'   is not a factor, falls back to frequency ordering.
+#'   \code{"frequency"} orders all levels by decreasing frequency (most common first).
 #' @param table_font_size Numeric; font size for Word document output tables. Default is 9.
 #' @param methods_doc Logical; if \code{TRUE} (default), generates a methods document describing the statistical tests used.
 #' @param methods_filename Character; filename for the methods document. Default is \code{"TernTables_methods.docx"}.
@@ -76,6 +88,14 @@
 #'   the first column header reads \code{"Category / Variable"}. Set to \code{FALSE} to suppress
 #'   all header line breaks. Can also be set package-wide via
 #'   \code{options(TernTables.line_break_header = FALSE)}.
+#' @param post_hoc Logical; if \code{TRUE}, runs pairwise post-hoc tests for continuous and ordinal
+#'   variables in three or more group comparisons and annotates each group column value with a compact
+#'   letter display (CLD) superscript. Groups sharing a letter are not significantly different at
+#'   \eqn{\alpha = 0.05}. For normally distributed variables (Welch ANOVA path), Games-Howell
+#'   pairwise tests are used. For non-normal and ordinal variables (Kruskal-Wallis path), Dunn's test
+#'   with Holm correction is used. Post-hoc testing is never applied to categorical variables.
+#'   Only valid when \code{group_var} has three or more levels; silently ignored for two-group
+#'   comparisons. Requires the \code{rstatix} package. Default is \code{FALSE}.
 #' @param indent_info_column Logical; if \code{FALSE} (default), the internal \code{.indent} helper column
 #'   is dropped from the returned tibble. Set to \code{TRUE} to retain it -- this is necessary when you
 #'   intend to post-process the tibble and later pass it to \code{word_export} directly, as
@@ -130,7 +150,7 @@ ternG <- function(data,
                   round_intg = FALSE,
                   smart_rename = TRUE,
                   insert_subheads = TRUE,
-                  factor_order = "levels",
+                  factor_order = "mixed",
                   table_font_size = 9,
                   methods_doc = TRUE,
                   methods_filename = "TernTables_methods.docx",
@@ -140,7 +160,8 @@ ternG <- function(data,
                   indent_info_column = FALSE,
                   show_total = TRUE,
                   table_caption = NULL, table_footnote = NULL,
-                  line_break_header = getOption("TernTables.line_break_header", TRUE)) {
+                  line_break_header = getOption("TernTables.line_break_header", TRUE),
+                  post_hoc = FALSE) {
 
   # Helper function for proper rounding (0.5 always rounds up)
   round_up_half <- function(x, digits = 0) {
@@ -186,6 +207,11 @@ ternG <- function(data,
   numeric_vars_tested <- 0
   numeric_vars_failed <- 0
 
+  # Track which variables actually had post-hoc tests run (omnibus significant)
+  posthoc_ran_display <- character(0)
+  # Track which variables used Monte Carlo Fisher's exact (workspace limit fallback)
+  fisher_sim_display  <- character(0)
+
   .summarize_var_internal <- function(df, var, force_ordinal = NULL, show_test = FALSE, round_intg = FALSE, show_total = FALSE) {
 
     g <- df %>% filter(!is.na(.data[[var]]), !is.na(.data[[group_var]]))
@@ -211,7 +237,19 @@ ternG <- function(data,
       fisher_flag <- any(suppressWarnings(stats::chisq.test(tab)$expected) < 5)
       test_result <- tryCatch({
         if (fisher_flag) {
-          list(p_value = stats::fisher.test(tab)$p.value, test_name = "Fisher exact", error = NULL)
+          sim_used <- FALSE
+          ft <- tryCatch(
+            stats::fisher.test(tab),
+            error = function(e) {
+              # Workspace limit exceeded for large tables — fall back to Monte Carlo
+              sim_used <<- TRUE
+              set.seed(getOption("TernTables.seed", 42L))
+              stats::fisher.test(tab, simulate.p.value = TRUE, B = 10000L)
+            }
+          )
+          list(p_value = ft$p.value,
+               test_name = if (sim_used) "Fisher exact (simulated)" else "Fisher exact",
+               error = NULL)
         } else {
           list(p_value = stats::chisq.test(tab)$p.value, test_name = "Chi-squared", error = NULL)
         }
@@ -226,7 +264,7 @@ ternG <- function(data,
         } else {
           reason <- "test failure"
         }
-        list(p_value = NA_real_, test_name = if (fisher_flag) "Fisher exact" else "Chi-squared", 
+        list(p_value = NA_real_, test_name = if (fisher_flag) "Fisher exact" else "Chi-squared",
              error = reason)
       })
       
@@ -247,12 +285,19 @@ ternG <- function(data,
         } else if (is_yes_no_full) {
           ref_level <- colnames(tab)[toupper(colnames(tab)) == "YES"]
         } else {
-          if (factor_order == "levels" && is.factor(g[[var]])) {
-            # Use the first level that actually appears in the data
+          if ((factor_order == "levels" || factor_order == "mixed") && is.factor(g[[var]])) {
+            # Factor: use first level that actually appears in the data
             available_levels <- levels(g[[var]])[levels(g[[var]]) %in% colnames(tab)]
             ref_level <- available_levels[1]
+          } else if (factor_order == "mixed") {
+            # Non-factor: 2-level → alphabetical first; 3+ → most frequent
+            if (length(colnames(tab)) == 2) {
+              ref_level <- sort(colnames(tab))[1]
+            } else {
+              ref_level <- names(sort(colSums(tab), decreasing = TRUE))[1]
+            }
           } else {
-            # Default: use most frequent level
+            # "levels" non-factor or "frequency": use most frequent level
             ref_level <- names(sort(colSums(tab), decreasing = TRUE))[1]
           }
         }
@@ -304,13 +349,20 @@ ternG <- function(data,
       } else {
         # Hierarchical format: header + indented sub-categories
         # tab_total_n is already a vector of total counts per level
-        if (factor_order == "levels" && is.factor(g[[var]])) {
-          # Respect original factor level ordering
+        if ((factor_order == "levels" || factor_order == "mixed") && is.factor(g[[var]])) {
+          # Factor: always respect original factor level ordering
           sorted_levels <- levels(g[[var]])
-          # Filter to only include levels that actually appear in the data
           sorted_levels <- sorted_levels[sorted_levels %in% names(tab_total_n)]
+        } else if (factor_order == "mixed") {
+          # Non-factor: 2-level → alphabetical; 3+ → frequency
+          available <- names(tab_total_n)
+          if (length(available) == 2) {
+            sorted_levels <- sort(available)
+          } else {
+            sorted_levels <- names(sort(tab_total_n, decreasing = TRUE))
+          }
         } else {
-          # Default: sort by frequency (descending order)
+          # "levels" non-factor fallback or "frequency": sort by frequency
           sorted_levels <- names(sort(tab_total_n, decreasing = TRUE))
         }
         
@@ -331,6 +383,45 @@ ternG <- function(data,
           header_row$Total <- ""
         }
         
+        # For two-level categorical variables, compute OR once before the row loop.
+        # Reference level: factor level 1, or alphabetical first for non-factors.
+        hier_or_vals <- NULL
+        if (OR_col && length(sorted_levels) == 2) {
+          ref_level_hier <- if (is.factor(g[[var]])) {
+            lvls <- levels(g[[var]])
+            lvls[lvls %in% sorted_levels][1]
+          } else {
+            sort(sorted_levels)[1]
+          }
+          non_ref_level_hier <- sorted_levels[sorted_levels != ref_level_hier]
+          # Reorder columns so reference level is first (groups stay as rows)
+          tab_hier2 <- tab[, c(ref_level_hier, non_ref_level_hier), drop = FALSE]
+          if (nrow(tab_hier2) == 2 && ncol(tab_hier2) == 2) {
+            or_string_hier <- tryCatch({
+              if (OR_method == "dynamic") {
+                if (fisher_flag) {
+                  fisher_obj2 <- stats::fisher.test(tab_hier2)
+                  sprintf("%.2f [%.2f\u2013%.2f]", fisher_obj2$estimate,
+                          fisher_obj2$conf.int[1], fisher_obj2$conf.int[2])
+                } else {
+                  or_obj2 <- epitools::oddsratio(tab_hier2, method = "wald")$measure
+                  sprintf("%.2f [%.2f\u2013%.2f]", or_obj2[2, 1], or_obj2[2, 2], or_obj2[2, 3])
+                }
+              } else if (OR_method == "wald") {
+                or_obj2 <- epitools::oddsratio(tab_hier2, method = "wald")$measure
+                sprintf("%.2f [%.2f\u2013%.2f]", or_obj2[2, 1], or_obj2[2, 2], or_obj2[2, 3])
+              } else {
+                "NA"
+              }
+            }, error = function(e) "NA (calculation failed)")
+            hier_or_vals <- list(
+              ref_level = ref_level_hier,
+              or_string  = or_string_hier,
+              or_method  = if (fisher_flag) "Fisher" else "Wald"
+            )
+          }
+        }
+
         # Create sub-category rows (indented)
         sub_rows <- lapply(sorted_levels, function(level) {
           out <- tibble(Variable = level, .indent = 6)
@@ -361,8 +452,14 @@ ternG <- function(data,
           }
           
           if (OR_col) {
-            out$OR <- "-"
-            if (show_test) out$OR_method <- "-"
+            if (!is.null(hier_or_vals)) {
+              # Two-level categorical: reference row shows "1.00 (ref.)", other row shows computed OR
+              out$OR <- if (level == hier_or_vals$ref_level) "1.00 (ref.)" else hier_or_vals$or_string
+              if (show_test) out$OR_method <- hier_or_vals$or_method
+            } else {
+              out$OR <- "-"
+              if (show_test) out$OR_method <- "-"
+            }
           }
           if (show_total) {
             out$Total <- paste0(tab_total_n[level], " (", tab_total_pct[level], "%)")
@@ -373,6 +470,8 @@ ternG <- function(data,
         # Combine header and sub-rows
         result <- bind_rows(list(header_row), sub_rows)
       }
+      if (grepl("simulated", test_result$test_name, fixed = FALSE))
+        fisher_sim_display <<- c(fisher_sim_display, result$Variable[1])
       return(result)
     }
 
@@ -440,6 +539,40 @@ ternG <- function(data,
           result[[paste0("SW_p_", g_lvl)]] <- formatC(sw_p, format = "f", digits = 4)
         }
       }
+      # Post-hoc pairwise testing for 3+ groups: Dunn's test with Holm correction
+      # Only runs when omnibus (Kruskal-Wallis) is significant at alpha = 0.05
+      if (post_hoc && n_levels >= 3L && is.null(test_result$error) &&
+          !is.na(test_result$p_value) && test_result$p_value < 0.05) {
+        if (!requireNamespace("rstatix", quietly = TRUE) || !requireNamespace("multcompView", quietly = TRUE)) {
+          warning("post_hoc = TRUE requires 'rstatix' and 'multcompView'. Install with: install.packages(c('rstatix', 'multcompView'))")
+        } else {
+          ph_formula <- stats::as.formula(paste0("`", var, "` ~ `", group_var, "`"))
+          ph_res <- tryCatch(
+            rstatix::dunn_test(g, ph_formula, p.adjust.method = "holm"),
+            error = function(e) NULL
+          )
+          if (!is.null(ph_res)) {
+            centers_df  <- g %>% dplyr::group_by(.data[[group_var]]) %>%
+              dplyr::summarise(ctr = median(.data[[var]], na.rm = TRUE), .groups = "drop")
+            centers_vec <- setNames(centers_df$ctr, as.character(centers_df[[group_var]]))
+            ph_df <- data.frame(
+              group1 = as.character(ph_res$group1),
+              group2 = as.character(ph_res$group2),
+              p.adj  = ph_res$p.adj,
+              stringsAsFactors = FALSE
+            )
+            cld <- .compute_cld(as.character(group_levels), centers_vec[as.character(group_levels)], ph_df)
+            for (g_lvl in group_levels) {
+              sup <- .superscript_letters(cld[as.character(g_lvl)])
+              if (!is.null(sup) && nzchar(sup))
+                result[[group_labels[g_lvl]]] <- paste0(result[[group_labels[g_lvl]]], sup)
+            }
+            posthoc_ran_display <<- c(posthoc_ran_display, result$Variable[1])
+          }
+        }
+      }
+      if (grepl("simulated", test_result$test_name, fixed = FALSE))
+        fisher_sim_display <<- c(fisher_sim_display, result$Variable[1])
       return(result)
     }
 
@@ -617,6 +750,36 @@ ternG <- function(data,
         result[[nm]] <- formatC(sw_p_all[[nm]], format = "f", digits = 4)
       }
     }
+    # Post-hoc pairwise testing for 3+ groups: Games-Howell
+    # Only runs when omnibus (Welch ANOVA) is significant at alpha = 0.05
+    if (post_hoc && n_levels >= 3L && is.null(test_result$error) &&
+        !is.na(test_result$p_value) && test_result$p_value < 0.05) {
+      if (!requireNamespace("rstatix", quietly = TRUE) || !requireNamespace("multcompView", quietly = TRUE)) {
+        warning("post_hoc = TRUE requires 'rstatix' and 'multcompView'. Install with: install.packages(c('rstatix', 'multcompView'))")
+      } else {
+        gh_formula <- stats::as.formula(paste0("`", var, "` ~ `", group_var, "`"))
+        ph_res <- tryCatch(
+          rstatix::games_howell_test(g, gh_formula),
+          error = function(e) NULL
+        )
+        if (!is.null(ph_res)) {
+          centers_vec <- setNames(stats$mean, as.character(stats[[group_var]]))
+          ph_df <- data.frame(
+            group1 = as.character(ph_res$group1),
+            group2 = as.character(ph_res$group2),
+            p.adj  = ph_res$p.adj,
+            stringsAsFactors = FALSE
+          )
+          cld <- .compute_cld(as.character(group_levels), centers_vec[as.character(group_levels)], ph_df)
+          for (g_lvl in group_levels) {
+            sup <- .superscript_letters(cld[as.character(g_lvl)])
+            if (!is.null(sup) && nzchar(sup))
+              result[[group_labels[g_lvl]]] <- paste0(result[[group_labels[g_lvl]]], sup)
+          }
+          posthoc_ran_display <<- c(posthoc_ran_display, result$Variable[1])
+        }
+      }
+    }
     return(result)
   }
 
@@ -662,7 +825,7 @@ ternG <- function(data,
   
   # Write methods document if requested
   if (methods_doc) {
-    write_methods_doc(out_tbl, methods_filename, n_levels = n_levels, OR_col = OR_col, source = "ternG")
+    write_methods_doc(out_tbl, methods_filename, n_levels = n_levels, OR_col = OR_col, source = "ternG", post_hoc = post_hoc)
   }
 
   # -- Report normality test results -----------------------------------------
@@ -725,7 +888,30 @@ ternG <- function(data,
   out_tbl_with_indent <- out_tbl
 
   # Export to Word AFTER smart_rename so docx gets clean names
-  if (!is.null(output_docx)) word_export(out_tbl, output_docx, round_intg = round_intg, font_size = table_font_size, category_start = category_start, manual_italic_indent = manual_italic_indent, manual_underline = manual_underline, table_caption = table_caption, table_footnote = table_footnote, line_break_header = line_break_header)
+  # Auto-prepend post-hoc footnote only when at least one variable actually ran post-hoc
+  effective_footnote <- table_footnote
+  notes <- character(0)
+  if (length(posthoc_ran_display) > 0L) {
+    vars_listed <- paste(unique(posthoc_ran_display), collapse = ", ")
+    notes <- c(notes, paste0(
+      "Superscript letters indicate pairwise post-hoc comparisons (",
+      vars_listed,
+      "; \u03b1\u00a0=\u00a00.05); groups sharing a letter are not significantly different."
+    ))
+  }
+  if (length(fisher_sim_display) > 0L) {
+    sim_vars <- paste(unique(fisher_sim_display), collapse = ", ")
+    notes <- c(notes, paste0(
+      "Fisher\u2019s exact test with Monte Carlo simulation (B\u00a0=\u00a010,000; seed\u00a0",
+      getOption("TernTables.seed", 42L),
+      ") was used where exact enumeration was computationally infeasible: ",
+      sim_vars, "."
+    ))
+  }
+  if (length(notes) > 0L)
+    effective_footnote <- if (is.null(table_footnote)) notes else c(notes, table_footnote)
+
+  if (!is.null(output_docx)) word_export(out_tbl, output_docx, round_intg = round_intg, font_size = table_font_size, category_start = category_start, manual_italic_indent = manual_italic_indent, manual_underline = manual_underline, table_caption = table_caption, table_footnote = effective_footnote, line_break_header = line_break_header)
 
   if (!indent_info_column) out_tbl <- dplyr::select(out_tbl, -dplyr::any_of(".indent"))
 
@@ -738,7 +924,7 @@ ternG <- function(data,
     manual_italic_indent = manual_italic_indent,
     manual_underline     = manual_underline,
     table_caption        = table_caption,
-    table_footnote       = table_footnote,
+    table_footnote       = effective_footnote,
     source               = "ternG",
     n_levels             = n_levels,
     OR_col               = OR_col

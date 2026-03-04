@@ -4,8 +4,14 @@
 # ------------------------------------------------------------------------------
 # PHI column name patterns
 #   Case-insensitive regex patterns. Any column name matching one or more of
-#   these patterns triggers the PHI hard stop. Patterns are intentionally
-#   broad — false positives are acceptable; false negatives are not.
+#   these patterns triggers the PHI hard stop.
+#
+#   Design intent: flag genuine personal identifiers while avoiding false
+#   positives on de-identified research columns that researchers routinely use.
+#   Specifically:
+#     - Patient/subject/participant IDs are NOT flagged (de-identified in use).
+#     - Clinical-event dates (admission, discharge, visit, etc.) are NOT flagged.
+#     - Only personal-identity dates (DOB, DOD) are flagged.
 # ------------------------------------------------------------------------------
 
 .phi_patterns <- c(
@@ -17,18 +23,19 @@
   # Identifiers
   # No word-boundary anchors on short abbreviations: underscores are word
   # characters in regex, so \\b would NOT fire on e.g. fake_MRN or fake_DOB.
+  # Note: patient_id / subject_id / participant_id are intentionally NOT flagged
+  # — researchers commonly use these as de-identified study identifiers.
   "mrn", "medical.?record", "record.?number", "record.?no",
-  "patient.?id", "subject.?id", "participant.?id",
   "npi", "national.?provider",
   "ssn", "social.?security", "\\bsin\\b",
   "account.?number", "insurance.?id", "member.?id", "policy.?number",
   "health.?plan", "beneficiary",
 
-  # Dates
+  # Dates — only PERSONAL identifiers (birth / death); clinical-event dates
+  # (admission, discharge, visit, procedure, surgery, etc.) are NOT flagged
+  # because they are routinely present in de-identified research datasets.
   "dob", "date.?of.?birth", "birth.?date", "birthdate", "birthday",
   "date.?of.?death", "dod", "death.?date",
-  "admission.?date", "discharge.?date", "visit.?date", "encounter.?date",
-  "procedure.?date", "service.?date", "surgery.?date", "transplant.?date",
 
   # Contact / location
   # No \\b anchors — underscores are word characters and would block matching

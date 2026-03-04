@@ -22,7 +22,7 @@ ternG(
   round_intg = FALSE,
   smart_rename = TRUE,
   insert_subheads = TRUE,
-  factor_order = "levels",
+  factor_order = "mixed",
   table_font_size = 9,
   methods_doc = TRUE,
   methods_filename = "TernTables_methods.docx",
@@ -33,7 +33,8 @@ ternG(
   show_total = TRUE,
   table_caption = NULL,
   table_footnote = NULL,
-  line_break_header = getOption("TernTables.line_break_header", TRUE)
+  line_break_header = getOption("TernTables.line_break_header", TRUE),
+  post_hoc = FALSE
 )
 }
 \arguments{
@@ -53,7 +54,11 @@ ternG(
 
 \item{output_docx}{Optional filename to export the table as a Word document.}
 
-\item{OR_col}{Logical; if \code{TRUE}, adds odds ratios with 95\% CI for binary categorical variables.
+\item{OR_col}{Logical; if \code{TRUE}, adds odds ratios with 95\% CI for binary categorical variables
+(Y/N, YES/NO, or numeric 0/1) and two-level categorical variables (e.g. Male/Female). For
+two-level categoricals displayed with sub-rows, the reference level (factor level 1, or
+alphabetical first for non-factors) shows \code{"1.00 (ref.)"}; the non-reference level
+shows the computed OR with 95\% CI. Variables with three or more levels show \code{"-"}.
 Only valid when \code{group_var} has exactly 2 levels; an error is raised for 3+ group comparisons.
 Default is \code{FALSE}.}
 
@@ -93,7 +98,15 @@ variables whose values are not Y/N, YES/NO, or 1/0 (e.g. Male/Female) use the hi
 sub-row format, showing both levels as indented rows.
 If \code{FALSE}, all categorical variables use a single-row flat format. Default is \code{TRUE}.}
 
-\item{factor_order}{Character; controls the ordering of factor levels in the output. If \code{"levels"} (default), respects the original factor level ordering as defined in the data; if the variable is not a factor, falls back to frequency ordering. If \code{"frequency"}, orders levels by decreasing frequency (most common first).}
+\item{factor_order}{Character; controls the ordering of factor levels in the output.
+\code{"mixed"} (default) applies level-aware ordering for two-level categorical variables and
+frequency ordering for variables with three or more levels: for any factor, factor level order
+is always respected regardless of the number of levels; for non-factor two-level variables
+(e.g. Male/Female), levels are sorted alphabetically; for non-factor variables with three or
+more levels, levels are sorted by decreasing frequency.
+\code{"levels"} respects the original factor level ordering for all variables; if the variable
+is not a factor, falls back to frequency ordering.
+\code{"frequency"} orders all levels by decreasing frequency (most common first).}
 
 \item{table_font_size}{Numeric; font size for Word document output tables. Default is 9.}
 
@@ -140,6 +153,15 @@ Default is \code{NULL} (no footnote).}
 the first column header reads \code{"Category / Variable"}. Set to \code{FALSE} to suppress
 all header line breaks. Can also be set package-wide via
 \code{options(TernTables.line_break_header = FALSE)}.}
+
+\item{post_hoc}{Logical; if \code{TRUE}, runs pairwise post-hoc tests for continuous and ordinal
+variables in three or more group comparisons and annotates each group column value with a compact
+letter display (CLD) superscript. Groups sharing a letter are not significantly different at
+\eqn{\alpha = 0.05}. For normally distributed variables (Welch ANOVA path), Games-Howell
+pairwise tests are used. For non-normal and ordinal variables (Kruskal-Wallis path), Dunn's test
+with Holm correction is used. Post-hoc testing is never applied to categorical variables.
+Only valid when \code{group_var} has three or more levels; silently ignored for two-group
+comparisons. Requires the \code{rstatix} package. Default is \code{FALSE}.}
 }
 \value{
 A tibble with one row per variable (multi-row for multi-level factors), showing summary statistics by group,

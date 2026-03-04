@@ -16,7 +16,7 @@ ternD(
   round_intg = FALSE,
   smart_rename = TRUE,
   insert_subheads = TRUE,
-  factor_order = "levels",
+  factor_order = "mixed",
   methods_doc = TRUE,
   methods_filename = "TernTables_methods.docx",
   category_start = NULL,
@@ -71,10 +71,15 @@ variables whose values are not Y/N, YES/NO, or 1/0 (e.g. Male/Female) use the hi
 sub-row format, showing both levels as indented rows.
 If \code{FALSE}, all categorical variables use a single-row flat format. Default is \code{TRUE}.}
 
-\item{factor_order}{Character; controls the ordering of factor levels in the output. If
-\code{"levels"} (default), respects the original factor level ordering as defined in the data;
-if the variable is not a factor, falls back to frequency ordering. If \code{"frequency"},
-orders levels by decreasing frequency (most common first).}
+\item{factor_order}{Character; controls the ordering of factor levels in the output.
+\code{"mixed"} (default) applies level-aware ordering for two-level categorical variables and
+frequency ordering for variables with three or more levels: for any factor, factor level order
+is always respected regardless of the number of levels; for non-factor two-level variables,
+levels are sorted alphabetically; for non-factor variables with three or more levels, levels
+are sorted by decreasing frequency.
+\code{"levels"} respects the original factor level ordering for all variables; if the variable
+is not a factor, falls back to frequency ordering.
+\code{"frequency"} orders all levels by decreasing frequency (most common first).}
 
 \item{methods_doc}{Logical; if \code{TRUE} (default), generates a methods document
 describing the statistical presentation used. The document contains boilerplate

@@ -9,5 +9,3 @@ devtools::check()
 #!!! update cran-comments.md
 devtools::check_win_devel()
 devtools::submit_cran()
-
-
