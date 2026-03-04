@@ -60,9 +60,9 @@ Invisibly returns the path to the written Word file.
 Export TernTables output to a formatted Word document
 }
 \examples{
-\dontrun{
+\donttest{
 data(tern_colon)
-tbl <- ternD(tern_colon, exclude_vars = c("ID"))
+tbl <- ternD(tern_colon, exclude_vars = c("ID"), methods_doc = FALSE)
 word_export(
   tbl      = tbl,
   filename = file.path(tempdir(), "descriptive.docx"),

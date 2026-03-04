@@ -48,13 +48,13 @@ val_p_format <- function(p, digits = 3) {
 #'
 #' @param mean Numeric mean value. Formatted to 1 decimal place.
 #' @param sd Numeric standard deviation. Formatted to 1 decimal place.
-#' @return A character string of the form \code{"X.X  +-  Y.Y"} where both values are
+#' @return A character string of the form \code{"X.X \u00b1 Y.Y"} where both values are
 #'   rendered to 1 decimal place using fixed-point notation.
 #' @export
 val_format <- function(mean, sd) {
   paste0(
     formatC(mean, format = "f", digits = 1),
-    "  +-  ",
+    " \u00b1 ",
     formatC(sd, format = "f", digits = 1)
   )
 }

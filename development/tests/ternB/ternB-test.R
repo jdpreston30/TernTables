@@ -49,8 +49,8 @@ T3 <- ternG(
 
 ternB(
   tables           = list(T1, T2, T3),
-  output_docx      = "development/ternB-test/T1-T3.docx",
+  output_docx      = "development/tests/ternB/tables/T1-T3.docx",
   methods_doc      = TRUE,
-  methods_filename = "development/ternB-test/T1-T3-methods.docx"
+  methods_filename = "development/tests/ternB/tables/T1-T3-methods.docx"
 )
 }

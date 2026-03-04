@@ -12,7 +12,7 @@ val_format(mean, sd)
 \item{sd}{Numeric standard deviation. Formatted to 1 decimal place.}
 }
 \value{
-A character string of the form \code{"X.X  +-  Y.Y"} where both values are
+A character string of the form \code{"X.X \u00b1 Y.Y"} where both values are
   rendered to 1 decimal place using fixed-point notation.
 }
 \description{

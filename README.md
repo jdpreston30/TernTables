@@ -158,11 +158,11 @@ Statistical tests applied automatically:
 
 Fisher's exact is used when any expected cell count is < 5 (Cochran criterion). If the exact algorithm cannot complete (workspace limit exceeded for large tables), Fisher's exact with Monte Carlo simulation (B = 10,000; seed fixed via `getOption("TernTables.seed")`, default 42) is used automatically.
 
-Normality routing uses `consider_normality = "ROBUST"` (default) — a three-gate
-decision: (1) absolute skewness > 2 in any group → non-parametric; (2) all
-groups n ≥ 30 → parametric via the Central Limit Theorem; (3) otherwise
-Shapiro-Wilk p > 0.05 in all groups → parametric. If any group has fewer than
-3 observations, the nonparametric test is used (conservative fail-safe).
+Normality routing uses `consider_normality = "ROBUST"` (default) — a four-gate
+decision: (1) any group n < 3 → non-parametric (conservative fail-safe);
+(2) absolute skewness > 2 in any group → non-parametric; (3) all groups
+n ≥ 30 → parametric via the Central Limit Theorem; (4) otherwise Shapiro-Wilk
+p > 0.05 in all groups → parametric.
 Set `consider_normality = TRUE` to use Shapiro-Wilk alone (original behaviour).
 
 ### `word_export()` — Format and export to Word
@@ -202,7 +202,7 @@ write_methods_doc(
 ```r
 val_p_format(0.0432)       # "0.043"
 val_p_format(0.000012)     # "1E-5"
-val_format(72.4, 8.1)  # "72.4  +-  8.1"
+val_format(72.4, 8.1)  # "72.4 ± 8.1"
 ```
 
 ## Output
@@ -243,4 +243,3 @@ This project is licensed under the MIT License.
 - [Joshua L. Chan](https://orcid.org/0000-0001-7220-561X) [![ORCID](https://img.shields.io/badge/ORCID-0000--0001--7220--561X-brightgreen?logo=orcid)](https://orcid.org/0000-0001-7220-561X)
 
 Feedback and contributions are welcome.
-

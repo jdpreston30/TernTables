@@ -47,9 +47,10 @@ generic boilerplate. When called from \code{ternD}, all comparison sections
 use generic boilerplate.
 }
 \examples{
-\dontrun{
+\donttest{
 data(tern_colon)
-tbl <- ternG(tern_colon, exclude_vars = c("ID"), group_var = "Recurrence")
+tbl <- ternG(tern_colon, exclude_vars = c("ID"), group_var = "Recurrence",
+            methods_doc = FALSE)
 write_methods_doc(tbl, filename = file.path(tempdir(), "methods.docx"))
 }
 }

@@ -32,9 +32,10 @@ Numeric variables can be designated as ordinal via \code{force_ordinal}.
   \item{Binary / Categorical}{Chi-squared or Fisher's exact, based on expected cell counts.}
   \item{Ordinal (forced)}{Wilcoxon rank-sum (2 groups) or Kruskal-Wallis (3+ groups).}
 }
-ROBUST routing uses three gates: (1) |skewness| > 2 in any group \eqn{\Rightarrow} non-parametric;
-(2) all groups n \eqn{\geq} 30 \eqn{\Rightarrow} parametric (CLT);
-(3) otherwise Shapiro-Wilk p > 0.05 in all groups \eqn{\Rightarrow} parametric.
+ROBUST routing uses four gates: (1) n < 3 \eqn{\Rightarrow} non-parametric (fail-safe);
+(2) |skewness| > 2 in any group \eqn{\Rightarrow} non-parametric;
+(3) all groups n \eqn{\geq} 30 \eqn{\Rightarrow} parametric (CLT);
+(4) otherwise Shapiro-Wilk p > 0.05 in all groups \eqn{\Rightarrow} parametric.
 }
 
 \section{Getting started}{
@@ -56,8 +57,8 @@ calling \code{ternG()}, \code{ternD()}, and \code{ternP()} directly.
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://tern-tables.com/}
   \item \url{https://github.com/jdpreston30/TernTables}
+  \item \url{https://tern-tables.com/}
   \item Report bugs at \url{https://github.com/jdpreston30/TernTables/issues}
 }
 

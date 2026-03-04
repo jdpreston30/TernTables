@@ -5,7 +5,7 @@
 devtools::load_all(".")
 data(tern_colon)
 
-out_dir <- "development/test-scripts/tables"
+out_dir <- "development/tests/posthoc-cld/tables"
 if (!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE)
 
 tbl <- ternG(

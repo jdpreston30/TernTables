@@ -23,9 +23,10 @@
 #'   \item{Binary / Categorical}{Chi-squared or Fisher's exact, based on expected cell counts.}
 #'   \item{Ordinal (forced)}{Wilcoxon rank-sum (2 groups) or Kruskal-Wallis (3+ groups).}
 #' }
-#' ROBUST routing uses three gates: (1) |skewness| > 2 in any group \eqn{\Rightarrow} non-parametric;
-#' (2) all groups n \eqn{\geq} 30 \eqn{\Rightarrow} parametric (CLT);
-#' (3) otherwise Shapiro-Wilk p > 0.05 in all groups \eqn{\Rightarrow} parametric.
+#' ROBUST routing uses four gates: (1) n < 3 \eqn{\Rightarrow} non-parametric (fail-safe);
+#' (2) |skewness| > 2 in any group \eqn{\Rightarrow} non-parametric;
+#' (3) all groups n \eqn{\geq} 30 \eqn{\Rightarrow} parametric (CLT);
+#' (4) otherwise Shapiro-Wilk p > 0.05 in all groups \eqn{\Rightarrow} parametric.
 #'
 #' @section Getting started:
 #' See \code{vignette("getting-started", package = "TernTables")} for a
@@ -44,7 +45,10 @@
 
 .onLoad <- function(libname, pkgname) {
   op     <- options()
-  op_tern <- list(TernTables.seed = 42L)
+  op_tern <- list(
+    TernTables.seed             = 42L,
+    TernTables.line_break_header = TRUE
+  )
   toset  <- !(names(op_tern) %in% names(op))
   if (any(toset)) options(op_tern[toset])
   invisible()

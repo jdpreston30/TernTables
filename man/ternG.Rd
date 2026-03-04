@@ -190,12 +190,13 @@ ternG(tern_colon, exclude_vars = c("ID"), group_var = "Treatment_Arm",
       group_order = c("Observation", "Levamisole", "Levamisole + 5FU"),
       methods_doc = FALSE)
 
-# Export to Word (writes a file -- not run during automated checks)
-\dontrun{
+# Export to Word (writes a file to tempdir)
+\donttest{
 ternG(tern_colon,
       exclude_vars   = c("ID"),
       group_var      = "Recurrence",
       OR_col         = TRUE,
+      methods_doc    = FALSE,
       output_docx    = file.path(tempdir(), "comparison.docx"),
       category_start = c("Patient Demographics"  = "Age (yr)",
                          "Tumor Characteristics" = "Positive Lymph Nodes (n)"))

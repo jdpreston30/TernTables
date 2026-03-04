@@ -12,10 +12,10 @@
 #' @return Invisibly returns the path to the written Word file.
 #' @seealso \code{\link{ternP}}, \code{\link{write_methods_doc}}
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' path   <- system.file("extdata/csv", "tern_colon_messy.csv",
 #'                       package = "TernTables")
-#' raw    <- readr::read_csv(path, show_col_types = FALSE)
+#' raw    <- read.csv(path, stringsAsFactors = FALSE)
 #' result <- ternP(raw)
 #' write_cleaning_doc(result, filename = file.path(tempdir(), "cleaning_summary.docx"))
 #' }

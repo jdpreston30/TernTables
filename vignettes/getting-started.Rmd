@@ -174,8 +174,8 @@ tbl_descriptive
 ```
 
 Continuous variables show mean ± SD or median [IQR] based on the four-gate
-ROBUST normality algorithm (skewness check, CLT at n ≥ 30, Shapiro-Wilk for
-small samples). Columns whose values are exactly Y/N,
+ROBUST normality algorithm (n < 3 fail-safe, skewness check, CLT at n ≥ 30,
+Shapiro-Wilk for small samples). Columns whose values are exactly Y/N,
 YES/NO, or numeric 0/1 are detected as binary and shown as a single n (%) row
 (the positive/yes count). All other categorical variables — including two-level
 variables like Male/Female — are shown with each level as an indented sub-row.
@@ -239,7 +239,7 @@ The same `ternG()` function handles three or more groups automatically,
 switching from t-test/Wilcoxon to Welch ANOVA/Kruskal-Wallis as appropriate.
 Odds ratios are not available for 3+ group comparisons. `consider_normality`
 controls normality routing; the default (`"ROBUST"`) applies the four-gate
-algorithm (skewness → CLT → Shapiro-Wilk). `FALSE` forces parametric tests
+algorithm (n < 3 fail-safe → skewness → CLT → Shapiro-Wilk). `FALSE` forces parametric tests
 throughout; `"FORCE"` forces nonparametric throughout.
 
 Set `post_hoc = TRUE` to run pairwise post-hoc tests automatically when the
@@ -334,11 +334,10 @@ TernTables selects tests automatically based on variable type and normality:
 \*Fisher's exact is used when any expected cell count is < 5 (Cochran criterion). If the exact algorithm cannot complete (workspace limit exceeded for large tables), Fisher's exact with Monte Carlo simulation (B = 10,000; seed fixed via `getOption("TernTables.seed")`, default 42) is used automatically.
 
 Normality routing uses `consider_normality = "ROBUST"` (the default) — a
-three-gate decision applied per group: (1) absolute skewness > 2 in any group
-→ non-parametric regardless of sample size; (2) all groups n ≥ 30 → parametric
-via the Central Limit Theorem; (3) otherwise Shapiro-Wilk p > 0.05 in all
-groups → parametric. If any group has fewer than 3 observations the
-nonparametric test is used (conservative fail-safe). For 3+ group comparisons,
+four-gate decision applied per group: (1) any group n < 3 → non-parametric
+(conservative fail-safe); (2) absolute skewness > 2 in any group → non-parametric
+regardless of sample size; (3) all groups n ≥ 30 → parametric via the Central
+Limit Theorem; (4) otherwise Shapiro-Wilk p > 0.05 in all groups → parametric. For 3+ group comparisons,
 omnibus *P* values are reported. When `post_hoc = TRUE`, pairwise comparisons
 are performed automatically for continuous and ordinal variables when omnibus
 *P* < 0.05, using the test paired to the omnibus (Games-Howell or Dunn's +

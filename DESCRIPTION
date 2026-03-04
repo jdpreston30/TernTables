@@ -1,7 +1,7 @@
 Package: TernTables
 Type: Package
 Title: Publication-Ready Summary Tables and Statistical Testing for Clinical Research
-Version: 1.6.2
+Version: 1.6.3
 Authors@R: c(
     person("Joshua D.", "Preston",
            email = "joshua.preston@emory.edu",
@@ -28,12 +28,14 @@ Description: Generates publication-ready summary tables for clinical research,
     The package streamlines the analytical workflow by detecting variable types 
     and applying appropriate statistical tests (Welch t-test, Wilcoxon rank-sum, 
     Welch ANOVA, Kruskal-Wallis, Chi-squared, or Fisher's exact test). Results are 
-    formatted as 'tibble' objects and can be exported to Word or Excel using 
+    formatted as 'tibble' objects and can be exported to 'Word' or 'Excel' using
     the 'officer', 'flextable', and 'writexl' packages. Optional pairwise
     post-hoc testing for three-group comparisons (Games-Howell and Dunn's
-    test) is available via the 'rstatix' package.
+    test) is available via the 'rstatix' package. Example data are derived
+    from the landmark adjuvant colon cancer trial described in
+    Moertel et al. (1990) <doi:10.1056/NEJM199002083220602>.
 License: MIT + file LICENSE
-URL: https://tern-tables.com/, https://github.com/jdpreston30/TernTables
+URL: https://github.com/jdpreston30/TernTables, https://tern-tables.com/
 BugReports: https://github.com/jdpreston30/TernTables/issues
 Encoding: UTF-8
 RoxygenNote: 7.3.3

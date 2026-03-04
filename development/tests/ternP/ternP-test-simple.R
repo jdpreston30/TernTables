@@ -10,7 +10,7 @@ if (!file.exists("inst/extdata/csv/tern_colon_messy.csv")) {
   source("data-raw/tern_colon_extdata.R")
 }
 
-out_dir <- "development/ternP-test"
+out_dir <- "development/tests/ternP/tables"
 
 # ==============================================================================
 # SCENARIO 1: messy data — all five transformations should fire in the printout

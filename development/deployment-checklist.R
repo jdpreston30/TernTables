@@ -1,6 +1,6 @@
 # GitHub commits
 devtools::document()
-Rscript -e "devtools::build_manual(pkg = '.', path = 'development/manual')"
+source("development/manual/build-manual.R")
 source("development/run-vignette/run-vignette.R")
 rmarkdown::render("vignettes/getting-started.Rmd")
 devtools::check()

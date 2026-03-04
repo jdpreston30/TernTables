@@ -117,10 +117,11 @@
 #' ternD(tern_colon, exclude_vars = c("ID"), methods_doc = FALSE,
 #'       force_ordinal = c("Positive_Lymph_Nodes_n"))
 #'
-#' # Export to Word (writes a file -- not run during automated checks)
-#' \dontrun{
+#' # Export to Word (writes a file to tempdir)
+#' \donttest{
 #' ternD(tern_colon,
 #'       exclude_vars     = c("ID"),
+#'       methods_doc      = FALSE,
 #'       output_docx      = file.path(tempdir(), "descriptive.docx"),
 #'       category_start   = c("Patient Demographics"  = "Age (yr)",
 #'                            "Surgical Findings"     = "Colonic Obstruction",

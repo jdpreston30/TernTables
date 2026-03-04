@@ -61,12 +61,9 @@
   # Remove trailing : Y, : N patterns (binary indicators)
   clean_name <- gsub(": [YN]$", "", var_name)
 
-  # If there are no underscores the name has already been cleaned — return as-is
-  # to avoid .capitalize_medical_term destroying title case
-  if (!grepl("_", clean_name)) return(trimws(clean_name))
-
-  # Split by underscores and process each part
-  parts <- strsplit(clean_name, "_")[[1]]
+  # Split by underscores and process each part (single-word names produce one
+  # token and flow through abbrev_map / .capitalize_medical_term normally)
+  parts <- strsplit(trimws(clean_name), "_")[[1]]
 
   # Common abbreviation mappings
   abbrev_map <- list(

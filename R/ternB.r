@@ -33,19 +33,19 @@
 #' @return Invisibly returns the path to the written Word file.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data(tern_colon)
 #'
 #' T1 <- ternD(tern_colon,
-#'             exclude_vars = "ID",
+#'             exclude_vars  = "ID",
 #'             table_caption = "Table 1. Overall patient characteristics.",
-#'             methods_doc = FALSE)
+#'             methods_doc   = FALSE)
 #'
 #' T2 <- ternG(tern_colon,
-#'             group_var    = "Recurrence",
-#'             exclude_vars = "ID",
+#'             group_var     = "Recurrence",
+#'             exclude_vars  = "ID",
 #'             table_caption = "Table 2. Characteristics by recurrence status.",
-#'             methods_doc = FALSE)
+#'             methods_doc   = FALSE)
 #'
 #' ternB(list(T1, T2),
 #'       output_docx = file.path(tempdir(), "combined_tables.docx"))

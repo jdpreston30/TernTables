@@ -23,10 +23,10 @@ stating that is produced instead. The document can be attached to a
 data-management log or supplemental materials.
 }
 \examples{
-\dontrun{
+\donttest{
 path   <- system.file("extdata/csv", "tern_colon_messy.csv",
                       package = "TernTables")
-raw    <- readr::read_csv(path, show_col_types = FALSE)
+raw    <- read.csv(path, stringsAsFactors = FALSE)
 result <- ternP(raw)
 write_cleaning_doc(result, filename = file.path(tempdir(), "cleaning_summary.docx"))
 }

@@ -73,11 +73,11 @@
 #' @seealso \code{\link{ternG}} for grouped comparisons, \code{\link{ternD}} for descriptive statistics.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Load a messy CSV and preprocess it
-#' path <- system.file("extdata/csv", "tern_colon_messy.csv",
-#'                     package = "TernTables")
-#' raw  <- readr::read_csv(path, show_col_types = FALSE)
+#' path   <- system.file("extdata/csv", "tern_colon_messy.csv",
+#'                       package = "TernTables")
+#' raw    <- read.csv(path, stringsAsFactors = FALSE)
 #' result <- ternP(raw)
 #'
 #' # Access cleaned data
@@ -86,7 +86,7 @@
 #' # Review preprocessing feedback
 #' result$feedback
 #'
-#' # Download sparse rows (>50% missing) if present
+#' # Sparse rows flagged (>50% missing), retained but not removed
 #' result$sparse_rows
 #' }
 #'
