@@ -1,0 +1,581 @@
+---
+title: "TernTables — Statistical Logic Review Request"
+author: "Joshua D. Preston"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    theme: flatly
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+## Try the Web App
+
+If you'd like to explore the package interactively before diving into the statistical
+questions, the web app is live at:
+
+**<https://tern-tables.com>**
+
+You can upload a CSV or Excel file and generate tables directly — no R installation
+required. The CRAN package is the engine running in the background.
+
+---
+
+## Overview
+
+To bring you up to speed and remind you of context — **TernTables** is an R package I developed that automates descriptive and
+univariate statistics for clinical datasets and exports publication-ready Word
+tables. `ternD()` generates descriptive summaries; `ternG()` handles two- and
+three-or-more-group comparisons with automated test selection based on normality. The
+goal is to let clinical researchers run standard Table 1/2 analyses
+independently and skip the formatting work entirely.
+
+The package was submitted to CRAN and a response is expected
+within a few weeks. In the meantime, it is available on R-universe and installs
+with:
+
+```{r install-overview, eval=FALSE}
+install.packages(
+  "TernTables",
+  repos = c("https://jdpreston30.r-universe.dev", "https://cloud.r-project.org")
+)
+```
+
+Here is the general outline of where things stand and what remains:
+
+**Done so far:**
+
+- The package is fully built and stable
+- Package is available on R-universe for installation and testing
+- Submitted to CRAN and awaiting a response/publication
+- Ailin and I have developed a beta version of the web app that runs all the R code in the background and allows users to upload data as Excel or CSV. The CRAN version will remain the core engine behind this.
+
+**Remaining:**
+
+- <mark>I need a review of the package's statistical logic to ensure all choices align
+  with best practices in clinical research statistics — this is where I am
+  relying on your expertise.</mark>
+- Once the statistical logic is approved, the package is accepted by CRAN, and
+  the web app is finalized, I will begin drafting a manuscript introducing the package
+  and the app.
+- Submit and publish the manuscript.
+
+<mark>**Section 1 below contains all requests — that is the only thing that requires
+your input.** Sections 2 and 3 are reference material.</mark>
+
+To make it as easy as possible to find the operative questions, I have highlighted them in yellow throughout Section 1 — so you can skim the context and land directly on what I am specifically asking for your input on.
+
+---
+
+## 1. Requests
+
+### Setup verification
+
+Before the statistical questions, please confirm:
+
+- [ ]  <mark>Package installs cleanly (see install command in Section 2)</mark>
+- [ ]  <mark>Vignette opens and renders without errors: `vignette("getting-started", package = "TernTables")`</mark>
+- [ ]  <mark>The vignette produces Word document tables that look publication-ready</mark>
+
+If any of these fail, please let me know before going further.
+
+### Statistical logic review
+
+The core test-selection logic lives in `ternG()`. The table below summarises the
+full decision tree; Section 2 documents each branch in detail.
+
+> **Overarching goal:** ensure that a researcher using TernTables can defend
+> their Table 1 against a hostile reviewer by citing a single, consistent, and
+> conservative decision-support algorithm.
+
+The eight specific questions are below.
+
+<details open>
+<summary>**Q1 — Do you broadly agree with this test-selection framework?**</summary>
+
+The table below is the complete automated test-selection logic in `ternG()`.
+Before getting into specific questions (Q2–Q8), I would like your high-level
+view: <mark>does this framework reflect reasonable, defensible choices for automated
+clinical table generation, or are there structural issues you would address
+first?</mark>
+
+| Variable type | Test (2 groups) | Test (3+ groups) | Post-hoc (omnibus *p* < 0.05) |
+|---|---|---|---|
+| Continuous, normal | Welch's *t*-test | Welch ANOVA | Games-Howell |
+| Continuous, non-normal | Wilcoxon rank-sum | Kruskal-Wallis | Dunn's + Holm |
+| Binary / Categorical | Fisher's exact or Chi-squared† | Fisher's exact or Chi-squared† | — |
+| Ordinal (`force_ordinal`) | Wilcoxon rank-sum | Kruskal-Wallis | Dunn's + Holm |
+
+†Fisher's exact when any expected cell < 5 (Cochran criterion). If the exact
+algorithm exceeds its workspace limit (e.g. 3×4+ tables), Monte Carlo
+simulation is used automatically (see Q8).
+
+Normality routing uses a four-gate algorithm (see Q2 below for full rationale).
+
+</details>
+
+---
+
+<details open>
+<summary>**Q2 — ROBUST normality routing: does the four-gate algorithm hold up statistically?**</summary>
+
+Shapiro-Wilk alone is a problematic normality gate in automated pipelines
+because it is n-sensitive in both directions — low power at small n (misses
+non-normality) and excessive power at large n (flags clinically irrelevant
+departures). I replaced it with a four-gate algorithm now set as the default
+(`consider_normality = "ROBUST"`). Here is exactly what was implemented:
+
+1. **Fail-safe (n < 3):** Any group with fewer than 3 non-missing observations
+   → non-parametric. Shapiro-Wilk cannot be validly computed; conservative.
+
+2. **Skewness gate (|skewness| > 2):** Any group with absolute skewness
+   exceeding 2.0 → non-parametric, *regardless of sample size*. Rationale:
+   even when n ≥ 30 gives a normal sampling distribution for the mean, an
+   extreme skewness of this magnitude indicates a distribution (LOS [length of stay], cost,
+   count data) where the parametric summary (mean ± SD) is misleadingly
+   unrepresentative of the typical patient and the CLT gate should not apply.
+   Skewness is computed inline as `(sum((x - mean)^3) / n) / sd^3` using the
+   **population formula** (divisor n, not n − 1) — no new package dependency.
+
+3. **CLT gate (all groups n ≥ 30):** All groups cleared the skewness gate and
+   all have ≥ 30 observations → parametric. CLT ensures the sampling
+   distribution of the mean is approximately normal; Shapiro-Wilk p-values at
+   this n are driven by trivial distributional departures and are uninformative.
+
+4. **Shapiro-Wilk fallback (small samples):** At least one group has n < 30
+   and all cleared Gates 1–2. Shapiro-Wilk is run per group; all groups must
+   pass (p > 0.05) for the variable to be treated as parametric.
+
+`consider_normality = TRUE` (Shapiro-Wilk only, original behaviour) remains
+available as an explicit argument.
+
+<mark>**Questions:**</mark>  
+<mark>**(a)** Does this four-gate structure reflect sound statistical reasoning for
+automated routing in clinical tables?</mark>  
+<mark>**(b)** Is |skewness| > 2 a reasonable universal cutoff, or would a different
+threshold (e.g. 1.0 or 1.5) be more appropriate for clinical data?</mark>  
+<mark>**(c)** Since Gate 2 has already filtered out variables with |skewness| > 2, does n ≥ 30
+provide a sufficiently robust "safe harbor" for parametric testing in clinical/surgical journals, or
+would you recommend an even higher threshold (e.g. n ≥ 50) for clinical data?</mark>  
+<mark>**(d)**</mark> The skewness is computed using the **population formula** (divisor *n*)
+rather than the sample-adjusted formula (divisor *n* − 1, Joanes & Gill, 1998).
+This was a deliberate implementation choice: using an inline formula avoids
+adding `e1071` or `moments` as package dependencies. The population formula
+produces a slightly smaller absolute skewness than the sample-corrected version,
+making the gate marginally harder to trigger — slightly more conservative toward
+parametric. Given that our CLT threshold is n ≥ 30, does the degree of
+underestimation at the boundary (e.g. n = 28–35) meaningfully risk Type II
+errors in the non-parametric routing, or is the difference negligible at these
+sample sizes? The bias of the population skewness formula is O(1/n); at n = 30,
+the population skewness is approximately 90% of the sample-adjusted value. <mark>Given
+that the cutoff of 2.0 is itself somewhat arbitrary, does this mathematical bias
+actually matter for clinical routing? Since skewness here is used solely to route to
+non-parametric summaries (Median [IQR]), is the conservative bias of the population
+formula actually a feature rather than a bug in clinical reporting?</mark>
+
+</details>
+
+---
+
+<details open>
+<summary>**Q3 — "All groups must pass" at the Shapiro-Wilk gate — still the right rule?**</summary>
+
+At Gate 4 of the ROBUST algorithm (small-sample variables that cleared the
+skewness gate), a variable is treated as parametric only if *every* group
+passes Shapiro-Wilk (p > 0.05). One group failing — even narrowly — flips
+the whole variable to non-parametric. The CLT gate now handles the large-n
+case where this rule was most punitive: by the time Shapiro-Wilk runs, every
+group in the comparison has n < 30 and |skewness| ≤ 2. In that small-sample,
+not-obviously-skewed regime, requiring all groups to pass feels more defensible
+than it did under the old pure-SW default.
+
+<mark>**Does the all-groups-must-pass rule seem appropriately conservative given
+that it is now only reached for small samples (n < 30) that also cleared the
+skewness gate?**</mark>
+
+</details>
+
+---
+
+<details open>
+<summary>**Q4 — Welch's *t*-test and Welch ANOVA as unconditional defaults**</summary>
+
+Welch's t-test (`stats::t.test(var.equal = FALSE)`) is used for all two-group
+normal comparisons and Welch's one-way ANOVA (`stats::oneway.test(var.equal = FALSE)`)
+for all three-or-more-group normal comparisons — both without any preliminary
+variance test. This follows Delacre et al. (2017, *IRSP*) and Ruxton
+(2006, *Behav Ecol*), who argue Welch should be the unconditional default
+because the equal-variance assumption is rarely verifiable in practice and the
+cost of using Welch when variances are equal is negligible. Pre-testing with
+Levene or an F-test inflates Type I error under heteroscedasticity and
+introduces a serial testing dependency that is hard to justify in an automated
+pipeline. <mark>**Do you agree with unconditional Welch, or would you recommend
+a different approach?**</mark>
+
+</details>
+
+---
+
+<details open>
+<summary>**Q5 — OR method: dynamic Fisher MLE / Wald switching, now extended to two-level categoricals**</summary>
+
+When `OR_col = TRUE`, odds ratios are now computed for two variable types:
+
+1. **Binary variables** (Y/N, YES/NO, 0/1) — single n (%) row; OR for the positive level.
+2. **Two-level categorical variables** (e.g. Male/Female) — sub-row display; the reference
+   level (factor level 1, or alphabetical first for non-factors) shows `1.00 (ref.)`;
+   the non-reference level shows the OR with 95% CI. Variables with 3+ levels show `—`.
+
+The OR estimation framework is matched to the test used for that variable:
+
+- **Fisher's exact path** (any expected cell < 5): OR is the **Conditional MLE** from `stats::fisher.test()`.
+- **Chi-squared path** (all expected cells ≥ 5): OR is the **Unconditional Wald estimate** from `epitools::oddsratio(..., method = "wald")`.
+
+<mark>**Question:** Is the inconsistency between Conditional (Fisher MLE) and Unconditional (Wald) OR within the
+same table acceptable given the Cochran switching criterion, or would a single estimator
+(e.g. Woolf log-odds) be preferable to harmonize the two routes?</mark>
+
+</details>
+
+---
+
+<details open>
+<summary>**Q6 — Handling of ties in non-parametric tests**</summary>
+
+Clinical data frequently has tied ranks — lab values truncated to the same
+precision, ordinal scores, counts with many zeros. `stats::wilcox.test()` and
+`stats::kruskal.test()` handle ties using a normal approximation with a
+continuity correction; they do not use exact permutation distributions when
+ties are present.
+
+For a package targeting publication-ready clinical tables:
+
+- <mark>Is the base R normal-approximation approach sufficient for standard
+  surgical/clinical manuscripts, or would you recommend exact tests via the
+  `coin` package for small-n tied data?</mark>
+- <mark>If you recommend exact tests, at what sample size threshold would you
+  switch from exact to asymptotic (to keep runtimes reasonable for automated
+  pipelines)?</mark>
+
+</details>
+
+---
+
+<details open>
+<summary>**Q7 — Post-hoc pairwise comparisons: test pairing, correction, and compact letter display (CLD)**</summary>
+
+`post_hoc = TRUE` (default `FALSE`) enables automatic pairwise comparisons when the
+omnibus p < 0.05 for 3+ group continuous/ordinal variables:
+
+- **Parametric path (Welch ANOVA):** Games-Howell (`rstatix::games_howell_test()`)
+- **Non-parametric/ordinal path (Kruskal-Wallis):** Dunn's test with Holm correction (`rstatix::dunn_test(..., p.adjust.method = "holm")`)
+- CLD computed via `multcompView::multcompLetters()` (Piepho 2004); letters re-labeled so "a" = highest-center group
+- Categorical variables never receive post-hoc testing
+- Auto-generated footnote appended to Word output naming only the variables that actually fired
+
+<mark>**Questions:**</mark>  
+<mark>**(a)** Is Games-Howell the right post-hoc pairing for Welch ANOVA in clinical data?
+Alternatives include Dunnett's T3 and Tamhane's T2 — both also assume unequal variances.
+Games-Howell is arguably the most widely cited in clinical research but is it the most appropriate?</mark>  
+<mark>**(b)** Is Dunn's test with Holm correction an appropriate pairing for Kruskal-Wallis?
+Alternatives include Conover's test (more powerful, less conservative) and Dunn's with
+Bonferroni (more conservative). Holm was chosen as a reasonable middle ground — do you agree?</mark>  
+<mark>**(c)** Is Holm the appropriate multiplicity correction here, or would Bonferroni or
+Benjamini-Hochberg be more defensible for a clinical Table 2 context? Note the number of
+comparisons scales as k(k−1)/2 with the number of groups.</mark>  
+<mark>**(d)** CLD convention: "a" maps to the highest-center group (highest mean or median),
+descending. Is this the right default, or is there a dominant convention in clinical journals?
+Specifically, since clinical readers equate "a" with "best" or "top" in a ranking, is there
+a risk that re-mapping for intuition violates a fundamental (albeit implicit) assumption that
+CLD letters should only follow the factor level order?</mark>  
+<mark>**(e)** Post-hoc is gated on omnibus p < 0.05. Should post-hoc instead run unconditionally
+when `post_hoc = TRUE` and let the multiple-comparison correction do the work? Some argue
+the omnibus-first strategy inflates Type I error in certain configurations.</mark>
+
+</details>
+
+---
+
+<details open>
+<summary>**Q8 — Monte Carlo Fisher's exact: defensible for clinical publication?**</summary>
+
+`stats::fisher.test()` uses an exact network algorithm (FEXACT) with a finite workspace.
+For larger contingency tables (e.g. 4-level variable × 3 groups = 3×4 table) the exact
+algorithm can exceed that limit and error. In v1.6.2, when this occurs TernTables
+automatically retries with:
+
+```r
+set.seed(getOption("TernTables.seed", 42L))
+fisher.test(tab, simulate.p.value = TRUE, B = 10000L)
+```
+
+The `test` column labels the result `"Fisher exact (simulated)"`. The seed is fixed
+package-wide (default 42, user-overridable via `options(TernTables.seed = ...)`) so the
+p-value is identical across sessions. A conditional Word footnote names the affected
+variable(s). Previously these tables returned `NA (test failure)`.
+
+<mark>**Questions:**</mark>  
+<mark>**(a)** Is `simulate.p.value = TRUE` with B = 10,000 considered a legitimate,
+citation-worthy method for clinical manuscripts, or would reviewers push back?</mark>  
+<mark>**(b)** Would a more defensible fallback be to simply apply the asymptotic Chi-squared
+test when the table is too large for exact Fisher's — rather than simulating? In most
+large-table cases the Cochran criterion has already been borderline, so would falling
+back to Chi-squared with a note be more standard practice?</mark>  
+<mark>**(c)** Is fixing a global seed for a simulation-based p-value a valid reproducibility
+strategy, or does it introduce any statistical concerns (e.g. dependence across multiple
+Monte Carlo calls within the same table)?</mark>
+
+</details>
+
+---
+
+<details open>
+<summary>**Q9 — Multiplicity across variables: is a table-wide correction needed?**</summary>
+
+`ternG()` commonly processes 25+ variables in a single call. Holm correction is applied
+within post-hoc pairwise comparisons for a given variable, but no correction is applied
+across the full table — each variable's omnibus p-value stands alone.
+
+<mark>**Question:** In a clinical Table 2, is it standard practice to let each variable's
+p-value stand on its own, or should TernTables offer an option for a global FDR correction
+(e.g. Benjamini-Hochberg) applied across all p-values in the table? Is the absence of
+a table-wide correction something a hostile reviewer would raise, or is it considered
+acceptable given the exploratory/descriptive nature of univariate Table 2 analyses?</mark>
+
+</details>
+
+Detailed documentation of what the code does — for context on the questions above.
+
+<details>
+<summary>**Installation**</summary>
+
+```{r install, eval=FALSE}
+install.packages(
+  "TernTables",
+  repos = c("https://jdpreston30.r-universe.dev", "https://cloud.r-project.org")
+)
+```
+
+```{r vignette, eval=FALSE}
+vignette("getting-started", package = "TernTables")
+```
+
+The vignette covers a descriptive table (`ternD`), a two-group comparison with
+odds ratios, and a three-group comparison using the bundled `tern_colon` dataset
+(n = 929; derived from `survival::colon`, Moertel et al., *NEJM* 1990).
+
+</details>
+
+<details>
+<summary>**2.1 — Variable type detection**</summary>
+
+| Condition | Treated as |
+|---|---|
+| `character` or `factor` | Categorical |
+| `numeric`, 2 unique values, all in {0, 1} | Binary categorical (auto-converted to Y/N) |
+| `numeric`, listed in `force_ordinal` | Ordinal (skips normality testing) |
+| `numeric`, all other cases | Continuous — goes to normality assessment |
+
+</details>
+
+<details>
+<summary>**2.2 — Normality assessment: ROBUST four-gate algorithm (default)**</summary>
+
+The default (`consider_normality = "ROBUST"`) applies a four-gate decision tree
+**per group** for `ternG()` and on the full variable vector for `ternD()` (which
+has no grouping variable). The gates run in order; the first gate triggered
+determines the routing:
+
+| Gate | Condition | Routing |
+|---|---|---|
+| 1 — fail-safe | any group n < 3 | non-parametric |
+| 2 — skewness | any group \|skewness\| > 2 | non-parametric |
+| 3 — CLT | all groups n ≥ 30 | **parametric** |
+| 4 — Shapiro-Wilk | small sample (≥ 1 group n < 30), all groups pass SW p > 0.05 | **parametric** |
+
+**Implementation details:**
+
+- Skewness is computed inline using the **population formula** (divisor *n*,
+  not *n* − 1): `(sum((x − mean)³) / n) / sd(x)³`. Non-missing values only.
+- At Gate 4, if Shapiro-Wilk returns `NA` for any group (sd = 0 edge case), that
+  `NA` is treated as a failure → non-parametric. Conservative.
+- The `shapiro.test()` n > 5000 limit is **never reached** at Gate 4 because
+  Gate 3 routes any variable where all groups have n ≥ 30 to parametric before
+  Gate 4 runs.
+- At Gate 4 the **all-groups-must-pass** rule applies: SW p > 0.05 in every
+  group required for parametric routing. One group failing flips the variable.
+
+**ternD (descriptive, no grouping variable):** the same four gates run on the
+full non-missing vector. Gate 1 checks total n < 3; Gate 2 checks skewness of
+the full distribution; Gate 3 checks total n ≥ 30; Gate 4 runs a single
+Shapiro-Wilk on the full vector.
+
+**Legacy modes (available via explicit argument):**
+
+- `consider_normality = TRUE` — Shapiro-Wilk only, no skewness or CLT gates.
+  For groups with n > 5,000, `shapiro.test()` errors → `NA` p-value → treated
+  as non-normal (conservative at large n).
+- `consider_normality = FALSE` — all numeric variables default to mean ± SD.
+- `consider_normality = "FORCE"` — all numeric variables treated as non-normal.
+
+</details>
+
+<details>
+<summary>**2.3 — Continuous variable test selection**</summary>
+
+| Distribution | 2 groups | 3+ groups |
+|---|---|---|
+| Normal | Welch's *t*-test (`stats::t.test`, `var.equal = FALSE`) | Welch's one-way ANOVA (`stats::oneway.test`, `var.equal = FALSE`) |
+| Non-normal / Ordinal | Wilcoxon rank-sum (`stats::wilcox.test`) | Kruskal-Wallis (`stats::kruskal.test`) |
+
+For normally distributed variables: summary statistics are **mean ± SD**  
+For non-normal / ordinal variables: summary statistics are **median [Q1–Q3]**
+
+</details>
+
+<details>
+<summary>**2.4 — Categorical variable test selection (Cochran criterion)**</summary>
+
+The **Cochran (1954) criterion** is used to select between Chi-squared and
+Fisher's exact:
+
+```r
+fisher_flag <- any(suppressWarnings(stats::chisq.test(tab)$expected) < 5)
+```
+
+If any expected cell count is < 5, `fisher_flag = TRUE` and `stats::fisher.test()`
+is used; otherwise `stats::chisq.test()` is used. No Yates continuity correction applied.
+
+**Monte Carlo fallback:** if `fisher.test()` exceeds its workspace limit (common for
+larger tables, e.g. 3×4 or larger), TernTables retries with `simulate.p.value = TRUE, B = 10000L`.
+The seed is fixed via `getOption("TernTables.seed", 42L)` before each call. The `test`
+column label becomes `"Fisher exact (simulated)"` and a conditional Word footnote is
+appended naming the affected variable(s).
+
+</details>
+
+<details>
+<summary>**2.5 — Odds ratios (two-group; binary and two-level categorical variables)**</summary>
+
+`OR_col = TRUE` adds unadjusted ORs with 95% CI for:
+
+- **Binary variables** (Y/N, YES/NO, 0/1): single n (%) row; OR for the positive level.
+- **Two-level categorical variables** (e.g. Male/Female): sub-row display; reference level
+  (factor level 1, or alphabetical first for non-factors) shows `1.00 (ref.)`; non-reference
+  level shows OR with 95% CI. Three-or-more-level variables show `—`.
+
+OR estimation matched to the test:
+
+- `fisher_flag = TRUE` → Conditional MLE OR from `stats::fisher.test()`
+- `fisher_flag = FALSE` → Wald OR from `epitools::oddsratio(..., method = "wald")`
+
+`OR_method = "wald"` forces Wald unconditionally.
+
+</details>
+
+<details>
+<summary>**2.6 — Post-hoc pairwise comparisons and CLD (3+ groups, `post_hoc = TRUE`)**</summary>
+
+When `post_hoc = TRUE` and omnibus p < 0.05 for a continuous or ordinal variable:
+
+- **Welch ANOVA path:** `rstatix::games_howell_test()`
+- **Kruskal-Wallis path:** `rstatix::dunn_test(..., p.adjust.method = "holm")`
+- CLD computed via `multcompView::multcompLetters()` (Piepho, 2004)
+- Letters re-labeled so "a" = highest-center group (highest mean or median)
+- CLD superscripts appended directly to cell values in the table
+- Categorical variables excluded from post-hoc testing
+- Conditional Word footnote names the tested variables (only fires when ≥1 variable ran)
+
+</details>
+
+---
+
+## 3. Reproducible Examples
+
+<details>
+<summary>**Two-group comparison with odds ratios (binary + two-level categoricals)**</summary>
+
+```{r example, eval=FALSE}
+library(TernTables)
+data(tern_colon)
+
+tbl <- ternG(
+  data            = tern_colon,
+  exclude_vars    = c("ID"),
+  group_var       = "Recurrence",
+  OR_col          = TRUE,
+  show_test       = TRUE,
+  print_normality = TRUE,
+  methods_doc     = FALSE
+)
+
+print(tbl, n = 30)
+# Sex (Male/Female) will show 1.00 (ref.) for Female and an OR for Male
+```
+
+</details>
+
+<details>
+<summary>**Three-group comparison with post-hoc CLD**</summary>
+
+```{r example3, eval=FALSE}
+tbl3 <- ternG(
+  data            = tern_colon,
+  exclude_vars    = c("ID"),
+  group_var       = "Treatment_Arm",
+  group_order     = c("Observation", "Levamisole", "Levamisole + 5FU"),
+  post_hoc        = TRUE,
+  show_test       = TRUE,
+  print_normality = TRUE,
+  methods_doc     = FALSE
+)
+
+print(tbl3, n = 30)
+# Continuous variables with omnibus p < 0.05 will have CLD superscripts
+```
+
+</details>
+
+<details>
+<summary>**Three-group comparison that triggers Monte Carlo Fisher fallback**</summary>
+
+Grouping by `Tumor_Differentiation` (Well / Moderate / Poor) produces a 4-level
+`Extent_of_Local_Spread` variable — a 3×4 contingency table that reliably exceeds the
+Fisher's exact workspace limit, demonstrating the Monte Carlo fallback.
+
+```{r example-mc, eval=FALSE}
+tbl_diff <- ternG(
+  data         = tern_colon,
+  exclude_vars = c("ID", "Treatment_Arm"),
+  group_var    = "Tumor_Differentiation",
+  group_order  = c("Well", "Moderate", "Poor"),
+  post_hoc     = TRUE,
+  show_test    = TRUE,
+  methods_doc  = FALSE
+)
+
+print(tbl_diff, n = 30)
+# Extent of Local Spread → test = "Fisher exact (simulated)"
+```
+
+</details>
+
+---
+
+## 4. Package Information
+
+- **Version:** 1.6.2
+- **Repository:** <https://github.com/jdpreston30/TernTables>
+- **R-universe:** <https://jdpreston30.r-universe.dev>
+- **Web app:** <https://tern-tables.com>
+- **Source files for review:**
+  - `R/ternG.R` — normality routing (~455–520), categorical/OR logic (~185–290), post-hoc/CLD injection (~525–780)
+  - `R/ternD.R` — normality routing applied to full vector (~290–330)
+  - `R/utils_posthoc.R` — `.compute_cld()` and `.superscript_letters()`
+
