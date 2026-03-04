@@ -5,7 +5,14 @@
 devtools::load_all(".")
 data(tern_colon)
 
-out_dir <- "development/tests/posthoc-cld/tables"
+# -- Dynamic path resolution: works whether source()'d or run directly --------
+script_dir <- tryCatch(
+  dirname(normalizePath(sys.frame(1)$ofile, mustWork = FALSE)),
+  error = function(e) getwd()
+)
+# ---------------------------------------------------------------------------
+
+out_dir <- file.path(script_dir, "tables")
 if (!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE)
 
 tbl <- ternG(

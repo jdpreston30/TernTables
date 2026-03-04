@@ -9,6 +9,7 @@ write_methods_doc(
   filename,
   n_levels = 2,
   OR_col = FALSE,
+  OR_method = "dynamic",
   source = "ternG",
   post_hoc = FALSE
 )
@@ -24,6 +25,11 @@ when generating a generic document.}
 
 \item{OR_col}{Logical; whether odds ratios were calculated. Default \code{FALSE}.}
 
+\item{OR_method}{Character; the OR calculation method used in \code{ternG}.
+\code{"dynamic"} (default) means Wald when all expected cells >= 5, Fisher's exact
+otherwise. \code{"wald"} means Wald was forced regardless of cell counts. Controls
+the OR description in the generated methods paragraph.}
+
 \item{source}{Character; \code{"ternG"} or \code{"ternD"}. Controls which
 section is populated with dynamic test information. Default \code{"ternG"}.}
 
@@ -34,7 +40,8 @@ describe the post-hoc test pairing (Games-Howell or Dunn's + Holm).
 Default \code{FALSE}.}
 }
 \value{
-Invisibly returns the path to the written Word file.
+Invisibly returns the methods paragraph text as a character string.
+  Useful for programmatic inspection or testing without opening the Word file.
 }
 \description{
 Generates a Word document containing boilerplate methods text for all three

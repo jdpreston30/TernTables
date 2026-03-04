@@ -4,7 +4,7 @@ t.test()
 # Manual vs ternG() Welch ANOVA validation
 # Purpose: confirm that the switch from aov() to oneway.test(var.equal = FALSE)
 #          was truly implemented and that ternG() p-values match manual calc.
-# Run from repo root with: source("development/test-welch-anova.R")
+# Run from repo root with: source("development/tests/welch-anova/test-welch-anova.R")
 # =============================================================================
 
 library(devtools)

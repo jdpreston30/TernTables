@@ -39,7 +39,7 @@ Given a data frame and an optional grouping variable, it automatically:
 - Returns a tibble for inspection, Excel export, or further analysis in R
 
 Three table types are supported: **descriptive summaries** (single cohort, no
-comparisons), **two-group comparisons** (with optional odds ratios), and
+comparisons), **two-group comparisons** (with optional unadjusted odds ratios), and
 **comparisons across three or more groups**.
 
 The convenience is in the automation, not in any compromise to statistical
@@ -197,10 +197,10 @@ knitr::include_graphics("figures/tern_descriptive.png")
 ## Two-Group Comparison (`ternG` — 2 levels)
 
 Use `ternG()` to compare variables between two groups. Set `OR_col = TRUE` to
-add odds ratios with 95% CI for binary variables (Y/N, YES/NO, 0/1) and
+add unadjusted odds ratios with 95% CI for binary variables (Y/N, YES/NO, 0/1) and
 two-level categorical variables such as Male/Female. For two-level categoricals
 displayed with sub-rows, the reference level (factor level 1 or alphabetical
-first) shows `1.00 (ref.)`; the non-reference level shows the computed OR with
+first) shows `1.00 (ref.)`; the non-reference level shows the computed unadjusted OR with
 95% CI. Fisher's exact or Wald is chosen automatically based on expected cell
 counts. Pass `output_docx` to write the Word table directly; `output_xlsx`
 exports the tibble to Excel.
@@ -224,7 +224,7 @@ tbl_2group <- ternG(
 tbl_2group
 ```
 
-The Word table includes an OR column (odds ratio with 95% CI for binary
+The Word table includes an OR column (unadjusted odds ratio with 95% CI for binary
 variables) and a *P* value column (test *P* value for each variable).
 
 Two-group comparison table exported to Word, with odds ratios and category section headers:

@@ -122,9 +122,17 @@ ternB <- function(tables, output_docx, page_break = TRUE,
     combined_tbl    <- data.frame(test = all_tests, stringsAsFactors = FALSE)
     max_n_levels    <- max(vapply(all_metas, function(m) if (is.null(m$n_levels)) 1L else m$n_levels, integer(1)))
     any_or_col      <- any(vapply(all_metas, function(m) isTRUE(m$OR_col), logical(1)))
+    any_post_hoc    <- any(vapply(all_metas, function(m) isTRUE(m$post_hoc), logical(1)))
+    # Use "wald" only if every OR-producing table explicitly used Wald; otherwise
+    # "dynamic" is accurate (at least one table auto-selected Fisher vs Wald).
+    or_methods      <- vapply(all_metas, function(m) if (isTRUE(m$OR_col)) as.character(m$OR_method) else NA_character_, character(1))
+    or_methods      <- or_methods[!is.na(or_methods)]
+    combined_or_method <- if (length(or_methods) > 0 && all(or_methods == "wald")) "wald" else "dynamic"
     combined_source <- if (any(vapply(all_metas, function(m) identical(m$source, "ternG"), logical(1)))) "ternG" else "ternD"
     write_methods_doc(combined_tbl, methods_filename,
-                      n_levels = max_n_levels, OR_col = any_or_col, source = combined_source)
+                      n_levels  = max_n_levels, OR_col    = any_or_col,
+                      OR_method = combined_or_method, post_hoc  = any_post_hoc,
+                      source    = combined_source)
   }
 
   invisible(output_docx)

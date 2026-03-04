@@ -2,7 +2,7 @@
 # welch-debug.R
 # Purpose: Diagnose the large p-value shift (0.18 -> 0.007) observed for BMI
 #          when switching from aov() to oneway.test(var.equal = FALSE).
-# Run from repo root: source("development/test-scripts/welch-debug.R")
+# Run from repo root: source("development/tests/welch-anova/welch-debug.R")
 # =============================================================================
 
 library(readr)

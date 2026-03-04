@@ -1,3 +1,20 @@
+# -- Dynamic path resolution: works whether source()'d or run directly --------
+script_dir <- tryCatch(
+  dirname(normalizePath(sys.frame(1)$ofile, mustWork = FALSE)),
+  error = function(e) getwd()
+)
+pkg_root <- local({
+  d <- script_dir
+  repeat {
+    if (length(list.files(d, pattern = "\\.Rproj$")) > 0) break
+    p <- dirname(d)
+    if (p == d) stop("Cannot find package root (.Rproj file)")
+    d <- p
+  }
+  d
+})
+# ---------------------------------------------------------------------------
+
 # Fresh setup
 {
 devtools::install(pkg = ".", quick = TRUE, upgrade = "never", quiet = TRUE)
@@ -49,8 +66,8 @@ T3 <- ternG(
 
 ternB(
   tables           = list(T1, T2, T3),
-  output_docx      = "development/tests/ternB/tables/T1-T3.docx",
+  output_docx      = file.path(script_dir, "tables", "T1-T3.docx"),
   methods_doc      = TRUE,
-  methods_filename = "development/tests/ternB/tables/T1-T3-methods.docx"
+  methods_filename = file.path(script_dir, "tables", "T1-T3-methods.docx")
 )
 }

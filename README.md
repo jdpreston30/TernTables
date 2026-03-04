@@ -116,7 +116,7 @@ tbl_descriptive <- ternD(
 
 ### `ternG()` — Grouped comparison table
 
-Use `ternG()` to compare variables between two or more groups. Set `OR_col = TRUE` to add unadjusted odds ratios with 95% CI for any two-level variable in two-group comparisons — including binary variables (Y/N, 0/1) and two-level categoricals such as Male/Female or Present/Absent. The reference level (factor level 1, or alphabetical first for non-factors) shows `1.00 (ref.)`; the non-reference level shows the computed OR with 95% CI. Fisher's exact or Wald method is chosen automatically based on expected cell counts (Cochran criterion). Odds ratios are not available for 3+ groups.
+Use `ternG()` to compare variables between two or more groups. Set `OR_col = TRUE` to add unadjusted odds ratios with 95% CI for any two-level variable in two-group comparisons — including binary variables (Y/N, 0/1) and two-level categoricals such as Male/Female or Present/Absent. The reference level (factor level 1, or alphabetical first for non-factors) shows `1.00 (ref.)`; the non-reference level shows the computed OR with 95% CI. Fisher's exact or Wald method is chosen automatically based on expected cell counts (Cochran criterion). Unadjusted odds ratios are not available for 3+ groups.
 
 **Two-group comparison:**
 
@@ -145,7 +145,7 @@ tbl_3group <- ternG(
 )
 ```
 
-Omnibus *P* values are reported for 3+ group comparisons. When `post_hoc = TRUE` and the omnibus *P* < 0.05, pairwise post-hoc tests are run automatically for continuous and ordinal variables: Games-Howell following Welch ANOVA, and Dunn's test with Holm correction following Kruskal-Wallis. Results appear as compact letter display (CLD) superscripts appended to each cell value — groups sharing a letter are not significantly different. Categorical variables never receive post-hoc testing. Odds ratios are not available for 3+ groups.
+Omnibus *P* values are reported for 3+ group comparisons. When `post_hoc = TRUE` and the omnibus *P* < 0.05, pairwise post-hoc tests are run automatically for continuous and ordinal variables: Games-Howell following Welch ANOVA, and Dunn's test with Holm correction following Kruskal-Wallis. Results appear as compact letter display (CLD) superscripts appended to each cell value — groups sharing a letter are not significantly different. Categorical variables never receive post-hoc testing. Unadjusted odds ratios are not available for 3+ groups.
 
 Statistical tests applied automatically:
 

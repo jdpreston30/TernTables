@@ -1,4 +1,4 @@
-## Run the getting-started vignette, write all outputs to the development/run-vignette folder.
+## Run the getting-started vignette, write all outputs to the development/tools/run-vignette folder.
 ##
 ## source() this from the package root, or run it directly in R Interactive
 ## with the working directory set to the package root.
@@ -7,8 +7,25 @@
 ## subprocess so there is no conflict with TernTables already being loaded
 ## in the interactive session.
 
-pkg_root    <- normalizePath(".", mustWork = TRUE)
-outdir      <- normalizePath(file.path(pkg_root, "development", "run-vignette"), mustWork = FALSE)
+# -- Dynamic path resolution: works whether source()'d or run directly --------
+script_dir <- tryCatch(
+  dirname(normalizePath(sys.frame(1)$ofile, mustWork = FALSE)),
+  error = function(e) getwd()
+)
+pkg_root <- local({
+  d <- script_dir
+  repeat {
+    if (length(list.files(d, pattern = "\\.Rproj$")) > 0) break
+    p <- dirname(d)
+    if (p == d) stop("Cannot find package root (.Rproj file)")
+    d <- p
+  }
+  d
+})
+# ---------------------------------------------------------------------------
+
+pkg_root    <- normalizePath(pkg_root, mustWork = TRUE)
+outdir      <- normalizePath(script_dir, mustWork = FALSE)
 libreoffice <- "/Applications/LibreOffice.app/Contents/MacOS/soffice"
 
 child_script <- tempfile(fileext = ".R")

@@ -6,11 +6,28 @@
 devtools::load_all(".")
 library(readr)
 
-if (!file.exists("inst/extdata/csv/tern_colon_messy.csv")) {
-  source("data-raw/tern_colon_extdata.R")
+# -- Dynamic path resolution: works whether source()'d or run directly --------
+script_dir <- tryCatch(
+  dirname(normalizePath(sys.frame(1)$ofile, mustWork = FALSE)),
+  error = function(e) getwd()
+)
+pkg_root <- local({
+  d <- script_dir
+  repeat {
+    if (length(list.files(d, pattern = "\\.Rproj$")) > 0) break
+    p <- dirname(d)
+    if (p == d) stop("Cannot find package root (.Rproj file)")
+    d <- p
+  }
+  d
+})
+# ---------------------------------------------------------------------------
+
+if (!file.exists(file.path(pkg_root, "inst/extdata/csv/tern_colon_messy.csv"))) {
+  source(file.path(pkg_root, "data-raw/tern_colon_extdata.R"))
 }
 
-out_dir <- "development/tests/ternP/tables"
+out_dir <- file.path(script_dir, "tables")
 
 # ==============================================================================
 # SCENARIO 1: messy data — all five transformations should fire in the printout

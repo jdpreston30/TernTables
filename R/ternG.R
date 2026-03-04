@@ -14,7 +14,7 @@
 #' @param group_order Optional character vector to specify a custom group level order.
 #' @param output_xlsx Optional filename to export the table as an Excel file.
 #' @param output_docx Optional filename to export the table as a Word document.
-#' @param OR_col Logical; if \code{TRUE}, adds odds ratios with 95\% CI for binary categorical variables
+#' @param OR_col Logical; if \code{TRUE}, adds unadjusted odds ratios with 95\% CI for binary categorical variables
 #'   (Y/N, YES/NO, or numeric 0/1) and two-level categorical variables (e.g. Male/Female). For
 #'   two-level categoricals displayed with sub-rows, the reference level (factor level 1, or
 #'   alphabetical first for non-factors) shows \code{"1.00 (ref.)"}; the non-reference level
@@ -826,7 +826,7 @@ ternG <- function(data,
   
   # Write methods document if requested
   if (methods_doc) {
-    write_methods_doc(out_tbl, methods_filename, n_levels = n_levels, OR_col = OR_col, source = "ternG", post_hoc = post_hoc)
+    write_methods_doc(out_tbl, methods_filename, n_levels = n_levels, OR_col = OR_col, OR_method = OR_method, source = "ternG", post_hoc = post_hoc)
   }
 
   # -- Report normality test results -----------------------------------------
@@ -928,7 +928,9 @@ ternG <- function(data,
     table_footnote       = effective_footnote,
     source               = "ternG",
     n_levels             = n_levels,
-    OR_col               = OR_col
+    OR_col               = OR_col,
+    OR_method            = OR_method,
+    post_hoc             = post_hoc
   )
 
   return(out_tbl)

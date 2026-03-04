@@ -1,7 +1,7 @@
 # GitHub commits
 devtools::document()
-source("development/manual/build-manual.R")
-source("development/run-vignette/run-vignette.R")
+source("development/tools/manual/build-manual.R")
+source("development/tools/run-vignette/run-vignette.R")
 rmarkdown::render("vignettes/getting-started.Rmd")
 devtools::check()
 

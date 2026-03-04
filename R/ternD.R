@@ -442,7 +442,9 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
     table_footnote       = table_footnote,
     source               = "ternD",
     n_levels             = 1L,
-    OR_col               = FALSE
+    OR_col               = FALSE,
+    OR_method            = "dynamic",
+    post_hoc             = FALSE
   )
 
   out_tbl

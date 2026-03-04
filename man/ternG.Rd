@@ -54,7 +54,7 @@ ternG(
 
 \item{output_docx}{Optional filename to export the table as a Word document.}
 
-\item{OR_col}{Logical; if \code{TRUE}, adds odds ratios with 95\% CI for binary categorical variables
+\item{OR_col}{Logical; if \code{TRUE}, adds unadjusted odds ratios with 95\% CI for binary categorical variables
 (Y/N, YES/NO, or numeric 0/1) and two-level categorical variables (e.g. Male/Female). For
 two-level categoricals displayed with sub-rows, the reference level (factor level 1, or
 alphabetical first for non-factors) shows \code{"1.00 (ref.)"}; the non-reference level
