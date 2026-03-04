@@ -2,7 +2,7 @@
 % Please edit documentation in R/write_methods_doc.R
 \name{write_methods_doc}
 \alias{write_methods_doc}
-\title{Write a methods section document for use with TernTables output}
+\title{Write a methods section Word document for TernTables output}
 \usage{
 write_methods_doc(
   tbl,
@@ -11,7 +11,8 @@ write_methods_doc(
   OR_col = FALSE,
   OR_method = "dynamic",
   source = "ternG",
-  post_hoc = FALSE
+  post_hoc = FALSE,
+  boilerplate = FALSE
 )
 }
 \arguments{
@@ -38,20 +39,34 @@ section is populated with dynamic test information. Default \code{"ternG"}.}
 \code{n_levels >= 3}, the three-group methods paragraph is updated to
 describe the post-hoc test pairing (Games-Howell or Dunn's + Holm).
 Default \code{FALSE}.}
+
+\item{boilerplate}{Logical; if \code{TRUE}, ignores all other arguments and
+writes a single comprehensive Word document covering every possible
+TernTables configuration (descriptive, two-group with and without odds
+ratios, three-or-more-group with and without post-hoc testing), using
+package-default phrasing throughout. Output is always written to
+\code{comprehensive_boilerplate_methods.docx} in the current working
+directory. Intended as a reference document, not for inclusion in a
+manuscript. Default \code{FALSE}.}
 }
 \value{
-Invisibly returns the methods paragraph text as a character string.
+Invisibly returns the methods paragraph text as a character string
+  (or, when \code{boilerplate = TRUE}, invisibly returns the output file path).
   Useful for programmatic inspection or testing without opening the Word file.
 }
 \description{
-Generates a Word document containing boilerplate methods text for all three
-table types produced by TernTables (descriptive, two-group comparison, and
-three-or-more-group comparison). Each section is headed by a clear label so
-the user can copy the relevant paragraph directly into a manuscript. When
-called from \code{ternG}, the two-group or multi-group section is populated
-with the statistical tests that were actually used; all other sections use
-generic boilerplate. When called from \code{ternD}, all comparison sections
-use generic boilerplate.
+Generates a Word document containing a methods paragraph describing the
+statistical approach used in a specific \code{ternG} or \code{ternD} run.
+The paragraph is fully dynamic: it reflects the tests that were actually used,
+the number of comparison groups, whether odds ratios were calculated, and
+whether post-hoc testing was performed. It is headed by a bold
+\strong{Statistical Methods} label and followed by a brief attribution footer.
+}
+\details{
+When \code{boilerplate = TRUE}, all run-specific arguments are ignored and a
+comprehensive reference document is written instead, covering all five standard
+TernTables configurations with package-default phrasing. See the
+\code{boilerplate} parameter for details.
 }
 \examples{
 \donttest{
@@ -59,5 +74,10 @@ data(tern_colon)
 tbl <- ternG(tern_colon, exclude_vars = c("ID"), group_var = "Recurrence",
             methods_doc = FALSE)
 write_methods_doc(tbl, filename = file.path(tempdir(), "methods.docx"))
+}
+\dontrun{
+# Write a comprehensive reference document covering all configurations.
+# Writes to comprehensive_boilerplate_methods.docx in the working directory.
+write_methods_doc(tbl = NULL, filename = "", boilerplate = TRUE)
 }
 }

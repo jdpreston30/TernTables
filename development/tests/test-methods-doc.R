@@ -206,95 +206,86 @@ check(txt6,
 )
 
 # ============================================================
-# 7. ternB – combined pool
-#    Tables: ternD + ternG-2group-OR + ternG-3group-posthoc
-#    Expected: 3-group paragraph, OR from tbl_2g_or, post_hoc
-#    from tbl_3g_ph — all recovered from stored ternB_meta.
+# 7. ternB – mixed bundle (ternD + ternG-2g-OR + ternG-3g-posthoc)
+#    All three have different configurations → should produce
+#    3 separate labeled sections in the methods document.
 # ============================================================
-sep("7. ternB — combined pool (ternD + ternG-2g-OR + ternG-3g-posthoc)")
+sep("7. ternB — mixed bundle: 3 distinct configs → 3 sections")
 
-all_metas <- lapply(
+tmp7 <- tempfile(fileext = ".docx")
+ternB(
   list(tbl_desc, tbl_2g_or, tbl_3g_ph),
-  function(t) attr(t, "ternB_meta")
+  output_docx      = tempfile(fileext = ".docx"),
+  methods_doc      = TRUE,
+  methods_filename = tmp7
 )
 
-# Replicate ternB's pooling logic (mirrors R/ternB.r exactly)
-all_tests <- unlist(lapply(all_metas, function(m) {
-  if (!is.null(m$tbl) && "test" %in% colnames(m$tbl)) m$tbl[["test"]] else character(0)
-}))
-combined_tbl    <- data.frame(test = all_tests, stringsAsFactors = FALSE)
-max_n_levels    <- max(vapply(all_metas, function(m) if (is.null(m$n_levels)) 1L else m$n_levels, integer(1)))
-any_or_col      <- any(vapply(all_metas, function(m) isTRUE(m$OR_col), logical(1)))
-any_post_hoc    <- any(vapply(all_metas, function(m) isTRUE(m$post_hoc), logical(1)))
-or_methods      <- vapply(all_metas, function(m) if (isTRUE(m$OR_col)) as.character(m$OR_method) else NA_character_, character(1))
-or_methods      <- or_methods[!is.na(or_methods)]
-combined_or_method <- if (length(or_methods) > 0 && all(or_methods == "wald")) "wald" else "dynamic"
-combined_source <- if (any(vapply(all_metas, function(m) identical(m$source, "ternG"), logical(1)))) "ternG" else "ternD"
+# Read text back from the written Word file
+doc7_text <- paste(officer::docx_summary(officer::read_docx(tmp7))$text, collapse = " ")
+cat("  Extracted text (truncated):\n ")
+cat(substr(doc7_text, 1, 300), "...\n\n")
 
-cat("  Pooled: max_n_levels =", max_n_levels,
-    "| any_or_col =", any_or_col,
-    "| any_post_hoc =", any_post_hoc,
-    "| combined_or_method =", combined_or_method,
-    "| source =", combined_source, "\n\n")
-
-txt7 <- wmd(combined_tbl,
-            n_levels  = max_n_levels, OR_col    = any_or_col,
-            OR_method = combined_or_method, post_hoc  = any_post_hoc,
-            source    = combined_source)
-cat(txt7, "\n")
-check(txt7,
+check(doc7_text,
   expected_fragments = c(
-    "any comparison group",
+    # Section for tbl_desc (ternD)
+    "fewer than three available observations",   # ternD n<3 phrasing
+    # Section for tbl_2g_or (ternG 2-group)
+    "Welch's independent samples t-test",
+    "unadjusted odds ratios (OR)",
+    "Where all expected cell counts were five or greater",
+    # Section for tbl_3g_ph (ternG 3-group posthoc)
     "Welch's one-way ANOVA",
-    "Kruskal-Wallis",
-    "unadjusted odds ratios (OR)",
-    "Where all expected cell counts were five or greater",  # dynamic OR branch
     "Games-Howell",
-    "Dunn\u2019s test with Holm correction",
-    "compact letter display (CLD)"
+    "compact letter display (CLD)",
+    # Footer
+    "Each section reflects the specific configuration"
   ),
   forbidden_fragments = c(
-    "pairwise post-hoc comparisons were not performed.",
-    "Wald method for all variables"  # should be dynamic, not wald-only
+    "pairwise post-hoc comparisons were not performed."
   )
 )
 
 # ============================================================
-# 8. ternB – Wald-only OR pooling edge case
-#    All OR-producing tables used OR_method = "wald"
-#    Expected: combined_or_method = "wald" → Wald-only sentence
+# 8. ternB – identical-config deduplication
+#    Two separate ternG 2-group tables (same settings) bundled
+#    together → should produce ONE section, not two.
 # ============================================================
-sep("8. ternB — Wald-only OR pooling (all tables used OR_method = \"wald\")")
+sep("8. ternB — deduplication: 2 identical configs → 1 section")
 
-all_metas_wald <- lapply(
-  list(tbl_2g_wald),
-  function(t) attr(t, "ternB_meta")
+# Build a second 2-group-OR table (same settings, same data — paragraph will be identical)
+tbl_2g_or_b <- ternG(tern_colon, group_var = "Recurrence",
+                     exclude_vars = c("ID", "Study", "Event_Type"),
+                     OR_col = TRUE, methods_doc = FALSE,
+                     table_caption = "Table 2. Duplicate config.")
+
+tmp8 <- tempfile(fileext = ".docx")
+ternB(
+  list(tbl_2g_or, tbl_2g_or_b),
+  output_docx      = tempfile(fileext = ".docx"),
+  methods_doc      = TRUE,
+  methods_filename = tmp8
 )
 
-or_methods_wald  <- vapply(all_metas_wald, function(m) if (isTRUE(m$OR_col)) as.character(m$OR_method) else NA_character_, character(1))
-or_methods_wald  <- or_methods_wald[!is.na(or_methods_wald)]
-combined_or_wald <- if (length(or_methods_wald) > 0 && all(or_methods_wald == "wald")) "wald" else "dynamic"
+doc8_rows <- officer::docx_summary(officer::read_docx(tmp8))
+doc8_text <- paste(doc8_rows$text, collapse = " ")
 
-cat("  or_methods stored in meta:", paste(or_methods_wald, collapse = ", "), "\n")
-cat("  combined_or_method resolved to:", combined_or_wald, "\n\n")
+# Count how many times the OR paragraph appears — should be exactly once
+or_count <- lengths(regmatches(doc8_text, gregexpr("unadjusted odds ratios \\(OR\\)", doc8_text)))
+cat("  OR sentence occurrences (expect 1):", or_count, "\n")
+if (or_count == 1L) {
+  cat("  [PASS] Deduplication working — identical paragraphs consolidated.\n")
+} else {
+  cat("  [FAIL] Expected 1 OR sentence, found", or_count, "\n")
+}
 
-all_tests_wald   <- unlist(lapply(all_metas_wald, function(m) {
-  if (!is.null(m$tbl) && "test" %in% colnames(m$tbl)) m$tbl[["test"]] else character(0)
-}))
-txt8 <- wmd(data.frame(test = all_tests_wald, stringsAsFactors = FALSE),
-            n_levels  = 2, OR_col    = TRUE,
-            OR_method = combined_or_wald, post_hoc  = FALSE,
-            source    = "ternG")
-cat(txt8, "\n")
-check(txt8,
-  expected_fragments = c(
-    "unadjusted odds ratios (OR)",
-    "Wald method for all variables"
-  ),
-  forbidden_fragments = c(
-    "Where all expected cell counts were five or greater"  # dynamic branch must not appear
-  )
-)
+# The heading should contain both table labels joined by " / "
+heading_rows <- doc8_rows[doc8_rows$style_name %in% c("Normal") & nchar(trimws(doc8_rows$text)) > 0, ]
+has_combined_label <- any(grepl("/", doc8_rows$text, fixed = TRUE))
+if (has_combined_label) {
+  cat("  [PASS] Combined label present (tables joined with '/').\n")
+} else {
+  cat("  [FAIL] Combined label not found — sections may not have been merged.\n")
+}
 
 # ============================================================
 cat("\n", strrep("=", 70), "\n")
