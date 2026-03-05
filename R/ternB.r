@@ -17,6 +17,9 @@
 #'   are pooled across all tables. Default is \code{FALSE}.
 #' @param methods_filename Output file path for the methods document. Defaults
 #'   to \code{"TernTables_methods.docx"} in the working directory.
+#' @param open_doc Logical; if \code{TRUE} (default), automatically opens each
+#'   written \code{.docx} in the system default application after saving.
+#'   Set to \code{FALSE} to suppress.
 #'
 #' @details
 #' \code{ternB()} works by replaying the exact \code{word_export()} call that
@@ -53,7 +56,8 @@
 #' @export
 ternB <- function(tables, output_docx, page_break = TRUE,
                   methods_doc = FALSE,
-                  methods_filename = "TernTables_methods.docx") {
+                  methods_filename = "TernTables_methods.docx",
+                  open_doc = TRUE) {
 
   # ── Input validation ──────────────────────────────────────────────────────
   if (!is.list(tables) || inherits(tables, "data.frame")) {
@@ -96,7 +100,8 @@ ternB <- function(tables, output_docx, page_break = TRUE,
       manual_italic_indent = meta$manual_italic_indent,
       manual_underline     = meta$manual_underline,
       table_caption        = meta$table_caption,
-      table_footnote       = meta$table_footnote
+      table_footnote       = meta$table_footnote,
+      open_doc             = FALSE
     )
   }
 
@@ -112,6 +117,7 @@ ternB <- function(tables, output_docx, page_break = TRUE,
 
   dir.create(dirname(output_docx), recursive = TRUE, showWarnings = FALSE)
   print(doc, target = output_docx)
+  if (isTRUE(open_doc)) .open_docx(output_docx)
 
   # ── Optional unified methods document ─────────────────────────────────────
   if (methods_doc) {
@@ -131,7 +137,8 @@ ternB <- function(tables, output_docx, page_break = TRUE,
           OR_method = if (is.null(m$OR_method))   "dynamic"     else m$OR_method,
           source    = if (is.null(m$source))      "ternG"       else m$source,
           post_hoc  = if (is.null(m$post_hoc))    FALSE         else m$post_hoc,
-          p_adjust  = if (is.null(m$p_adjust))    FALSE         else m$p_adjust
+          p_adjust  = if (is.null(m$p_adjust))    FALSE         else m$p_adjust,
+          open_doc  = FALSE
         )
       )
     }, character(1))
@@ -193,6 +200,7 @@ ternB <- function(tables, output_docx, page_break = TRUE,
 
     dir.create(dirname(methods_filename), recursive = TRUE, showWarnings = FALSE)
     print(doc, target = methods_filename)
+    if (isTRUE(open_doc)) .open_docx(methods_filename)
     cli::cli_alert_success("Methods document written to: {methods_filename}")
   }
 

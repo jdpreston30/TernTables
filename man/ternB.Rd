@@ -9,7 +9,8 @@ ternB(
   output_docx,
   page_break = TRUE,
   methods_doc = FALSE,
-  methods_filename = "TernTables_methods.docx"
+  methods_filename = "TernTables_methods.docx",
+  open_doc = TRUE
 )
 }
 \arguments{
@@ -30,6 +31,10 @@ are pooled across all tables. Default is \code{FALSE}.}
 
 \item{methods_filename}{Output file path for the methods document. Defaults
 to \code{"TernTables_methods.docx"} in the working directory.}
+
+\item{open_doc}{Logical; if \code{TRUE} (default), automatically opens each
+written \code{.docx} in the system default application after saving.
+Set to \code{FALSE} to suppress.}
 }
 \value{
 Invisibly returns the path to the written Word file.
