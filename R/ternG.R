@@ -83,6 +83,14 @@
 #' @param table_footnote Optional character string for a footnote to display below the table in the
 #'   Word document. Rendered as size 6 Arial italic with a double-bar border above and below.
 #'   Default is \code{NULL} (no footnote).
+#' @param abbreviation_footnote Optional character string listing abbreviations. Always printed
+#'   first in the footnote block. Default \code{NULL}.
+#' @param variable_footnote Optional named character vector. Names are display variable names
+#'   (case-insensitive); values are the footnote definition text. Each variable gets the next
+#'   symbol appended to its name in the table, and the footnote block lists each definition
+#'   below the abbreviation line. Default \code{NULL}.
+#' @param index_style Character; \code{"symbols"} (default) uses *, \u2020, \u2021 ...
+#'   \code{"alphabet"} uses Unicode superscript letters. See \code{word_export} for details.
 #' @param line_break_header Logical; if \code{TRUE} (default), column headers are wrapped with
 #'   \code{\\n} -- group names break on spaces, sample size counts move to a second line, and
 #'   the first column header reads \code{"Category / Variable"}. Set to \code{FALSE} to suppress
@@ -183,6 +191,8 @@ ternG <- function(data,
                   indent_info_column = FALSE,
                   show_total = TRUE,
                   table_caption = NULL, table_footnote = NULL,
+                  abbreviation_footnote = NULL, variable_footnote = NULL,
+                  index_style = "symbols",
                   line_break_header = getOption("TernTables.line_break_header", TRUE),
                   post_hoc = FALSE,
                   p_adjust = FALSE,
@@ -975,27 +985,30 @@ ternG <- function(data,
   if (length(notes) > 0L)
     effective_footnote <- if (is.null(table_footnote)) notes else c(notes, table_footnote)
 
-  if (!is.null(output_docx)) word_export(out_tbl, output_docx, round_intg = round_intg, font_size = table_font_size, category_start = category_start, manual_italic_indent = manual_italic_indent, manual_underline = manual_underline, table_caption = table_caption, table_footnote = effective_footnote, line_break_header = line_break_header, open_doc = open_doc)
+  if (!is.null(output_docx)) word_export(out_tbl, output_docx, round_intg = round_intg, font_size = table_font_size, category_start = category_start, manual_italic_indent = manual_italic_indent, manual_underline = manual_underline, table_caption = table_caption, table_footnote = effective_footnote, abbreviation_footnote = abbreviation_footnote, variable_footnote = variable_footnote, index_style = index_style, line_break_header = line_break_header, open_doc = open_doc)
 
   if (!indent_info_column) out_tbl <- dplyr::select(out_tbl, -dplyr::any_of(".indent"))
 
   # Attach word-export metadata so ternB() can reproduce this table in a combined document
   attr(out_tbl, "ternB_meta") <- list(
-    tbl                  = out_tbl_with_indent,
-    round_intg           = round_intg,
-    font_size            = table_font_size,
-    category_start       = category_start,
-    manual_italic_indent = manual_italic_indent,
-    manual_underline     = manual_underline,
-    table_caption        = table_caption,
-    table_footnote       = effective_footnote,
-    source               = "ternG",
-    n_levels             = n_levels,
-    OR_col               = OR_col,
-    OR_method            = OR_method,
-    post_hoc             = post_hoc,
-    p_adjust             = p_adjust,
-    p_adjust_display     = p_adjust_display
+    tbl                   = out_tbl_with_indent,
+    round_intg            = round_intg,
+    font_size             = table_font_size,
+    category_start        = category_start,
+    manual_italic_indent  = manual_italic_indent,
+    manual_underline      = manual_underline,
+    table_caption         = table_caption,
+    table_footnote        = effective_footnote,
+    abbreviation_footnote = abbreviation_footnote,
+    variable_footnote     = variable_footnote,
+    index_style           = index_style,
+    source                = "ternG",
+    n_levels              = n_levels,
+    OR_col                = OR_col,
+    OR_method             = OR_method,
+    post_hoc              = post_hoc,
+    p_adjust              = p_adjust,
+    p_adjust_display      = p_adjust_display
   )
 
   return(out_tbl)

@@ -65,6 +65,25 @@ export_to_excel <- function(tbl, filename) {
   writexl::write_xlsx(tbl, path = filename)
 }
 
+# Internal helper: generate n footnote symbols in standard academic order.
+# style = "symbols": *, \u2020, \u2021, \u00a7, \u00b6, \u2225, then doubles (**, \u2020\u2020, ...)
+# style = "alphabet": Unicode superscript Latin letters (\u1d43=\u1d43, \u1d47=b, \u1d9c=c, ...)
+.footnote_symbol_seq <- function(n, style = "symbols") {
+  if (style == "alphabet") {
+    base <- c("\u1d43", "\u1d47", "\u1d9c", "\u1d48", "\u1d49", "\u1da0",
+              "\u1d4d", "\u02b0", "\u2071", "\u02b2", "\u1d4f", "\u02e1",
+              "\u1d50", "\u207f", "\u1d52", "\u1d56", "\u02b3", "\u02e2",
+              "\u1d57", "\u1d58", "\u1d5b", "\u02b7", "\u02e3", "\u02b8",
+              "\u1dbb")
+    all_syms <- c(base, paste0(base, base))
+  } else {
+    base     <- c("*", "\u2020", "\u2021", "\u00a7", "\u00b6", "\u2225")
+    doubled  <- unlist(lapply(base, function(s) paste0(s, s)))
+    all_syms <- c(base, doubled)
+  }
+  all_syms[seq_len(min(n, length(all_syms)))]
+}
+
 # Internal helper: open a file with the OS-level default application,
 # bypassing IDE shell interception (e.g. VS Code's browseURL handler).
 .open_docx <- function(path) {

@@ -92,16 +92,19 @@ ternB <- function(tables, output_docx, page_break = TRUE,
     temp_files[i] <- tempfile(fileext = ".docx")
 
     word_export(
-      tbl                  = meta$tbl,
-      filename             = temp_files[i],
-      round_intg           = meta$round_intg,
-      font_size            = meta$font_size,
-      category_start       = meta$category_start,
-      manual_italic_indent = meta$manual_italic_indent,
-      manual_underline     = meta$manual_underline,
-      table_caption        = meta$table_caption,
-      table_footnote       = meta$table_footnote,
-      open_doc             = FALSE
+      tbl                   = meta$tbl,
+      filename              = temp_files[i],
+      round_intg            = meta$round_intg,
+      font_size             = meta$font_size,
+      category_start        = meta$category_start,
+      manual_italic_indent  = meta$manual_italic_indent,
+      manual_underline      = meta$manual_underline,
+      table_caption         = meta$table_caption,
+      table_footnote        = meta$table_footnote,
+      abbreviation_footnote = meta$abbreviation_footnote,
+      variable_footnote     = meta$variable_footnote,
+      index_style           = if (is.null(meta$index_style)) "symbols" else meta$index_style,
+      open_doc              = FALSE
     )
   }
 

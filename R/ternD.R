@@ -73,6 +73,14 @@
 #' @param table_footnote Optional character string for a footnote to display below the table in the
 #'   Word document. Rendered as size 6 Arial italic with a double-bar border above and below.
 #'   Default is \code{NULL} (no footnote).
+#' @param abbreviation_footnote Optional character string listing abbreviations. Always printed
+#'   first in the footnote block. Default \code{NULL}.
+#' @param variable_footnote Optional named character vector. Names are display variable names
+#'   (case-insensitive); values are the footnote definition text. Each variable gets the next
+#'   symbol appended to its name in the table, and the footnote block lists each definition
+#'   below the abbreviation line. Default \code{NULL}.
+#' @param index_style Character; \code{"symbols"} (default) uses *, \u2020, \u2021 ...
+#'   \code{"alphabet"} uses Unicode superscript letters. See \code{word_export} for details.
 #' @param line_break_header Logical; if \code{TRUE} (default), column headers are wrapped with
 #'   \code{\\n} -- the first column header includes a category hierarchy label, and the sample
 #'   size appears on a second line. Set to \code{FALSE} to suppress all header line breaks.
@@ -140,6 +148,8 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
                   methods_filename = "TernTables_methods.docx", category_start = NULL,
                   table_font_size = 9, manual_italic_indent = NULL, manual_underline = NULL,
                   table_caption = NULL, table_footnote = NULL,
+                  abbreviation_footnote = NULL, variable_footnote = NULL,
+                  index_style = "symbols",
                   line_break_header = getOption("TernTables.line_break_header", TRUE),
                   open_doc = TRUE) {
   stopifnot(is.data.frame(data))
@@ -424,32 +434,38 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
 
   if (!is.null(output_xlsx)) export_to_excel(out_tbl, output_xlsx)
   if (!is.null(output_docx)) word_export(out_tbl, output_docx, font_size = table_font_size,
-                                         category_start = category_start,
-                                         manual_italic_indent = manual_italic_indent,
-                                         manual_underline = manual_underline,
-                                         table_caption = table_caption,
-                                         table_footnote = table_footnote,
-                                         line_break_header = line_break_header,
-                                         open_doc = open_doc)
+                                         category_start        = category_start,
+                                         manual_italic_indent  = manual_italic_indent,
+                                         manual_underline      = manual_underline,
+                                         table_caption         = table_caption,
+                                         table_footnote        = table_footnote,
+                                         abbreviation_footnote = abbreviation_footnote,
+                                         variable_footnote     = variable_footnote,
+                                         index_style           = index_style,
+                                         line_break_header     = line_break_header,
+                                         open_doc              = open_doc)
   if (methods_doc) write_methods_doc(out_tbl, methods_filename, source = "ternD")
 
   out_tbl <- dplyr::select(out_tbl, -dplyr::any_of(".indent"))
 
   # Attach word-export metadata so ternB() can reproduce this table in a combined document
   attr(out_tbl, "ternB_meta") <- list(
-    tbl                  = out_tbl_with_indent,
-    round_intg           = FALSE,
-    font_size            = table_font_size,
-    category_start       = category_start,
-    manual_italic_indent = manual_italic_indent,
-    manual_underline     = manual_underline,
-    table_caption        = table_caption,
-    table_footnote       = table_footnote,
-    source               = "ternD",
-    n_levels             = 1L,
-    OR_col               = FALSE,
-    OR_method            = "dynamic",
-    post_hoc             = FALSE
+    tbl                   = out_tbl_with_indent,
+    round_intg            = FALSE,
+    font_size             = table_font_size,
+    category_start        = category_start,
+    manual_italic_indent  = manual_italic_indent,
+    manual_underline      = manual_underline,
+    table_caption         = table_caption,
+    table_footnote        = table_footnote,
+    abbreviation_footnote = abbreviation_footnote,
+    variable_footnote     = variable_footnote,
+    index_style           = index_style,
+    source                = "ternD",
+    n_levels              = 1L,
+    OR_col                = FALSE,
+    OR_method             = "dynamic",
+    post_hoc              = FALSE
   )
 
   out_tbl

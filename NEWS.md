@@ -39,6 +39,17 @@
   `.docx` is automatically opened in the system default application after
   saving. Set to `FALSE` to suppress. Has no effect on web-app usage.
 
+* **`variable_footnote`, `abbreviation_footnote`, `index_style` parameters** —
+  `ternD()`, `ternG()`, `word_export()`, and `ternB()` now support structured
+  footnotes. `abbreviation_footnote` (character string) is printed first.
+  `variable_footnote` (named character vector: `name` = display variable,
+  `value` = definition text) auto-assigns `*`, `†`, `‡`, `§`, `¶`, `∥` (then
+  doubled `**`, `††`, …) to named variables in column 1, appending the symbol
+  as a true Word superscript (except `*` which appends as plain text). 
+  `index_style = "alphabet"` uses Unicode superscript letters (ᵃ, ᵇ, ᶜ, …)
+  instead. Symbols appear as plain text in the footnote body per journal
+  convention. Legacy `table_footnote` lines follow last.
+
 * **`ternB()` per-table methods paragraphs** — `ternB(methods_doc = TRUE)` now
   generates one labeled section per table (using `table_caption` as the
   heading, falling back to "Table 1", "Table 2", etc.) instead of a single

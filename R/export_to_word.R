@@ -20,6 +20,20 @@
 #' @param table_footnote Optional character string to display as a footnote below the table in the Word
 #'   document. Rendered as size 6 Arial italic. A double-bar border is applied above and below the
 #'   footnote row. Default is \code{NULL} (no footnote).
+#' @param abbreviation_footnote Optional character string (or character vector, which will be
+#'   collapsed with spaces) listing abbreviations to display at the top of the footnote block.
+#'   Always printed first, before any variable-specific footnote lines. Default \code{NULL}.
+#' @param variable_footnote Optional named character vector. Names are display variable names as
+#'   they appear in the table (case-insensitive match); values are the footnote definition text
+#'   for that variable. Each entry is assigned the next symbol in the sequence (\code{*},
+#'   \code{\u2020}, \code{\u2021}, ...) and the symbol is appended to the variable name in column 1.
+#'   The footnote block lists each as \code{"* Definition text."} below the abbreviations.
+#'   Default \code{NULL}.
+#' @param index_style Character; controls the footnote symbol sequence. \code{"symbols"} (default)
+#'   uses \code{*}, \code{\u2020}, \code{\u2021}, \code{\u00a7}, \code{\u00b6}, \code{\u2225},
+#'   then doubled forms. \code{"*"} is appended as plain text; all others are true Word superscripts.
+#'   \code{"alphabet"} uses Unicode superscript letters (\code{\u1d43}, \code{\u1d47},
+#'   \code{\u1d9c}, ...) which render as raised glyphs without explicit superscript formatting.
 #' @param line_break_header Logical; if \code{TRUE} (default), column headers are wrapped with
 #'   \code{\\n} -- group names break on spaces, sample size counts move to a second line, and
 #'   the first column header includes a category hierarchy label. Set to \code{FALSE} to suppress
@@ -42,7 +56,7 @@
 #' )
 #' }
 #' @export
-word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, category_start = NULL, manual_italic_indent = NULL, manual_underline = NULL, table_caption = NULL, table_footnote = NULL, line_break_header = getOption("TernTables.line_break_header", TRUE), open_doc = TRUE) {
+word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, category_start = NULL, manual_italic_indent = NULL, manual_underline = NULL, table_caption = NULL, table_footnote = NULL, abbreviation_footnote = NULL, variable_footnote = NULL, index_style = "symbols", line_break_header = getOption("TernTables.line_break_header", TRUE), open_doc = TRUE) {
   # Keep the table as-is
   modified_tbl <- tbl
 
@@ -114,7 +128,33 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
       if (length(cat_idx) > 0) category_rows <- c(category_rows, cat_idx)
     }
   }
-  
+
+  # ── Variable footnote: assign symbols and inject into column 1 ────────────
+  vf_row_info <- list()
+  if (!is.null(variable_footnote) && length(variable_footnote) > 0) {
+    vf_names     <- names(variable_footnote)
+    symbols      <- .footnote_symbol_seq(length(vf_names), index_style)
+    trimmed_col1 <- trimws(modified_tbl[[1]])
+    for (k in seq_along(vf_names)) {
+      vname <- vf_names[k]
+      sym   <- symbols[k]
+      row_matches <- which(trimmed_col1 == vname)
+      if (length(row_matches) == 0)
+        row_matches <- which(tolower(trimmed_col1) == tolower(vname))
+      if (length(row_matches) == 0) next
+      row_idx   <- row_matches[1]
+      il        <- if (!is.null(indent_col) && row_idx <= length(indent_col)) indent_col[row_idx] else 2L
+      is_italic <- isTRUE(il == 6L) ||
+                   (!is.null(manual_italic_indent) && vname %in% manual_italic_indent)
+      # symbols: superscript all except "*"; alphabet: never (glyphs inherently raised)
+      needs_super <- (index_style == "symbols") && (sym != "*")
+      modified_tbl[[1]][row_idx] <- paste0(trimmed_col1[row_idx], sym)
+      trimmed_col1[row_idx]      <- paste0(trimmed_col1[row_idx], sym)
+      vf_row_info[[k]] <- list(row_idx = row_idx, symbol = sym,
+                               needs_super = needs_super, is_italic = is_italic)
+    }
+  }
+
   # Modify column headers to add symbols and line breaks
   original_colnames <- colnames(modified_tbl)
   new_colnames <- original_colnames
@@ -333,18 +373,57 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
     }
   }
 
-  # Add footer footnote
-  if (!is.null(table_footnote) && length(table_footnote) > 0 && any(nchar(trimws(table_footnote)) > 0)) {
-    dbl_border <- fp_border(color = "black", width = 0.5, style = "double")
-    footnote_text <- paste(table_footnote, collapse = "\n")
-    ft <- ft %>%
-      add_footer_lines(values = footnote_text) %>%
-      font(fontname = "Arial", part = "footer") %>%
-      fontsize(size = 6, part = "footer") %>%
-      italic(part = "footer") %>%
-      align(align = "left", part = "footer") %>%
-      hline_top(border = dbl_border, part = "footer") %>%
-      hline_bottom(border = dbl_border, part = "footer")
+  # ── Superscript pass: rebuild cells for non-"*" symbols ──────────────────
+  for (info in vf_row_info) {
+    if (!isTRUE(info$needs_super)) next
+    row_idx    <- info$row_idx
+    sym        <- info$symbol
+    cell_text  <- modified_tbl[[1]][row_idx]
+    main_text  <- substr(cell_text, 1, nchar(cell_text) - nchar(sym))
+    main_props  <- fp_text(font.family = "Arial", font.size = font_size,
+                           italic = isTRUE(info$is_italic))
+    super_props <- fp_text(font.family = "Arial",
+                           font.size = max(4L, as.integer(font_size) - 2L),
+                           vertical.align = "superscript")
+    ft <- compose(ft, i = row_idx, j = 1,
+      value = as_paragraph(
+        as_chunk(main_text, props = main_props),
+        as_chunk(sym,       props = super_props)
+      ),
+      part = "body"
+    )
+  }
+
+  # ── Assemble footnote: abbreviations → variable definitions → legacy table_footnote ─
+  {
+    footnote_lines <- character(0)
+    if (!is.null(abbreviation_footnote) && length(abbreviation_footnote) > 0) {
+      abbr_text <- trimws(paste(abbreviation_footnote, collapse = " "))
+      if (nchar(abbr_text) > 0) footnote_lines <- c(footnote_lines, abbr_text)
+    }
+    if (!is.null(variable_footnote) && length(variable_footnote) > 0) {
+      vf_syms <- .footnote_symbol_seq(length(variable_footnote), index_style)
+      for (k in seq_along(variable_footnote)) {
+        footnote_lines <- c(footnote_lines,
+                            paste0(vf_syms[k], " ", variable_footnote[[k]]))
+      }
+    }
+    if (!is.null(table_footnote) && length(table_footnote) > 0) {
+      footnote_lines <- c(footnote_lines,
+                          table_footnote[nchar(trimws(table_footnote)) > 0])
+    }
+    if (length(footnote_lines) > 0) {
+      dbl_border    <- fp_border(color = "black", width = 0.5, style = "double")
+      footnote_text <- paste(footnote_lines, collapse = "\n")
+      ft <- ft %>%
+        add_footer_lines(values = footnote_text) %>%
+        font(fontname = "Arial", part = "footer") %>%
+        fontsize(size = 6, part = "footer") %>%
+        italic(part = "footer") %>%
+        align(align = "left", part = "footer") %>%
+        hline_top(border = dbl_border, part = "footer") %>%
+        hline_bottom(border = dbl_border, part = "footer")
+    }
   }
 
   # Create Word document
