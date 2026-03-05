@@ -1,3 +1,66 @@
+# TernTables 1.6.3.9003 (development)
+
+## New features
+
+* **BH FDR correction (`p_adjust`)** — `ternG()` now accepts `p_adjust = TRUE`
+  to apply Benjamini-Hochberg false discovery rate correction (Benjamini &
+  Hochberg, 1995) to all omnibus *P* values. Correction pool is one *P* per
+  variable; sub-rows of multi-level categoricals share the parent *P* and are
+  not double-counted; post-hoc pairwise *P* values (which already carry Holm
+  correction) are excluded. `p_adjust_display = "fdr_only"` (default) renames
+  the *P* column to `"P value (FDR corrected)"`; `"both"` retains raw values
+  and inserts the corrected column immediately to the right. When `p_adjust =
+  TRUE`, the auto-generated methods paragraph is updated automatically to
+  include the BH procedure sentence and restates the significance threshold as
+  FDR-corrected p < 0.05.
+
+* **`write_methods_doc()` single-paragraph redesign** — replaced the previous
+  three-section boilerplate with a single dynamic paragraph tailored to the
+  actual run (descriptive, two-group, or three-or-more-group). Paragraph is
+  preceded by a bold "Statistical Methods" header and followed by an italic
+  attribution footer. Version number in the footer strips the dev tag so the
+  public release version is always shown. `write_methods_doc()` now returns the
+  paragraph text invisibly for programmatic testing.
+
+* **`write_methods_doc(boilerplate = TRUE)`** — new parameter (default `FALSE`;
+  existing behaviour unchanged). When `TRUE`, writes a comprehensive reference
+  document covering all five standard configurations (ternD descriptive; ternG
+  2-group no OR; ternG 2-group with OR; ternG 3+-group no post-hoc; ternG
+  3+-group with post-hoc), always saved to
+  `comprehensive_boilerplate_methods.docx` in the working directory.
+
+* **`ternB()` per-table methods paragraphs** — `ternB(methods_doc = TRUE)` now
+  generates one labeled section per table (using `table_caption` as the
+  heading, falling back to "Table 1", "Table 2", etc.) instead of a single
+  pooled paragraph. Tables with identical configurations are deduplicated into
+  a single section with combined labels (e.g. "Table 1 / Table 3") to avoid
+  redundant boilerplate. Footer updated to note consolidation behavior.
+
+## Bug fixes
+
+* `category_start` anchors now match case-insensitively against the display
+  variable names in the table. Previously, anchors written in title case (e.g.
+  `"Colonic Obstruction"`) silently failed to insert the header when
+  `smart_rename = TRUE` (the default) produced sentence-case output (e.g.
+  `"Colonic obstruction"`), leaving sandwiched headers absent from the Word
+  output. First word and abbreviation-driven labels (e.g. `"Age (yr)"`) were
+  unaffected. Fixed in `word_export()`.
+
+* `OR_method` was not stored in `ternB_meta`; `ternB(methods_doc = TRUE)` could
+  never produce the Wald-only OR description. Fixed.
+* `post_hoc` was not stored in `ternB_meta`; `ternB(methods_doc = TRUE)` always
+  wrote "post-hoc comparisons were not performed" even when `post_hoc = TRUE`
+  was used on a pooled table. Fixed.
+* `or_sentence` was missing from `sec3_body`; OR content was silently dropped
+  from three-or-more-group paragraphs in `ternB` bundles. Fixed.
+* `OR_method` was not forwarded from `ternG()` to `write_methods_doc()`; Wald-only
+  users received the wrong dynamic Fisher/Wald description. Fixed.
+* Skewness gate phrasing now context-aware: `ternG()` correctly says "any
+  comparison group had absolute skewness exceeding 2.0"; `ternD()` says
+  "variables with absolute skewness exceeding 2.0".
+
+---
+
 # TernTables 1.6.3
 
 * CRAN resubmission addressing reviewer comments on v1.3.1.

@@ -34,7 +34,9 @@ ternG(
   table_caption = NULL,
   table_footnote = NULL,
   line_break_header = getOption("TernTables.line_break_header", TRUE),
-  post_hoc = FALSE
+  post_hoc = FALSE,
+  p_adjust = FALSE,
+  p_adjust_display = "fdr_only"
 )
 }
 \arguments{
@@ -162,6 +164,19 @@ pairwise tests are used. For non-normal and ordinal variables (Kruskal-Wallis pa
 with Holm correction is used. Post-hoc testing is never applied to categorical variables.
 Only valid when \code{group_var} has three or more levels; silently ignored for two-group
 comparisons. Requires the \code{rstatix} package. Default is \code{FALSE}.}
+
+\item{p_adjust}{Logical; if \code{TRUE}, applies the Benjamini-Hochberg (BH) false discovery rate
+correction to all omnibus P values after testing. The correction pool is one P value per
+variable — sub-rows of multi-level categoricals share the parent P value and are not
+double-counted. Post-hoc pairwise P values (which already carry within-variable Holm
+correction) are excluded from the correction pool. Default is \code{FALSE}.}
+
+\item{p_adjust_display}{Character; controls how BH-corrected P values appear in the output
+when \code{p_adjust = TRUE}. \code{"fdr_only"} (default) replaces the standard P value
+column with the corrected values, renaming the column to \code{"P value (FDR corrected)"}.
+\code{"both"} retains the original P values in a column named \code{"P value"} and adds
+FDR-corrected values immediately to its right in a column named
+\code{"P value (FDR corrected)"}. Ignored when \code{p_adjust = FALSE}.}
 }
 \value{
 A tibble with one row per variable (multi-row for multi-level factors), showing summary statistics by group,
@@ -189,6 +204,14 @@ ternG(tern_colon, exclude_vars = c("ID"), group_var = "Recurrence",
 ternG(tern_colon, exclude_vars = c("ID"), group_var = "Treatment_Arm",
       group_order = c("Observation", "Levamisole", "Levamisole + 5FU"),
       methods_doc = FALSE)
+
+# 2-group comparison with BH FDR correction (fdr_only — default display)
+ternG(tern_colon, exclude_vars = c("ID"), group_var = "Recurrence",
+      p_adjust = TRUE, methods_doc = FALSE)
+
+# 2-group comparison with BH FDR correction (show raw + corrected side by side)
+ternG(tern_colon, exclude_vars = c("ID"), group_var = "Recurrence",
+      p_adjust = TRUE, p_adjust_display = "both", methods_doc = FALSE)
 
 # Export to Word (writes a file to tempdir)
 \donttest{

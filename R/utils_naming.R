@@ -192,6 +192,13 @@
 #' @noRd
 .capitalize_medical_term <- function(term) {
 
+  # Handle multi-word terms by processing each word individually so that
+  # mixed-case tokens like "5FU" are not lowercased by the single-word fallback
+  if (grepl(" ", term, fixed = TRUE)) {
+    parts <- strsplit(term, " ", fixed = TRUE)[[1]]
+    return(paste(sapply(parts, .capitalize_medical_term), collapse = " "))
+  }
+
   if (grepl("^[0-9.]+$", term)) return(term)
 
   if (nchar(term) >= 2 && term == toupper(term) && grepl("^[A-Z]+[0-9]*$", term)) return(term)

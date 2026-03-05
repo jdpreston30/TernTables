@@ -118,6 +118,8 @@ tbl_descriptive <- ternD(
 
 Use `ternG()` to compare variables between two or more groups. Set `OR_col = TRUE` to add unadjusted odds ratios with 95% CI for any two-level variable in two-group comparisons — including binary variables (Y/N, 0/1) and two-level categoricals such as Male/Female or Present/Absent. The reference level (factor level 1, or alphabetical first for non-factors) shows `1.00 (ref.)`; the non-reference level shows the computed OR with 95% CI. Fisher's exact or Wald method is chosen automatically based on expected cell counts (Cochran criterion). Unadjusted odds ratios are not available for 3+ groups.
 
+Set `p_adjust = TRUE` to apply Benjamini-Hochberg (BH) false discovery rate (FDR) correction to all omnibus *P* values after testing (Benjamini & Hochberg, 1995). The correction pool is one *P* value per variable; post-hoc pairwise *P* values are excluded. Use `p_adjust_display = "fdr_only"` (default) to show only FDR-corrected values — the *P* value column is renamed to `"P value (FDR corrected)"`. Use `p_adjust_display = "both"` to show original and corrected values side by side. The auto-generated methods paragraph is updated automatically when `p_adjust = TRUE`.
+
 **Two-group comparison:**
 
 ```r
@@ -145,6 +147,18 @@ tbl_3group <- ternG(
 )
 ```
 
+**Two-group comparison with BH FDR correction:**
+
+```r
+tbl_fdr <- ternG(
+  data             = tern_colon,
+  exclude_vars     = c("ID"),
+  group_var        = "Recurrence",
+  p_adjust         = TRUE,
+  p_adjust_display = "fdr_only"   # or "both" to show raw + corrected
+)
+```
+
 Omnibus *P* values are reported for 3+ group comparisons. When `post_hoc = TRUE` and the omnibus *P* < 0.05, pairwise post-hoc tests are run automatically for continuous and ordinal variables: Games-Howell following Welch ANOVA, and Dunn's test with Holm correction following Kruskal-Wallis. Results appear as compact letter display (CLD) superscripts appended to each cell value — groups sharing a letter are not significantly different. Categorical variables never receive post-hoc testing. Unadjusted odds ratios are not available for 3+ groups.
 
 Statistical tests applied automatically:
@@ -164,6 +178,8 @@ decision: (1) any group n < 3 → non-parametric (conservative fail-safe);
 n ≥ 30 → parametric via the Central Limit Theorem; (4) otherwise Shapiro-Wilk
 p > 0.05 in all groups → parametric.
 Set `consider_normality = TRUE` to use Shapiro-Wilk alone (original behaviour).
+
+BH FDR correction (Benjamini & Hochberg, 1995) is available via `p_adjust = TRUE`.
 
 ### `word_export()` — Format and export to Word
 

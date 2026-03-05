@@ -51,12 +51,20 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
       trimmed_vars <- sapply(modified_tbl[[1]], function(x) trimws(x, which = "both"))
       var_matches <- which(trimmed_vars == var_name)
 
-      # Fallback: if raw name not found, try matching the cleaned display form
-      # This allows anchors to be either the original column name (e.g. "Age_Years")
-      # or the cleaned display name (e.g. "Age (yr)")
+      # Fallback 1: case-insensitive exact match (handles smart_rename sentence-case output)
+      if (length(var_matches) == 0) {
+        var_matches <- which(tolower(trimmed_vars) == tolower(var_name))
+      }
+
+      # Fallback 2: try matching the cleaned display form (allows raw column names as anchors,
+      # e.g. "Age_Years" → "Age (yr)")
       if (length(var_matches) == 0) {
         cleaned_anchor <- .clean_variable_name_for_header(var_name)
         var_matches <- which(trimmed_vars == cleaned_anchor)
+        # Fallback 2b: case-insensitive cleaned form
+        if (length(var_matches) == 0) {
+          var_matches <- which(tolower(trimmed_vars) == tolower(cleaned_anchor))
+        }
       }
 
       if (length(var_matches) > 1) {

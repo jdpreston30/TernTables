@@ -12,7 +12,8 @@ write_methods_doc(
   OR_method = "dynamic",
   source = "ternG",
   post_hoc = FALSE,
-  boilerplate = FALSE
+  boilerplate = FALSE,
+  p_adjust = FALSE
 )
 }
 \arguments{
@@ -48,6 +49,11 @@ package-default phrasing throughout. Output is always written to
 \code{comprehensive_boilerplate_methods.docx} in the current working
 directory. Intended as a reference document, not for inclusion in a
 manuscript. Default \code{FALSE}.}
+
+\item{p_adjust}{Logical; if \code{TRUE}, prepends a sentence to the methods paragraph
+stating that P values were corrected using the Benjamini-Hochberg FDR procedure, and
+updates the significance threshold wording accordingly. Should match the \code{p_adjust}
+argument passed to \code{ternG()}. Default \code{FALSE}.}
 }
 \value{
 Invisibly returns the methods paragraph text as a character string

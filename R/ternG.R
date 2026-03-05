@@ -101,6 +101,17 @@
 #'   intend to post-process the tibble and later pass it to \code{word_export} directly, as
 #'   \code{word_export} uses the \code{.indent} column to apply correct indentation and italic formatting
 #'   in the Word table.
+#' @param p_adjust Logical; if \code{TRUE}, applies the Benjamini-Hochberg (BH) false discovery rate
+#'   correction to all omnibus P values after testing. The correction pool is one P value per
+#'   variable — sub-rows of multi-level categoricals share the parent P value and are not
+#'   double-counted. Post-hoc pairwise P values (which already carry within-variable Holm
+#'   correction) are excluded from the correction pool. Default is \code{FALSE}.
+#' @param p_adjust_display Character; controls how BH-corrected P values appear in the output
+#'   when \code{p_adjust = TRUE}. \code{"fdr_only"} (default) replaces the standard P value
+#'   column with the corrected values, renaming the column to \code{"P value (FDR corrected)"}.
+#'   \code{"both"} retains the original P values in a column named \code{"P value"} and adds
+#'   FDR-corrected values immediately to its right in a column named
+#'   \code{"P value (FDR corrected)"}. Ignored when \code{p_adjust = FALSE}.
 #'
 #' @return A tibble with one row per variable (multi-row for multi-level factors), showing summary statistics by group,
 #' P values, test type, and optionally odds ratios and total summary column.
@@ -120,6 +131,14 @@
 #' ternG(tern_colon, exclude_vars = c("ID"), group_var = "Treatment_Arm",
 #'       group_order = c("Observation", "Levamisole", "Levamisole + 5FU"),
 #'       methods_doc = FALSE)
+#'
+#' # 2-group comparison with BH FDR correction (fdr_only — default display)
+#' ternG(tern_colon, exclude_vars = c("ID"), group_var = "Recurrence",
+#'       p_adjust = TRUE, methods_doc = FALSE)
+#'
+#' # 2-group comparison with BH FDR correction (show raw + corrected side by side)
+#' ternG(tern_colon, exclude_vars = c("ID"), group_var = "Recurrence",
+#'       p_adjust = TRUE, p_adjust_display = "both", methods_doc = FALSE)
 #'
 #' # Export to Word (writes a file to tempdir)
 #' \donttest{
@@ -162,7 +181,9 @@ ternG <- function(data,
                   show_total = TRUE,
                   table_caption = NULL, table_footnote = NULL,
                   line_break_header = getOption("TernTables.line_break_header", TRUE),
-                  post_hoc = FALSE) {
+                  post_hoc = FALSE,
+                  p_adjust = FALSE,
+                  p_adjust_display = "fdr_only") {
 
   # Helper function for proper rounding (0.5 always rounds up)
   round_up_half <- function(x, digits = 0) {
@@ -310,9 +331,11 @@ ternG <- function(data,
         }
 
         if (!is.null(test_result$error)) {
-          result$P <- paste0("NA (", test_result$error, ")")
+          result$P      <- paste0("NA (", test_result$error, ")")
+          result$.p_raw <- NA_real_
         } else {
-          result$P <- val_p_format(test_result$p_value, p_digits)
+          result$P      <- val_p_format(test_result$p_value, p_digits)
+          result$.p_raw <- test_result$p_value
         }
         if (show_test) {
           result$test <- test_result$test_name
@@ -372,7 +395,8 @@ ternG <- function(data,
         for (g_lvl in group_levels) {
           header_row[[group_labels[g_lvl]]] <- ""
         }
-        header_row$P <- ""
+        header_row$P      <- ""
+        header_row$.p_raw <- NA_real_
         if (show_test) {
           header_row$test <- ""
         }
@@ -438,15 +462,18 @@ ternG <- function(data,
           # Only first sub-row gets P value, others get "-"
           if (level == sorted_levels[1]) {
             if (!is.null(test_result$error)) {
-              out$P <- paste0("NA (", test_result$error, ")")
+              out$P      <- paste0("NA (", test_result$error, ")")
+              out$.p_raw <- NA_real_
             } else {
-              out$P <- val_p_format(test_result$p_value, p_digits)
+              out$P      <- val_p_format(test_result$p_value, p_digits)
+              out$.p_raw <- test_result$p_value
             }
             if (show_test) {
               out$test <- test_result$test_name
             }
           } else {
-            out$P <- "-"
+            out$P      <- "-"
+            out$.p_raw <- NA_real_
             if (show_test) {
               out$test <- "-"
             }
@@ -515,9 +542,11 @@ ternG <- function(data,
       })
       
       if (!is.null(test_result$error)) {
-        result$P <- paste0("NA (", test_result$error, ")")
+        result$P      <- paste0("NA (", test_result$error, ")")
+        result$.p_raw <- NA_real_
       } else {
-        result$P <- val_p_format(test_result$p_value, p_digits)
+        result$P      <- val_p_format(test_result$p_value, p_digits)
+        result$.p_raw <- test_result$p_value
       }
       if (show_test) {
         result$test <- test_result$test_name
@@ -728,9 +757,11 @@ ternG <- function(data,
     })
     
     if (!is.null(test_result$error)) {
-      result$P <- paste0("NA (", test_result$error, ")")
+      result$P      <- paste0("NA (", test_result$error, ")")
+      result$.p_raw <- NA_real_
     } else {
-      result$P <- val_p_format(test_result$p_value, p_digits)
+      result$P      <- val_p_format(test_result$p_value, p_digits)
+      result$.p_raw <- test_result$p_value
     }
     if (show_test) {
       result$test <- test_result$test_name
@@ -820,13 +851,34 @@ ternG <- function(data,
   if ("Total" %in% names(out_tbl)) {
     names(out_tbl)[names(out_tbl) == "Total"] <- paste0("Total\n(N = ", total_n, ")")
   }
-                        
+
+  # ── Benjamini-Hochberg FDR correction ─────────────────────────────────────
+  if (isTRUE(p_adjust) && ".p_raw" %in% names(out_tbl)) {
+    raw_vals <- out_tbl[[".p_raw"]]
+    adj_idx  <- which(!is.na(raw_vals))
+    if (length(adj_idx) > 0) {
+      fdr_vals <- p.adjust(raw_vals[adj_idx], method = "BH")
+      fdr_fmt  <- vapply(fdr_vals, val_p_format, character(1), digits = p_digits)
+      # Template from P column: preserves "-" (sub-rows) and "" (header rows) as-is
+      fdr_col         <- out_tbl[["P"]]
+      fdr_col[adj_idx] <- fdr_fmt
+      if (p_adjust_display == "fdr_only") {
+        out_tbl[["P"]] <- fdr_col
+        names(out_tbl)[names(out_tbl) == "P"] <- "P value (FDR corrected)"
+      } else {
+        names(out_tbl)[names(out_tbl) == "P"] <- "P value"
+        out_tbl <- dplyr::mutate(out_tbl, `P value (FDR corrected)` = fdr_col,
+                                 .after = dplyr::all_of("P value"))
+      }
+    }
+  }
+  out_tbl <- dplyr::select(out_tbl, -dplyr::any_of(".p_raw"))
 
   if (!is.null(output_xlsx)) export_to_excel(out_tbl, output_xlsx)
   
   # Write methods document if requested
   if (methods_doc) {
-    write_methods_doc(out_tbl, methods_filename, n_levels = n_levels, OR_col = OR_col, OR_method = OR_method, source = "ternG", post_hoc = post_hoc)
+    write_methods_doc(out_tbl, methods_filename, n_levels = n_levels, OR_col = OR_col, OR_method = OR_method, source = "ternG", post_hoc = post_hoc, p_adjust = p_adjust)
   }
 
   # -- Report normality test results -----------------------------------------
@@ -930,7 +982,9 @@ ternG <- function(data,
     n_levels             = n_levels,
     OR_col               = OR_col,
     OR_method            = OR_method,
-    post_hoc             = post_hoc
+    post_hoc             = post_hoc,
+    p_adjust             = p_adjust,
+    p_adjust_display     = p_adjust_display
   )
 
   return(out_tbl)

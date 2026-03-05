@@ -37,6 +37,10 @@
 #'   \code{comprehensive_boilerplate_methods.docx} in the current working
 #'   directory. Intended as a reference document, not for inclusion in a
 #'   manuscript. Default \code{FALSE}.
+#' @param p_adjust Logical; if \code{TRUE}, prepends a sentence to the methods paragraph
+#'   stating that P values were corrected using the Benjamini-Hochberg FDR procedure, and
+#'   updates the significance threshold wording accordingly. Should match the \code{p_adjust}
+#'   argument passed to \code{ternG()}. Default \code{FALSE}.
 #' @return Invisibly returns the methods paragraph text as a character string
 #'   (or, when \code{boilerplate = TRUE}, invisibly returns the output file path).
 #'   Useful for programmatic inspection or testing without opening the Word file.
@@ -55,7 +59,7 @@
 #' @export
 write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
                               OR_method = "dynamic", source = "ternG", post_hoc = FALSE,
-                              boilerplate = FALSE) {
+                              boilerplate = FALSE, p_adjust = FALSE) {
 
   # ── Boilerplate mode: comprehensive reference document, all configurations ──
   if (isTRUE(boilerplate)) {
@@ -267,7 +271,19 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
       or_method_detail
     )
   } else ""
-  sig_sentence <- "Statistical significance was defined as p < 0.05."
+  fdr_sentence <- if (isTRUE(p_adjust)) {
+    paste0(
+      "All reported P values were corrected for multiple comparisons using the ",
+      "Benjamini-Hochberg false discovery rate (FDR) procedure (Benjamini & Hochberg, 1995). "
+    )
+  } else {
+    ""
+  }
+  sig_sentence <- if (isTRUE(p_adjust)) {
+    "Statistical significance was defined as FDR-corrected p\u2009<\u20090.05."
+  } else {
+    "Statistical significance was defined as p\u2009<\u20090.05."
+  }
 
   # ── Section 1: Descriptive ───────────────────────────────────────────────────
   sec1_body <- paste0(desc_sentence, " ", sig_sentence)
@@ -283,14 +299,14 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
     } else {
       "Normally distributed continuous variables were compared using Welch's independent samples t-test; non-normally distributed variables were compared using the Wilcoxon rank-sum test. "
     }
-    sec2_body <- paste0(desc_sentence, " ", s2_cont, cat_sentence(has_fisher, has_chisq, has_fisher_sim), or_sentence, sig_sentence)
+    sec2_body <- paste0(desc_sentence, " ", s2_cont, cat_sentence(has_fisher, has_chisq, has_fisher_sim), or_sentence, fdr_sentence, sig_sentence)
   } else {
     sec2_body <- paste0(
       desc_sentence, " ",
       "Normally distributed continuous variables were compared between groups using Welch's independent samples t-test; ",
       "non-normally distributed or ordinal continuous variables were compared using the Wilcoxon rank-sum test. ",
       "Categorical variables were compared using Chi-squared tests, or Fisher's exact tests when any expected cell count was less than 5 (Cochran criterion). ",
-      sig_sentence
+      fdr_sentence, sig_sentence
     )
   }
 
@@ -318,7 +334,7 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
     } else {
       "Omnibus P values are reported; pairwise post-hoc comparisons were not performed. "
     }
-    sec3_body <- paste0(desc_sentence, " ", s3_cont, omnibus_note, cat_sentence(has_fisher, has_chisq, has_fisher_sim), or_sentence, sig_sentence)
+    sec3_body <- paste0(desc_sentence, " ", s3_cont, omnibus_note, cat_sentence(has_fisher, has_chisq, has_fisher_sim), or_sentence, fdr_sentence, sig_sentence)
   } else {
     sec3_body <- paste0(
       desc_sentence, " ",
@@ -326,7 +342,7 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
       "non-normally distributed or ordinal continuous variables were compared using the Kruskal-Wallis test. ",
       "Omnibus P values are reported; pairwise post-hoc comparisons were not performed. ",
       "Categorical variables were compared using Chi-squared tests, or Fisher's exact tests when any expected cell count was less than 5 (Cochran criterion). ",
-      sig_sentence
+      fdr_sentence, sig_sentence
     )
   }
 

@@ -275,6 +275,55 @@ Three-group comparison table exported to Word with category section headers:
 
 ![](figures/tern_3_group.png){width=100%}
 
+> **Note:** In randomized trials, *P* values for baseline characteristics are
+> conventionally omitted — any observed differences between arms are attributable
+> to chance, not systematic bias, because randomization was the assignment
+> mechanism. The baseline variables above (Patient Demographics, Surgical
+> Findings, Tumor Characteristics) are included here alongside the Outcomes
+> section solely to demonstrate multi-group Welch ANOVA and Kruskal-Wallis
+> testing across the full range of variable types. The clinically meaningful
+> comparison in this table is the outcome: Recurrence by treatment arm.
+
+---
+
+## BH FDR Correction (`p_adjust`)
+
+When comparing many variables simultaneously, the probability of observing at
+least one false-positive *P* value by chance increases with the number of tests
+performed. Set `p_adjust = TRUE` to apply the Benjamini-Hochberg (BH) false
+discovery rate (FDR) correction (Benjamini & Hochberg, 1995) to all omnibus *P*
+values after testing. This is appropriate for exploratory comparison tables where
+the goal is to limit the expected proportion of false discoveries across all tests.
+
+The correction pool is **one *P* value per variable** — sub-rows of multi-level
+categorical variables share the parent variable's *P* value and are not
+double-counted. Post-hoc pairwise *P* values (which already carry within-variable
+Holm correction) are excluded from the pool.
+
+Control column display with `p_adjust_display`:
+
+- `"fdr_only"` (default) — replaces the standard *P* value column, renaming it
+  `"P value (FDR corrected)"`
+- `"both"` — retains the original *P* values and adds the corrected values
+  immediately to the right
+
+```{r ternG-fdr, eval = FALSE}
+tbl_fdr <- ternG(
+  data             = tern_colon,
+  exclude_vars     = c("ID"),
+  group_var        = "Recurrence",
+  p_adjust         = TRUE,
+  p_adjust_display = "both",   # show raw AND FDR-corrected P values
+  methods_doc      = FALSE
+)
+```
+
+When `p_adjust = TRUE`, the auto-generated methods paragraph is updated
+automatically to include: *"All reported P values were corrected for multiple
+comparisons using the Benjamini-Hochberg false discovery rate (FDR) procedure
+(Benjamini & Hochberg, 1995)."* and the significance threshold is restated as
+*"FDR-corrected p\u00a0< 0.05."*
+
 ---
 
 ## Word Output Formatting
@@ -346,6 +395,13 @@ letter are not significantly different. Categorical variables never receive
 post-hoc testing. `post_hoc` defaults to `FALSE`.
 Set `consider_normality = TRUE` to use Shapiro-Wilk alone (original behaviour).
 
+When comparing many variables simultaneously, set `p_adjust = TRUE` to apply
+Benjamini-Hochberg (BH) FDR correction to all omnibus *P* values. Use
+`p_adjust_display = "fdr_only"` (default) to show only corrected values
+(column renamed to `"P value (FDR corrected)"`), or `"both"` to show original
+and corrected values side by side. See the [BH FDR Correction](#bh-fdr-correction-p_adjust)
+section above for details.
+
 ---
 
 ## Methods Document
@@ -396,4 +452,8 @@ the underlying implementation.
 Moertel CG, Fleming TR, Macdonald JS, et al. (1990). Levamisole and fluorouracil
 for adjuvant therapy of resected colon carcinoma. *New England Journal of Medicine*,
 **322**(6), 352–358. <https://doi.org/10.1056/NEJM199002083220602>
+
+Benjamini Y, Hochberg Y. (1995). Controlling the false discovery rate: a practical
+and powerful approach to multiple testing. *Journal of the Royal Statistical Society,
+Series B*, **57**(1), 289–300. <https://doi.org/10.1111/j.2517-6161.1995.tb02031.x>
 
