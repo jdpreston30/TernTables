@@ -349,6 +349,11 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
 
   # Create Word document
   doc <- read_docx()
+  # Remove the default blank paragraph officer inserts so temp files used by
+  # ternB() don't carry a leading empty paragraph that can displace captions
+  # onto a separate page when assembled into a combined document.
+  doc <- officer::cursor_begin(doc)
+  doc <- officer::body_remove(doc)
   if (!is.null(table_caption) && nchar(trimws(table_caption)) > 0) {
     cap <- trimws(table_caption)
 

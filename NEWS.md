@@ -71,6 +71,19 @@
 * `p.adjust` was called without a formal import, triggering an R CMD check NOTE
   (`no visible global function definition for 'p.adjust'`). Added
   `importFrom("stats", "p.adjust")` to `imports.R`.
+* `ternB(methods_doc = TRUE)` section headings used the full `table_caption`
+  text as the heading label, producing multi-sentence headings when long
+  clinical captions were supplied. Labels now extract only the leading
+  `"Table N"` token (e.g. `"Table 2 Statistical Methods"` instead of the
+  entire caption). Tables with identical configurations are still consolidated
+  under a combined label (e.g. `"Table 2 / Table 3 Statistical Methods"`).
+* `ternB()` blank page and displaced caption between assembled tables: the
+  default blank paragraph created by `read_docx()` in each temp file was
+  carried into the combined document after the manual page break, leaving
+  insufficient room for the subsequent table and causing Word to push the
+  table to the next page while the caption remained behind on what appeared
+  as a blank page. Fixed by stripping the initial blank paragraph in
+  `word_export()` immediately after `read_docx()`.
 
 ---
 

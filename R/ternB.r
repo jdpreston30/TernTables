@@ -143,13 +143,13 @@ ternB <- function(tables, output_docx, page_break = TRUE,
       )
     }, character(1))
 
-    # Derive a short label for each table. Use the table_caption if set,
-    # stripping trailing punctuation to keep the heading concise.
-    # Fall back to "Table i".
+    # Derive a short label for each table: extract just "Table N" from the
+    # start of the caption. Fall back to "Table i" if no match.
     labels <- vapply(seq_along(all_metas), function(i) {
       cap <- all_metas[[i]]$table_caption
       if (!is.null(cap) && nchar(trimws(cap)) > 0) {
-        trimws(gsub("[.:]\\s*$", "", trimws(cap)))
+        m <- regmatches(cap, regexpr("^Table\\s*\\d+", cap, ignore.case = TRUE))
+        if (length(m) > 0 && nchar(m) > 0) m else paste0("Table ", i)
       } else {
         paste0("Table ", i)
       }
@@ -183,6 +183,7 @@ ternB <- function(tables, output_docx, page_break = TRUE,
     doc <- read_docx()
     for (sec in sections) {
       heading_txt <- paste(sec$labels, collapse = " / ")
+      heading_txt <- paste0(heading_txt, " Statistical Methods")
       doc <- doc |>
         body_add_fpar(fpar(ftext(heading_txt, prop = hp))) |>
         body_add_par("", style = "Normal") |>
