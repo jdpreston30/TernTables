@@ -25,8 +25,8 @@
 #'   the first column header includes a category hierarchy label. Set to \code{FALSE} to suppress
 #'   all header line breaks. Can also be set package-wide via
 #'   \code{options(TernTables.line_break_header = FALSE)}.
-#' @param open_doc Logical; if \code{TRUE}, automatically opens the written Word
-#'   document in the system default application after saving. Default \code{FALSE}.
+#' @param open_doc Logical; if \code{TRUE} (default), automatically opens the written Word
+#'   document in the system default application after saving. Set to \code{FALSE} to suppress.
 #' @return Invisibly returns the path to the written Word file.
 #' @examples
 #' \donttest{
@@ -42,7 +42,7 @@
 #' )
 #' }
 #' @export
-word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, category_start = NULL, manual_italic_indent = NULL, manual_underline = NULL, table_caption = NULL, table_footnote = NULL, line_break_header = getOption("TernTables.line_break_header", TRUE), open_doc = FALSE) {
+word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, category_start = NULL, manual_italic_indent = NULL, manual_underline = NULL, table_caption = NULL, table_footnote = NULL, line_break_header = getOption("TernTables.line_break_header", TRUE), open_doc = TRUE) {
   # Keep the table as-is
   modified_tbl <- tbl
 

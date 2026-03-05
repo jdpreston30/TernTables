@@ -112,6 +112,9 @@
 #'   \code{"both"} retains the original P values in a column named \code{"P value"} and adds
 #'   FDR-corrected values immediately to its right in a column named
 #'   \code{"P value (FDR corrected)"}. Ignored when \code{p_adjust = FALSE}.
+#' @param open_doc Logical; if \code{TRUE} (default), automatically opens the written Word document
+#'   in the system default application after saving. Set to \code{FALSE} to suppress.
+#'   Has no effect when \code{output_docx} is \code{NULL}.
 #'
 #' @return A tibble with one row per variable (multi-row for multi-level factors), showing summary statistics by group,
 #' P values, test type, and optionally odds ratios and total summary column.
@@ -183,7 +186,8 @@ ternG <- function(data,
                   line_break_header = getOption("TernTables.line_break_header", TRUE),
                   post_hoc = FALSE,
                   p_adjust = FALSE,
-                  p_adjust_display = "fdr_only") {
+                  p_adjust_display = "fdr_only",
+                  open_doc = TRUE) {
 
   # Helper function for proper rounding (0.5 always rounds up)
   round_up_half <- function(x, digits = 0) {
@@ -971,7 +975,7 @@ ternG <- function(data,
   if (length(notes) > 0L)
     effective_footnote <- if (is.null(table_footnote)) notes else c(notes, table_footnote)
 
-  if (!is.null(output_docx)) word_export(out_tbl, output_docx, round_intg = round_intg, font_size = table_font_size, category_start = category_start, manual_italic_indent = manual_italic_indent, manual_underline = manual_underline, table_caption = table_caption, table_footnote = effective_footnote, line_break_header = line_break_header)
+  if (!is.null(output_docx)) word_export(out_tbl, output_docx, round_intg = round_intg, font_size = table_font_size, category_start = category_start, manual_italic_indent = manual_italic_indent, manual_underline = manual_underline, table_caption = table_caption, table_footnote = effective_footnote, line_break_header = line_break_header, open_doc = open_doc)
 
   if (!indent_info_column) out_tbl <- dplyr::select(out_tbl, -dplyr::any_of(".indent"))
 

@@ -34,10 +34,10 @@
   3+-group with post-hoc), always saved to
   `comprehensive_boilerplate_methods.docx` in the working directory.
 
-* **`open_doc` parameter** — `word_export()` and `write_methods_doc()` now accept
-  `open_doc = FALSE` (default). Set to `TRUE` to automatically open the written
-  `.docx` in the system default application immediately after saving. Has no
-  effect on web-app usage; intended for interactive R sessions.
+* **`open_doc` parameter** — `ternD()`, `ternG()`, `word_export()`, and
+  `write_methods_doc()` now accept `open_doc = TRUE` (default). The written
+  `.docx` is automatically opened in the system default application after
+  saving. Set to `FALSE` to suppress. Has no effect on web-app usage.
 
 * **`ternB()` per-table methods paragraphs** — `ternB(methods_doc = TRUE)` now
   generates one labeled section per table (using `table_caption` as the

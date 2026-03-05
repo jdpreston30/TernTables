@@ -77,6 +77,9 @@
 #'   \code{\\n} -- the first column header includes a category hierarchy label, and the sample
 #'   size appears on a second line. Set to \code{FALSE} to suppress all header line breaks.
 #'   Can also be set package-wide via \code{options(TernTables.line_break_header = FALSE)}.
+#' @param open_doc Logical; if \code{TRUE} (default), automatically opens the written Word document
+#'   in the system default application after saving. Set to \code{FALSE} to suppress.
+#'   Has no effect when \code{output_docx} is \code{NULL}.
 #'
 #' @details
 #' The function always returns a tibble with a single \code{Total (N = n)} column format, regardless of the
@@ -137,7 +140,8 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
                   methods_filename = "TernTables_methods.docx", category_start = NULL,
                   table_font_size = 9, manual_italic_indent = NULL, manual_underline = NULL,
                   table_caption = NULL, table_footnote = NULL,
-                  line_break_header = getOption("TernTables.line_break_header", TRUE)) {
+                  line_break_header = getOption("TernTables.line_break_header", TRUE),
+                  open_doc = TRUE) {
   stopifnot(is.data.frame(data))
   
   # Store total N for column header
@@ -425,7 +429,8 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
                                          manual_underline = manual_underline,
                                          table_caption = table_caption,
                                          table_footnote = table_footnote,
-                                         line_break_header = line_break_header)
+                                         line_break_header = line_break_header,
+                                         open_doc = open_doc)
   if (methods_doc) write_methods_doc(out_tbl, methods_filename, source = "ternD")
 
   out_tbl <- dplyr::select(out_tbl, -dplyr::any_of(".indent"))
