@@ -98,3 +98,25 @@ export_to_excel <- function(tbl, filename) {
   }
   invisible(NULL)
 }
+
+# Internal helper: returns the 3-part public release version of TernTables,
+# stripping any development tag (e.g. .9008) so footers always show the
+# public release number (e.g. "1.6.3").
+.tern_pkg_version <- function() {
+  raw <- unclass(utils::packageVersion("TernTables"))[[1]]
+  paste(raw[seq_len(min(3L, length(raw)))], collapse = ".")
+}
+
+# Internal helper: returns the full citation line used in Word document
+# footers when citation = TRUE. Version is resolved dynamically.
+.tern_citation_line <- function() {
+  ver <- .tern_pkg_version()
+  paste0(
+    "Created with TernTables v", ver, ". Please cite: ",
+    "Preston JD, Abadiotakis H, Tang A, Aslam MV, Rust CJ, Chan JL. ",
+    "TernTables: Publication-ready summary tables and statistical testing for clinical research. ",
+    "R package version ", ver, ", 2026. ",
+    "Available at: https://github.com/jdpreston30/TernTables ",
+    "(Web interface: https://tern-tables.com)"
+  )
+}

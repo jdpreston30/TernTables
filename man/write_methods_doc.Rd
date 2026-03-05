@@ -14,7 +14,8 @@ write_methods_doc(
   post_hoc = FALSE,
   boilerplate = FALSE,
   p_adjust = FALSE,
-  open_doc = TRUE
+  open_doc = TRUE,
+  citation = TRUE
 )
 }
 \arguments{
@@ -58,6 +59,10 @@ argument passed to \code{ternG()}. Default \code{FALSE}.}
 
 \item{open_doc}{Logical; if \code{TRUE} (default), automatically opens the written Word
 document in the system default application after saving. Set to \code{FALSE} to suppress.}
+
+\item{citation}{Logical; if \code{TRUE} (default), appends a citation line after the
+document footer: package version, authors, and links to the GitHub repository and web
+interface. Set to \code{FALSE} to suppress.}
 }
 \value{
 Invisibly returns the methods paragraph text as a character string
@@ -82,8 +87,9 @@ TernTables configurations with package-default phrasing. See the
 \donttest{
 data(tern_colon)
 tbl <- ternG(tern_colon, exclude_vars = c("ID"), group_var = "Recurrence",
-            methods_doc = FALSE)
-write_methods_doc(tbl, filename = file.path(tempdir(), "methods.docx"))
+            methods_doc = FALSE, open_doc = FALSE)
+write_methods_doc(tbl, filename = file.path(tempdir(), "methods.docx"),
+                  open_doc = FALSE)
 }
 \dontrun{
 # Write a comprehensive reference document covering all configurations.

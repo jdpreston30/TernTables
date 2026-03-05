@@ -20,6 +20,9 @@
 #' @param open_doc Logical; if \code{TRUE} (default), automatically opens each
 #'   written \code{.docx} in the system default application after saving.
 #'   Set to \code{FALSE} to suppress.
+#' @param citation Logical; if \code{TRUE} (default), appends a citation line at the bottom
+#'   of each table footnote block and methods document: package version, authors, and links
+#'   to the GitHub repository and web interface. Set to \code{FALSE} to suppress.
 #'
 #' @details
 #' \code{ternB()} works by replaying the exact \code{word_export()} call that
@@ -42,22 +45,25 @@
 #' T1 <- ternD(tern_colon,
 #'             exclude_vars  = "ID",
 #'             table_caption = "Table 1. Overall patient characteristics.",
-#'             methods_doc   = FALSE)
+#'             methods_doc   = FALSE,
+#'             open_doc      = FALSE)
 #'
 #' T2 <- ternG(tern_colon,
 #'             group_var     = "Recurrence",
 #'             exclude_vars  = "ID",
 #'             table_caption = "Table 2. Characteristics by recurrence status.",
-#'             methods_doc   = FALSE)
+#'             methods_doc   = FALSE,
+#'             open_doc      = FALSE)
 #'
 #' ternB(list(T1, T2),
-#'       output_docx = file.path(tempdir(), "combined_tables.docx"))
+#'       output_docx = file.path(tempdir(), "combined_tables.docx"),
+#'       open_doc    = FALSE)
 #' }
 #' @export
 ternB <- function(tables, output_docx, page_break = TRUE,
                   methods_doc = FALSE,
                   methods_filename = "TernTables_methods.docx",
-                  open_doc = TRUE) {
+                  open_doc = TRUE, citation = TRUE) {
 
   # ── Input validation ──────────────────────────────────────────────────────
   if (!is.list(tables) || inherits(tables, "data.frame")) {
@@ -104,7 +110,8 @@ ternB <- function(tables, output_docx, page_break = TRUE,
       abbreviation_footnote = meta$abbreviation_footnote,
       variable_footnote     = meta$variable_footnote,
       index_style           = if (is.null(meta$index_style)) "symbols" else meta$index_style,
-      open_doc              = FALSE
+      open_doc              = FALSE,
+      citation              = citation
     )
   }
 
@@ -141,7 +148,8 @@ ternB <- function(tables, output_docx, page_break = TRUE,
           source    = if (is.null(m$source))      "ternG"       else m$source,
           post_hoc  = if (is.null(m$post_hoc))    FALSE         else m$post_hoc,
           p_adjust  = if (is.null(m$p_adjust))    FALSE         else m$p_adjust,
-          open_doc  = FALSE
+          open_doc  = FALSE,
+          citation  = citation
         )
       )
     }, character(1))
@@ -180,8 +188,7 @@ ternB <- function(tables, output_docx, page_break = TRUE,
     fp <- fp_text(font.size = 9,  font.family = "Arial", italic = TRUE,
                   color = "#555555")
 
-    raw_ver <- unclass(utils::packageVersion("TernTables"))[[1]]
-    pkg_ver <- paste(raw_ver[seq_len(min(3L, length(raw_ver)))], collapse = ".")
+    pkg_ver <- .tern_pkg_version()
 
     doc <- read_docx()
     for (sec in sections) {
@@ -201,6 +208,19 @@ ternB <- function(tables, output_docx, page_break = TRUE,
     )
     doc <- doc |>
       body_add_fpar(fpar(ftext(footer_txt, prop = fp)))
+
+    if (isTRUE(citation)) {
+      cit_props <- fp_text(font.family = "Arial", font.size = 7,
+                           bold = TRUE, italic = TRUE, color = "black")
+      doc <- body_set_default_section(
+        doc,
+        value = prop_section(
+          footer_default = block_list(
+            fpar(ftext(.tern_citation_line(), prop = cit_props))
+          )
+        )
+      )
+    }
 
     dir.create(dirname(methods_filename), recursive = TRUE, showWarnings = FALSE)
     print(doc, target = methods_filename)

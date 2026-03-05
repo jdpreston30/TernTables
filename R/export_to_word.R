@@ -26,14 +26,14 @@
 #' @param variable_footnote Optional named character vector. Names are display variable names as
 #'   they appear in the table (case-insensitive match); values are the footnote definition text
 #'   for that variable. Each entry is assigned the next symbol in the sequence (\code{*},
-#'   \code{\u2020}, \code{\u2021}, ...) and the symbol is appended to the variable name in column 1.
+#'   \code{†}, \code{‡}, ...) and the symbol is appended to the variable name in column 1.
 #'   The footnote block lists each as \code{"* Definition text."} below the abbreviations.
 #'   Default \code{NULL}.
 #' @param index_style Character; controls the footnote symbol sequence. \code{"symbols"} (default)
-#'   uses \code{*}, \code{\u2020}, \code{\u2021}, \code{\u00a7}, \code{\u00b6}, \code{\u2225},
+#'   uses \code{*}, \code{†}, \code{‡}, \code{§}, \code{¶}, \code{∥},
 #'   then doubled forms. \code{"*"} is appended as plain text; all others are true Word superscripts.
-#'   \code{"alphabet"} uses Unicode superscript letters (\code{\u1d43}, \code{\u1d47},
-#'   \code{\u1d9c}, ...) which render as raised glyphs without explicit superscript formatting.
+#'   \code{"alphabet"} uses Unicode superscript letters (\code{ᵃ}, \code{ᵇ},
+#'   \code{ᶜ}, ...) which render as raised glyphs without explicit superscript formatting.
 #' @param line_break_header Logical; if \code{TRUE} (default), column headers are wrapped with
 #'   \code{\\n} -- group names break on spaces, sample size counts move to a second line, and
 #'   the first column header includes a category hierarchy label. Set to \code{FALSE} to suppress
@@ -41,14 +41,18 @@
 #'   \code{options(TernTables.line_break_header = FALSE)}.
 #' @param open_doc Logical; if \code{TRUE} (default), automatically opens the written Word
 #'   document in the system default application after saving. Set to \code{FALSE} to suppress.
+#' @param citation Logical; if \code{TRUE} (default), appends a citation line at the bottom
+#'   of the table footnote block: package version, authors, and links to the GitHub repository
+#'   and web interface. Set to \code{FALSE} to suppress.
 #' @return Invisibly returns the path to the written Word file.
 #' @examples
 #' \donttest{
 #' data(tern_colon)
-#' tbl <- ternD(tern_colon, exclude_vars = c("ID"), methods_doc = FALSE)
+#' tbl <- ternD(tern_colon, exclude_vars = c("ID"), methods_doc = FALSE, open_doc = FALSE)
 #' word_export(
 #'   tbl      = tbl,
 #'   filename = file.path(tempdir(), "descriptive.docx"),
+#'   open_doc = FALSE,
 #'   category_start = c(
 #'     "Patient Demographics"  = "Age (yr)",
 #'     "Tumor Characteristics" = "Positive Lymph Nodes (n)"
@@ -56,7 +60,7 @@
 #' )
 #' }
 #' @export
-word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, category_start = NULL, manual_italic_indent = NULL, manual_underline = NULL, table_caption = NULL, table_footnote = NULL, abbreviation_footnote = NULL, variable_footnote = NULL, index_style = "symbols", line_break_header = getOption("TernTables.line_break_header", TRUE), open_doc = TRUE) {
+word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, category_start = NULL, manual_italic_indent = NULL, manual_underline = NULL, table_caption = NULL, table_footnote = NULL, abbreviation_footnote = NULL, variable_footnote = NULL, index_style = "symbols", line_break_header = getOption("TernTables.line_break_header", TRUE), open_doc = TRUE, citation = TRUE) {
   # Keep the table as-is
   modified_tbl <- tbl
 
@@ -472,6 +476,21 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
     doc <- doc %>% body_add_fpar(caption_text)
   }
   doc <- doc %>% body_add_flextable(ft)
+
+  # ── Word document page footer (citation line) ─────────────────────────────
+  if (isTRUE(citation)) {
+    cit_props <- fp_text(font.family = "Arial", font.size = 8,
+                         bold = TRUE, italic = TRUE, color = "black")
+    doc <- body_set_default_section(
+      doc,
+      value = prop_section(
+        footer_default = block_list(
+          fpar(ftext(.tern_citation_line(), prop = cit_props))
+        )
+      )
+    )
+  }
+
   dir.create(dirname(filename), recursive = TRUE, showWarnings = FALSE)
   print(doc, target = filename)
   if (isTRUE(open_doc)) .open_docx(filename)

@@ -163,6 +163,7 @@ tbl_descriptive <- ternD(
   exclude_vars     = c("ID"),
   output_docx      = file.path(out_dir, "Tern_descriptive.docx"),
   methods_filename = file.path(out_dir, "TernTables_methods.docx"),
+  open_doc         = FALSE,
   category_start = c(
     "Patient Demographics"  = "Age (yr)",
     "Surgical Findings"     = "Colonic Obstruction",
@@ -212,6 +213,7 @@ tbl_2group <- ternG(
   group_var        = "Recurrence",
   output_docx      = file.path(out_dir, "Tern_2_group.docx"),
   methods_filename = file.path(out_dir, "TernTables_methods.docx"),
+  open_doc         = FALSE,
   OR_col           = TRUE,
   insert_subheads  = TRUE,
   category_start   = c(
@@ -259,6 +261,7 @@ tbl_3group <- ternG(
   group_order        = c("Observation", "Levamisole", "Levamisole + 5FU"),
   output_docx        = file.path(out_dir, "Tern_3_group.docx"),
   methods_filename   = file.path(out_dir, "TernTables_methods.docx"),
+  open_doc           = FALSE,
   consider_normality = "ROBUST",
   post_hoc           = TRUE,
   category_start     = c(

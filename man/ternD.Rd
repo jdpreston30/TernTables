@@ -25,8 +25,12 @@ ternD(
   manual_underline = NULL,
   table_caption = NULL,
   table_footnote = NULL,
+  abbreviation_footnote = NULL,
+  variable_footnote = NULL,
+  index_style = "symbols",
   line_break_header = getOption("TernTables.line_break_header", TRUE),
-  open_doc = TRUE
+  open_doc = TRUE,
+  citation = TRUE
 )
 }
 \arguments{
@@ -118,6 +122,17 @@ Example: \code{"Table 1. Patient demographics."}}
 Word document. Rendered as size 6 Arial italic with a double-bar border above and below.
 Default is \code{NULL} (no footnote).}
 
+\item{abbreviation_footnote}{Optional character string listing abbreviations. Always printed
+first in the footnote block. Default \code{NULL}.}
+
+\item{variable_footnote}{Optional named character vector. Names are display variable names
+(case-insensitive); values are the footnote definition text. Each variable gets the next
+symbol appended to its name in the table, and the footnote block lists each definition
+below the abbreviation line. Default \code{NULL}.}
+
+\item{index_style}{Character; \code{"symbols"} (default) uses *, †, ‡ ...
+\code{"alphabet"} uses Unicode superscript letters. See \code{word_export} for details.}
+
 \item{line_break_header}{Logical; if \code{TRUE} (default), column headers are wrapped with
 \code{\\n} -- the first column header includes a category hierarchy label, and the sample
 size appears on a second line. Set to \code{FALSE} to suppress all header line breaks.
@@ -126,6 +141,10 @@ Can also be set package-wide via \code{options(TernTables.line_break_header = FA
 \item{open_doc}{Logical; if \code{TRUE} (default), automatically opens the written Word document
 in the system default application after saving. Set to \code{FALSE} to suppress.
 Has no effect when \code{output_docx} is \code{NULL}.}
+
+\item{citation}{Logical; if \code{TRUE} (default), appends a citation line at the bottom
+of the table footnote block and at the end of the methods document: package version, authors,
+and links to the GitHub repository and web interface. Set to \code{FALSE} to suppress.}
 }
 \value{
 A tibble with one row per variable (multi-row for factors), containing:
@@ -178,6 +197,7 @@ ternD(tern_colon, exclude_vars = c("ID"), methods_doc = FALSE,
 ternD(tern_colon,
       exclude_vars     = c("ID"),
       methods_doc      = FALSE,
+      open_doc         = FALSE,
       output_docx      = file.path(tempdir(), "descriptive.docx"),
       category_start   = c("Patient Demographics"  = "Age (yr)",
                            "Surgical Findings"     = "Colonic Obstruction",

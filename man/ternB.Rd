@@ -10,7 +10,8 @@ ternB(
   page_break = TRUE,
   methods_doc = FALSE,
   methods_filename = "TernTables_methods.docx",
-  open_doc = TRUE
+  open_doc = TRUE,
+  citation = TRUE
 )
 }
 \arguments{
@@ -35,6 +36,10 @@ to \code{"TernTables_methods.docx"} in the working directory.}
 \item{open_doc}{Logical; if \code{TRUE} (default), automatically opens each
 written \code{.docx} in the system default application after saving.
 Set to \code{FALSE} to suppress.}
+
+\item{citation}{Logical; if \code{TRUE} (default), appends a citation line at the bottom
+of each table footnote block and methods document: package version, authors, and links
+to the GitHub repository and web interface. Set to \code{FALSE} to suppress.}
 }
 \value{
 Invisibly returns the path to the written Word file.
@@ -63,15 +68,18 @@ data(tern_colon)
 T1 <- ternD(tern_colon,
             exclude_vars  = "ID",
             table_caption = "Table 1. Overall patient characteristics.",
-            methods_doc   = FALSE)
+            methods_doc   = FALSE,
+            open_doc      = FALSE)
 
 T2 <- ternG(tern_colon,
             group_var     = "Recurrence",
             exclude_vars  = "ID",
             table_caption = "Table 2. Characteristics by recurrence status.",
-            methods_doc   = FALSE)
+            methods_doc   = FALSE,
+            open_doc      = FALSE)
 
 ternB(list(T1, T2),
-      output_docx = file.path(tempdir(), "combined_tables.docx"))
+      output_docx = file.path(tempdir(), "combined_tables.docx"),
+      open_doc    = FALSE)
 }
 }

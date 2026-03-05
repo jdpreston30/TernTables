@@ -79,7 +79,7 @@
 #'   (case-insensitive); values are the footnote definition text. Each variable gets the next
 #'   symbol appended to its name in the table, and the footnote block lists each definition
 #'   below the abbreviation line. Default \code{NULL}.
-#' @param index_style Character; \code{"symbols"} (default) uses *, \u2020, \u2021 ...
+#' @param index_style Character; \code{"symbols"} (default) uses *, †, ‡ ...
 #'   \code{"alphabet"} uses Unicode superscript letters. See \code{word_export} for details.
 #' @param line_break_header Logical; if \code{TRUE} (default), column headers are wrapped with
 #'   \code{\\n} -- the first column header includes a category hierarchy label, and the sample
@@ -88,6 +88,9 @@
 #' @param open_doc Logical; if \code{TRUE} (default), automatically opens the written Word document
 #'   in the system default application after saving. Set to \code{FALSE} to suppress.
 #'   Has no effect when \code{output_docx} is \code{NULL}.
+#' @param citation Logical; if \code{TRUE} (default), appends a citation line at the bottom
+#'   of the table footnote block and at the end of the methods document: package version, authors,
+#'   and links to the GitHub repository and web interface. Set to \code{FALSE} to suppress.
 #'
 #' @details
 #' The function always returns a tibble with a single \code{Total (N = n)} column format, regardless of the
@@ -133,6 +136,7 @@
 #' ternD(tern_colon,
 #'       exclude_vars     = c("ID"),
 #'       methods_doc      = FALSE,
+#'       open_doc         = FALSE,
 #'       output_docx      = file.path(tempdir(), "descriptive.docx"),
 #'       category_start   = c("Patient Demographics"  = "Age (yr)",
 #'                            "Surgical Findings"     = "Colonic Obstruction",
@@ -151,7 +155,7 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
                   abbreviation_footnote = NULL, variable_footnote = NULL,
                   index_style = "symbols",
                   line_break_header = getOption("TernTables.line_break_header", TRUE),
-                  open_doc = TRUE) {
+                  open_doc = TRUE, citation = TRUE) {
   stopifnot(is.data.frame(data))
   
   # Store total N for column header
@@ -443,8 +447,9 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
                                          variable_footnote     = variable_footnote,
                                          index_style           = index_style,
                                          line_break_header     = line_break_header,
-                                         open_doc              = open_doc)
-  if (methods_doc) write_methods_doc(out_tbl, methods_filename, source = "ternD")
+                                         open_doc              = open_doc,
+                                         citation              = citation)
+  if (methods_doc) write_methods_doc(out_tbl, methods_filename, source = "ternD", open_doc = open_doc, citation = citation)
 
   out_tbl <- dplyr::select(out_tbl, -dplyr::any_of(".indent"))
 
@@ -465,7 +470,8 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
     n_levels              = 1L,
     OR_col                = FALSE,
     OR_method             = "dynamic",
-    post_hoc              = FALSE
+    post_hoc              = FALSE,
+    citation              = citation
   )
 
   out_tbl

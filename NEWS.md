@@ -1,3 +1,46 @@
+# TernTables 1.6.3.9009 (development)
+
+## New features
+
+* **`citation` parameter** — `ternD()`, `ternG()`, `word_export()`,
+  `write_methods_doc()`, and `ternB()` now accept `citation = TRUE` (default).
+  When enabled, a full citation line is embedded as a true Word document page
+  footer (bold italic, 8 pt Arial, black) in every exported `.docx` — tables,
+  methods documents, and combined `ternB()` bundles alike. The citation text is
+  generated dynamically: the package version is resolved at runtime with the
+  development suffix stripped (e.g. `1.6.3.9009` → `1.6.3`). Set
+  `citation = FALSE` to suppress. Citation format:
+  *Preston JD, Abadiotakis H, Tang A, Aslam MV, Rust CJ, Chan JL.
+  TernTables: Publication-ready summary tables and statistical testing for
+  clinical research. R package version 1.6.3, 2026. Available at:
+  https://github.com/jdpreston30/TernTables (Web interface:
+  https://tern-tables.com).*
+
+## Internal changes
+
+* Added `.tern_pkg_version()` and `.tern_citation_line()` internal helpers to
+  `utils_format.R`. These centralise version-stripping logic and citation text
+  generation, replacing duplicated inline code in `write_methods_doc()` and
+  `ternB()`.
+* Added `body_set_default_section`, `prop_section`, and `block_list` to
+  `@importFrom officer` for page-footer support.
+* Added `as_chunk` to `@importFrom flextable`; was previously used but not
+  formally imported (triggered R CMD check NOTE).
+
+## Bug fixes / check clean-up
+
+* `\u` Unicode escape sequences in roxygen `@param` comments for `ternD()`,
+  `ternG()`, and `word_export()` replaced with literal Unicode characters.
+  The escapes were valid in R string literals but not in `.Rd` source, causing
+  repeated `unknown macro '\u'` warnings during `R CMD check` and build.
+* `open_doc = FALSE` added to all live-executing code chunks in the vignette
+  to prevent `.docx` files from auto-opening during `devtools::check()` and
+  `rmarkdown::render()`.
+* `feature.R` added to `.Rbuildignore` to suppress the non-standard top-level
+  file NOTE in `R CMD check`.
+
+---
+
 # TernTables 1.6.3.9003 (development)
 
 ## New features
