@@ -34,6 +34,11 @@
   3+-group with post-hoc), always saved to
   `comprehensive_boilerplate_methods.docx` in the working directory.
 
+* **`open_doc` parameter** — `word_export()` and `write_methods_doc()` now accept
+  `open_doc = FALSE` (default). Set to `TRUE` to automatically open the written
+  `.docx` in the system default application immediately after saving. Has no
+  effect on web-app usage; intended for interactive R sessions.
+
 * **`ternB()` per-table methods paragraphs** — `ternB(methods_doc = TRUE)` now
   generates one labeled section per table (using `table_caption` as the
   heading, falling back to "Table 1", "Table 2", etc.) instead of a single
@@ -63,6 +68,9 @@
 * Skewness gate phrasing now context-aware: `ternG()` correctly says "any
   comparison group had absolute skewness exceeding 2.0"; `ternD()` says
   "variables with absolute skewness exceeding 2.0".
+* `p.adjust` was called without a formal import, triggering an R CMD check NOTE
+  (`no visible global function definition for 'p.adjust'`). Added
+  `importFrom("stats", "p.adjust")` to `imports.R`.
 
 ---
 

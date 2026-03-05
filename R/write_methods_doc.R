@@ -41,6 +41,8 @@
 #'   stating that P values were corrected using the Benjamini-Hochberg FDR procedure, and
 #'   updates the significance threshold wording accordingly. Should match the \code{p_adjust}
 #'   argument passed to \code{ternG()}. Default \code{FALSE}.
+#' @param open_doc Logical; if \code{TRUE}, automatically opens the written Word
+#'   document in the system default application after saving. Default \code{FALSE}.
 #' @return Invisibly returns the methods paragraph text as a character string
 #'   (or, when \code{boilerplate = TRUE}, invisibly returns the output file path).
 #'   Useful for programmatic inspection or testing without opening the Word file.
@@ -59,7 +61,7 @@
 #' @export
 write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
                               OR_method = "dynamic", source = "ternG", post_hoc = FALSE,
-                              boilerplate = FALSE, p_adjust = FALSE) {
+                              boilerplate = FALSE, p_adjust = FALSE, open_doc = FALSE) {
 
   # ── Boilerplate mode: comprehensive reference document, all configurations ──
   if (isTRUE(boilerplate)) {
@@ -193,6 +195,7 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
 
     dir.create(dirname(out_path), recursive = TRUE, showWarnings = FALSE)
     print(doc, target = out_path)
+    if (isTRUE(open_doc)) utils::browseURL(normalizePath(out_path))
     cli::cli_alert_success("Comprehensive boilerplate methods document written to: {out_path}")
     return(invisible(out_path))
   }
@@ -381,6 +384,7 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
 
   dir.create(dirname(filename), recursive = TRUE, showWarnings = FALSE)
   print(doc, target = filename)
+  if (isTRUE(open_doc)) utils::browseURL(normalizePath(filename))
   cli::cli_alert_success("Methods document written to: {filename}")
   invisible(methods_body)
 }
