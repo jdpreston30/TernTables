@@ -14,6 +14,11 @@
   include the BH procedure sentence and restates the significance threshold as
   FDR-corrected p < 0.05.
 
+* **`p_adjust` single-test warning** — when `p_adjust = TRUE` and only one
+  variable's *P* value is in the correction pool, a `cli_alert_info` message
+  notifies the user that BH adjustment requires multiple tests to be meaningful
+  and the reported value is unchanged from the raw *P* value.
+
 * **`write_methods_doc()` single-paragraph redesign** — replaced the previous
   three-section boilerplate with a single dynamic paragraph tailored to the
   actual run (descriptive, two-group, or three-or-more-group). Paragraph is

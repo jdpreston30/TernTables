@@ -857,6 +857,13 @@ ternG <- function(data,
     raw_vals <- out_tbl[[".p_raw"]]
     adj_idx  <- which(!is.na(raw_vals))
     if (length(adj_idx) > 0) {
+      if (length(adj_idx) < 2) {
+        cli::cli_alert_info(
+          "p_adjust = TRUE: only {length(adj_idx)} P value found in the correction pool. \\
+           BH adjustment requires multiple tests to be meaningful; \\
+           the reported value is unchanged from the raw P value."
+        )
+      }
       fdr_vals <- p.adjust(raw_vals[adj_idx], method = "BH")
       fdr_fmt  <- vapply(fdr_vals, val_p_format, character(1), digits = p_digits)
       # Template from P column: preserves "-" (sub-rows) and "" (header rows) as-is
