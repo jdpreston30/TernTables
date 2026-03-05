@@ -15,7 +15,7 @@ word_export(
   table_caption = NULL,
   table_footnote = NULL,
   line_break_header = getOption("TernTables.line_break_header", TRUE),
-  open_doc = FALSE
+  open_doc = TRUE
 )
 }
 \arguments{
@@ -54,8 +54,8 @@ the first column header includes a category hierarchy label. Set to \code{FALSE}
 all header line breaks. Can also be set package-wide via
 \code{options(TernTables.line_break_header = FALSE)}.}
 
-\item{open_doc}{Logical; if \code{TRUE}, automatically opens the written Word
-document in the system default application after saving. Default \code{FALSE}.}
+\item{open_doc}{Logical; if \code{TRUE} (default), automatically opens the written Word
+document in the system default application after saving. Set to \code{FALSE} to suppress.}
 }
 \value{
 Invisibly returns the path to the written Word file.

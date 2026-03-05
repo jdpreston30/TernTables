@@ -195,7 +195,7 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
 
     dir.create(dirname(out_path), recursive = TRUE, showWarnings = FALSE)
     print(doc, target = out_path)
-    if (isTRUE(open_doc)) utils::browseURL(normalizePath(out_path))
+    if (isTRUE(open_doc)) .open_docx(out_path)
     cli::cli_alert_success("Comprehensive boilerplate methods document written to: {out_path}")
     return(invisible(out_path))
   }
@@ -384,7 +384,7 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
 
   dir.create(dirname(filename), recursive = TRUE, showWarnings = FALSE)
   print(doc, target = filename)
-  if (isTRUE(open_doc)) utils::browseURL(normalizePath(filename))
+  if (isTRUE(open_doc)) .open_docx(filename)
   cli::cli_alert_success("Methods document written to: {filename}")
   invisible(methods_body)
 }

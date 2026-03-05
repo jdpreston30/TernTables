@@ -64,3 +64,18 @@ export_to_excel <- function(tbl, filename) {
   dir.create(dirname(filename), recursive = TRUE, showWarnings = FALSE)
   writexl::write_xlsx(tbl, path = filename)
 }
+
+# Internal helper: open a file with the OS-level default application,
+# bypassing IDE shell interception (e.g. VS Code's browseURL handler).
+.open_docx <- function(path) {
+  path <- normalizePath(path, mustWork = FALSE)
+  sysname <- Sys.info()[["sysname"]]
+  if (sysname == "Darwin") {
+    system2("open", shQuote(path), wait = FALSE)
+  } else if (sysname == "Windows") {
+    shell.exec(path)
+  } else {
+    system2("xdg-open", shQuote(path), wait = FALSE)
+  }
+  invisible(NULL)
+}

@@ -390,6 +390,6 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
   doc <- doc %>% body_add_flextable(ft)
   dir.create(dirname(filename), recursive = TRUE, showWarnings = FALSE)
   print(doc, target = filename)
-  if (isTRUE(open_doc)) utils::browseURL(normalizePath(filename))
+  if (isTRUE(open_doc)) .open_docx(filename)
   invisible(filename)
 }

@@ -36,7 +36,8 @@ ternG(
   line_break_header = getOption("TernTables.line_break_header", TRUE),
   post_hoc = FALSE,
   p_adjust = FALSE,
-  p_adjust_display = "fdr_only"
+  p_adjust_display = "fdr_only",
+  open_doc = TRUE
 )
 }
 \arguments{
@@ -177,6 +178,10 @@ column with the corrected values, renaming the column to \code{"P value (FDR cor
 \code{"both"} retains the original P values in a column named \code{"P value"} and adds
 FDR-corrected values immediately to its right in a column named
 \code{"P value (FDR corrected)"}. Ignored when \code{p_adjust = FALSE}.}
+
+\item{open_doc}{Logical; if \code{TRUE} (default), automatically opens the written Word document
+in the system default application after saving. Set to \code{FALSE} to suppress.
+Has no effect when \code{output_docx} is \code{NULL}.}
 }
 \value{
 A tibble with one row per variable (multi-row for multi-level factors), showing summary statistics by group,

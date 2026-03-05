@@ -25,7 +25,8 @@ ternD(
   manual_underline = NULL,
   table_caption = NULL,
   table_footnote = NULL,
-  line_break_header = getOption("TernTables.line_break_header", TRUE)
+  line_break_header = getOption("TernTables.line_break_header", TRUE),
+  open_doc = TRUE
 )
 }
 \arguments{
@@ -121,6 +122,10 @@ Default is \code{NULL} (no footnote).}
 \code{\\n} -- the first column header includes a category hierarchy label, and the sample
 size appears on a second line. Set to \code{FALSE} to suppress all header line breaks.
 Can also be set package-wide via \code{options(TernTables.line_break_header = FALSE)}.}
+
+\item{open_doc}{Logical; if \code{TRUE} (default), automatically opens the written Word document
+in the system default application after saving. Set to \code{FALSE} to suppress.
+Has no effect when \code{output_docx} is \code{NULL}.}
 }
 \value{
 A tibble with one row per variable (multi-row for factors), containing:

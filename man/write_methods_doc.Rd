@@ -14,7 +14,7 @@ write_methods_doc(
   post_hoc = FALSE,
   boilerplate = FALSE,
   p_adjust = FALSE,
-  open_doc = FALSE
+  open_doc = TRUE
 )
 }
 \arguments{
@@ -56,8 +56,8 @@ stating that P values were corrected using the Benjamini-Hochberg FDR procedure,
 updates the significance threshold wording accordingly. Should match the \code{p_adjust}
 argument passed to \code{ternG()}. Default \code{FALSE}.}
 
-\item{open_doc}{Logical; if \code{TRUE}, automatically opens the written Word
-document in the system default application after saving. Default \code{FALSE}.}
+\item{open_doc}{Logical; if \code{TRUE} (default), automatically opens the written Word
+document in the system default application after saving. Set to \code{FALSE} to suppress.}
 }
 \value{
 Invisibly returns the methods paragraph text as a character string
