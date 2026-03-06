@@ -594,9 +594,15 @@ ternG <- function(data,
         if (!requireNamespace("rstatix", quietly = TRUE) || !requireNamespace("multcompView", quietly = TRUE)) {
           warning("post_hoc = TRUE requires 'rstatix' and 'multcompView'. Install with: install.packages(c('rstatix', 'multcompView'))")
         } else {
-          ph_formula <- stats::as.formula(paste0("`", var, "` ~ `", group_var, "`"))
+          # Sanitize column names for rstatix (spaced/special names break its formula parser)
+          safe_var      <- make.names(var)
+          safe_group    <- make.names(group_var)
+          g_safe        <- g
+          names(g_safe)[names(g_safe) == var]       <- safe_var
+          names(g_safe)[names(g_safe) == group_var] <- safe_group
+          ph_formula <- stats::as.formula(paste0("`", safe_var, "` ~ `", safe_group, "`"))
           ph_res <- tryCatch(
-            rstatix::dunn_test(g, ph_formula, p.adjust.method = "holm"),
+            rstatix::dunn_test(g_safe, ph_formula, p.adjust.method = "holm"),
             error = function(e) NULL
           )
           if (!is.null(ph_res)) {
@@ -807,9 +813,15 @@ ternG <- function(data,
       if (!requireNamespace("rstatix", quietly = TRUE) || !requireNamespace("multcompView", quietly = TRUE)) {
         warning("post_hoc = TRUE requires 'rstatix' and 'multcompView'. Install with: install.packages(c('rstatix', 'multcompView'))")
       } else {
-        gh_formula <- stats::as.formula(paste0("`", var, "` ~ `", group_var, "`"))
+        # Sanitize column names for rstatix (spaced/special names break its formula parser)
+        safe_var      <- make.names(var)
+        safe_group    <- make.names(group_var)
+        g_safe        <- g
+        names(g_safe)[names(g_safe) == var]       <- safe_var
+        names(g_safe)[names(g_safe) == group_var] <- safe_group
+        gh_formula <- stats::as.formula(paste0("`", safe_var, "` ~ `", safe_group, "`"))
         ph_res <- tryCatch(
-          rstatix::games_howell_test(g, gh_formula),
+          rstatix::games_howell_test(g_safe, gh_formula),
           error = function(e) NULL
         )
         if (!is.null(ph_res)) {
