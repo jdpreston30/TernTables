@@ -111,18 +111,29 @@ ternB <- function(tables, output_docx, page_break = TRUE,
       variable_footnote     = meta$variable_footnote,
       index_style           = if (is.null(meta$index_style)) "symbols" else meta$index_style,
       open_doc              = FALSE,
-      citation              = citation
+      citation              = FALSE   # temp files only; prevents section-property bleed into combined doc
     )
   }
 
   # ── Assemble the combined document ────────────────────────────────────────
   doc <- read_docx()
+  # Strip the default blank paragraph that officer inserts on read_docx() so
+  # the first table starts at the top of page 1 with no leading empty line.
+  doc <- officer::cursor_begin(doc)
+  doc <- officer::body_remove(doc)
 
   for (i in seq_along(temp_files)) {
-    if (i > 1 && page_break) {
+    doc <- doc %>% body_add_docx(src = temp_files[i])
+    if (i < length(temp_files) && page_break) {
+      # Strip the trailing blank paragraph that officer appends after each
+      # body_add_docx import before inserting the page break.  Without this,
+      # a table that fills its page exactly pushes the trailing blank onto the
+      # next page, and the subsequent explicit break creates a second advance,
+      # yielding a spurious blank page between tables.
+      doc <- officer::cursor_end(doc)
+      doc <- officer::body_remove(doc)
       doc <- doc %>% body_add_break()
     }
-    doc <- doc %>% body_add_docx(src = temp_files[i])
   }
 
   dir.create(dirname(output_docx), recursive = TRUE, showWarnings = FALSE)

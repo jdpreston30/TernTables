@@ -25,15 +25,15 @@
 #'   Always printed first, before any variable-specific footnote lines. Default \code{NULL}.
 #' @param variable_footnote Optional named character vector. Names are display variable names as
 #'   they appear in the table (case-insensitive match); values are the footnote definition text
-#'   for that variable. Each entry is assigned the next symbol in the sequence (\code{*},
-#'   \code{†}, \code{‡}, ...) and the symbol is appended to the variable name in column 1.
+#'   for that variable. Each entry is assigned the next symbol in the sequence (*, dagger,
+#'   double-dagger, ...) and the symbol is appended to the variable name in column 1.
 #'   The footnote block lists each as \code{"* Definition text."} below the abbreviations.
 #'   Default \code{NULL}.
 #' @param index_style Character; controls the footnote symbol sequence. \code{"symbols"} (default)
-#'   uses \code{*}, \code{†}, \code{‡}, \code{§}, \code{¶}, \code{∥},
-#'   then doubled forms. \code{"*"} is appended as plain text; all others are true Word superscripts.
-#'   \code{"alphabet"} uses Unicode superscript letters (\code{ᵃ}, \code{ᵇ},
-#'   \code{ᶜ}, ...) which render as raised glyphs without explicit superscript formatting.
+#'   uses *, dagger, double-dagger, section, pilcrow, double-vertical-bar, then doubled forms.
+#'   \code{"*"} is appended as plain text; all others are rendered as true Word superscripts.
+#'   \code{"alphabet"} uses Unicode superscript letters (a, b, c, ...) which render as raised
+#'   glyphs without explicit superscript formatting.
 #' @param line_break_header Logical; if \code{TRUE} (default), column headers are wrapped with
 #'   \code{\\n} -- group names break on spaces, sample size counts move to a second line, and
 #'   the first column header includes a category hierarchy label. Set to \code{FALSE} to suppress

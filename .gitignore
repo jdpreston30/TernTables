@@ -3,6 +3,7 @@
 *.Rhistory
 *.RData
 *.Ruserdata
+feature.R
 
 # devtools/roxygen build artifacts
 /doc/
@@ -30,3 +31,4 @@ TernTables_methods.docx
 
 # Windows
 Thumbs.db
+.Rd2pdf*

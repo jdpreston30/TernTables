@@ -1,3 +1,19 @@
+#* 1: Descriptive Statistics
+#+ 1.1: Prepare data for descriptive table
+T1_data <- raw_named |>
+  select(
+    # Demographics
+    Age, `Gender (Male)`, BMI,
+    # Injury features and vital signs
+    `AAST Grade`, GCS, MAP, SBP, DBP, HR, ISS,
+    # Lab values
+    initial_lactate, `Max Lactate (24 h)`, initial_base_deficit,
+    # Blood products (24 h)
+    MTP, RBC, FFP, Platelets, Cryoprecipitate, `Whole Blood`, TXA,
+    # Clinical course
+    Survival, `Renal Salvage`, `Index Management Success`, `Index Management Strategy`,
+    AKI, highest_Cr, `Ventilator Days`, `ICU LOS`, `Hospital LOS`, `Return to ED (30 d)`
+  )
 #+ 1.2: Create descriptive statistics table
 T1 <- ternD(
   data = T1_data,
@@ -17,6 +33,11 @@ T1 <- ternD(
     "Clinical Course"                 = "Survival"
   )
 )
+#* 2: Stratification by Management Strategy
+#+ 2.1: Can use exact same data for Table 2 and Table 1 data
+T2_data <- T1_data |>
+  select(`Index Management Strategy`, everything())
+#+ 2.2: Create table 2 stratified by index management strategy
 T2 <- ternG(
   data = T2_data,
   group_var = "Index Management Strategy",
@@ -41,6 +62,29 @@ T2 <- ternG(
     "Clinical Course"                 = "Survival"
   )
 )
+#* 3: Stratification by AAST Grade
+#+ 3.1: Clean up and structure data for Table 3
+T3_data <- raw_named |>
+  select(
+    # Grouping variable
+    `AAST Grade`,
+    # Demographics
+    Age, `Gender (Male)`, BMI,
+    # Injury features and vital signs
+    GCS, MAP, SBP, DBP, HR, ISS,
+    # Lab values
+    initial_lactate, `Max Lactate (24 h)`, initial_base_deficit,
+    # Blood products (24 h)
+    MTP, RBC, FFP, Platelets, Cryoprecipitate, `Whole Blood`, TXA,
+    # Clinical course
+    Survival, `Renal Salvage`, `Index Management Success`, `Index Management Strategy`,
+    AKI, highest_Cr, `Ventilator Days`, `ICU LOS`, `Hospital LOS`, `Return to ED (30 d)`
+  ) |>
+  mutate(`AAST Grade` = dplyr::recode(as.character(`AAST Grade`),
+    "3" = "Grade III",
+    "4" = "Grade IV",
+    "5" = "Grade V"
+  ))
 #+ 3.2: Create Table 3 stratified by AAST grade
 T3 <- ternG(
   data = T3_data,
@@ -67,4 +111,10 @@ T3 <- ternG(
     "Index Management Details" = "Index Management Success",
     "Clinical Course" = "Survival"
   )
+)
+ternB(
+  tables           = list(T1, T2, T3),
+  output_docx      = "Tables/T1-T3.docx",
+  methods_doc      = TRUE,
+  methods_filename = "Tables/T1-T3-methods.docx"
 )

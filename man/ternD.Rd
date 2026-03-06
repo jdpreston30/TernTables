@@ -130,7 +130,7 @@ first in the footnote block. Default \code{NULL}.}
 symbol appended to its name in the table, and the footnote block lists each definition
 below the abbreviation line. Default \code{NULL}.}
 
-\item{index_style}{Character; \code{"symbols"} (default) uses *, †, ‡ ...
+\item{index_style}{Character; \code{"symbols"} (default) uses *, dagger, double-dagger ...
 \code{"alphabet"} uses Unicode superscript letters. See \code{word_export} for details.}
 
 \item{line_break_header}{Logical; if \code{TRUE} (default), column headers are wrapped with
