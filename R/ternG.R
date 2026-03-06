@@ -67,6 +67,9 @@
 #'   (e.g. \code{"Age (yr)"}). Both forms are accepted.
 #'   Example: \code{c("Demographics" = "Age_Years", "Clinical" = "bmi")}.
 #'   Default is \code{NULL} (no category headers).
+#' @param plain_header Named character vector, same interface as \code{category_start}. Names are
+#'   the label text; values are the anchor variable to insert before. Inserts a label-only row
+#'   with underline formatting and no bold, merge, or border treatments. Default \code{NULL}.
 #' @param manual_italic_indent Character vector of display variable names (post-cleaning) that should be
 #'   formatted as italicized and indented in Word output -- matching the appearance of factor sub-category
 #'   rows. Has no effect on the returned tibble; only applies when \code{output_docx} is specified or when
@@ -190,6 +193,7 @@ ternG <- function(data,
                   methods_doc = TRUE,
                   methods_filename = "TernTables_methods.docx",
                   category_start = NULL,
+                  plain_header = NULL,
                   manual_italic_indent = NULL,
                   manual_underline = NULL,
                   indent_info_column = FALSE,
@@ -996,7 +1000,7 @@ ternG <- function(data,
   if (length(notes) > 0L)
     effective_footnote <- if (is.null(table_footnote)) notes else c(notes, table_footnote)
 
-  if (!is.null(output_docx)) word_export(out_tbl, output_docx, round_intg = round_intg, font_size = table_font_size, category_start = category_start, manual_italic_indent = manual_italic_indent, manual_underline = manual_underline, table_caption = table_caption, table_footnote = effective_footnote, abbreviation_footnote = abbreviation_footnote, posthoc_footnote = posthoc_note, variable_footnote = variable_footnote, index_style = index_style, line_break_header = line_break_header, open_doc = open_doc, citation = citation)
+  if (!is.null(output_docx)) word_export(out_tbl, output_docx, round_intg = round_intg, font_size = table_font_size, category_start = category_start, plain_header = plain_header, manual_italic_indent = manual_italic_indent, manual_underline = manual_underline, table_caption = table_caption, table_footnote = effective_footnote, abbreviation_footnote = abbreviation_footnote, posthoc_footnote = posthoc_note, variable_footnote = variable_footnote, index_style = index_style, line_break_header = line_break_header, open_doc = open_doc, citation = citation)
 
   if (!indent_info_column) out_tbl <- dplyr::select(out_tbl, -dplyr::any_of(".indent"))
 
@@ -1006,6 +1010,7 @@ ternG <- function(data,
     round_intg            = round_intg,
     font_size             = table_font_size,
     category_start        = category_start,
+    plain_header          = plain_header,
     manual_italic_indent  = manual_italic_indent,
     manual_underline      = manual_underline,
     table_caption         = table_caption,

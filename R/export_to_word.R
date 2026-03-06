@@ -7,6 +7,11 @@
 #' @param category_start Named character vector specifying category headers. Names are header
 #'   label text; values are anchor variable names -- either the original column name or the
 #'   cleaned display name (both forms accepted).
+#' @param plain_header Named character vector, same interface as \code{category_start}. Names are
+#'   the label text to display; values are the anchor variable to insert before. The inserted row
+#'   has text only in column 1 (all other cells blank) and receives \emph{underline} formatting --
+#'   identical to \code{manual_underline} -- but no bold, merge, or border treatments.
+#'   Default is \code{NULL} (none).
 #' @param manual_italic_indent Character vector of display variable names (post-cleaning) to force into
 #'   italicized and indented formatting, matching the appearance of factor sub-category rows (e.g., levels
 #'   of a multi-category variable). Use this for rows that should visually appear as sub-items but are not
@@ -67,7 +72,7 @@
 #' )
 #' }
 #' @export
-word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, category_start = NULL, manual_italic_indent = NULL, manual_underline = NULL, table_caption = NULL, table_footnote = NULL, abbreviation_footnote = NULL, posthoc_footnote = NULL, variable_footnote = NULL, index_style = "symbols", page_break_after = FALSE, line_break_header = getOption("TernTables.line_break_header", TRUE), open_doc = TRUE, citation = TRUE) {
+word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, category_start = NULL, plain_header = NULL, manual_italic_indent = NULL, manual_underline = NULL, table_caption = NULL, table_footnote = NULL, abbreviation_footnote = NULL, posthoc_footnote = NULL, variable_footnote = NULL, index_style = "symbols", page_break_after = FALSE, line_break_header = getOption("TernTables.line_break_header", TRUE), open_doc = TRUE, citation = TRUE) {
   # Keep the table as-is
   modified_tbl <- tbl
 
@@ -124,6 +129,48 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
     }
   }
 
+  # Insert plain header rows (underlined label-only rows, no subheader styling)
+  if (!is.null(plain_header) && length(plain_header) > 0) {
+    for (ph_label in names(plain_header)) {
+      var_name <- plain_header[[ph_label]]
+      trimmed_vars <- sapply(modified_tbl[[1]], function(x) trimws(x, which = "both"))
+      var_matches <- which(trimmed_vars == var_name)
+      if (length(var_matches) == 0)
+        var_matches <- which(tolower(trimmed_vars) == tolower(var_name))
+      if (length(var_matches) == 0) {
+        cleaned_anchor <- .clean_variable_name_for_header(var_name)
+        var_matches <- which(trimmed_vars == cleaned_anchor)
+        if (length(var_matches) == 0)
+          var_matches <- which(tolower(trimmed_vars) == tolower(cleaned_anchor))
+      }
+      if (length(var_matches) > 1) {
+        second_col <- modified_tbl[[2]]
+        header_match <- var_matches[which(second_col[var_matches] == "" | is.na(second_col[var_matches]))]
+        var_idx <- if (length(header_match) > 0) header_match[1] else var_matches[1]
+      } else if (length(var_matches) == 1) {
+        var_idx <- var_matches[1]
+      } else {
+        next
+      }
+      ph_row <- modified_tbl[1, ]
+      ph_row[[1]][1] <- ph_label
+      for (j in 2:ncol(ph_row)) {
+        if (is.numeric(ph_row[[j]])) ph_row[[j]][1] <- NA_real_
+        else ph_row[[j]][1] <- ""
+      }
+      if (".indent" %in% colnames(ph_row)) ph_row[[".indent"]][1] <- 0L
+      if (var_idx == 1) {
+        modified_tbl <- rbind(ph_row, modified_tbl)
+      } else {
+        modified_tbl <- rbind(
+          modified_tbl[1:(var_idx - 1), ],
+          ph_row,
+          modified_tbl[var_idx:nrow(modified_tbl), ]
+        )
+      }
+    }
+  }
+
   # Store .indent column for later use, then remove it from display
   indent_col <- if (".indent" %in% colnames(modified_tbl)) modified_tbl[[".indent"]] else NULL
   if (!is.null(indent_col)) {
@@ -137,6 +184,16 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
       trimmed_vars <- sapply(modified_tbl[[1]], function(x) trimws(x, which = "both"))
       cat_idx <- which(trimmed_vars == category_label)
       if (length(cat_idx) > 0) category_rows <- c(category_rows, cat_idx)
+    }
+  }
+
+  # Track which rows are plain headers for formatting
+  plain_header_rows <- NULL
+  if (!is.null(plain_header) && length(plain_header) > 0) {
+    for (ph_label in names(plain_header)) {
+      trimmed_vars <- sapply(modified_tbl[[1]], function(x) trimws(x, which = "both"))
+      ph_idx <- which(trimmed_vars == ph_label)
+      if (length(ph_idx) > 0) plain_header_rows <- c(plain_header_rows, ph_idx)
     }
   }
 
@@ -329,6 +386,16 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
         border(i = cat_row_idx, border.bottom = fp_border(color = "black", width = 0.5), part = "body") %>%
         align(i = cat_row_idx, align = "left", part = "body") %>%
         padding(i = cat_row_idx, j = 1, padding.left = base_padding, padding.top = 2, padding.bottom = 2, part = "body")
+    }
+  }
+
+  # Format plain header rows: underlined label, same indent as a normal variable row, no other treatments
+  if (!is.null(plain_header_rows) && length(plain_header_rows) > 0) {
+    base_padding <- 3
+    for (ph_row_idx in plain_header_rows) {
+      ft <- ft %>%
+        padding(i = ph_row_idx, j = 1, padding.left = 6 + base_padding, part = "body") %>%
+        style(i = ph_row_idx, j = 1, pr_t = fp_text(underlined = TRUE, font.family = "Arial", font.size = font_size), part = "body")
     }
   }
   

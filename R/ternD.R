@@ -57,6 +57,9 @@
 #'   (e.g. \code{"Age (yr)"}). Both forms are accepted.
 #'   Example: \code{c("Demographics" = "Age_Years", "Clinical Measures" = "bmi")}.
 #'   Default is \code{NULL} (no category headers).
+#' @param plain_header Named character vector, same interface as \code{category_start}. Names are
+#'   the label text; values are the anchor variable to insert before. Inserts a label-only row
+#'   with underline formatting and no bold, merge, or border treatments. Default \code{NULL}.
 #' @param table_font_size Numeric; font size for Word document output tables. Default is 9.
 #' @param manual_italic_indent Character vector of display variable names (post-cleaning) that should be
 #'   formatted as italicized and indented in Word output -- matching the appearance of factor sub-category
@@ -150,6 +153,7 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
                   round_intg = FALSE, smart_rename = TRUE, insert_subheads = TRUE,
                   factor_order = "mixed", methods_doc = TRUE,
                   methods_filename = "TernTables_methods.docx", category_start = NULL,
+                  plain_header = NULL,
                   table_font_size = 9, manual_italic_indent = NULL, manual_underline = NULL,
                   table_caption = NULL, table_footnote = NULL,
                   abbreviation_footnote = NULL, variable_footnote = NULL,
@@ -439,6 +443,7 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
   if (!is.null(output_xlsx)) export_to_excel(out_tbl, output_xlsx)
   if (!is.null(output_docx)) word_export(out_tbl, output_docx, font_size = table_font_size,
                                          category_start        = category_start,
+                                         plain_header          = plain_header,
                                          manual_italic_indent  = manual_italic_indent,
                                          manual_underline      = manual_underline,
                                          table_caption         = table_caption,
@@ -459,6 +464,7 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
     round_intg            = FALSE,
     font_size             = table_font_size,
     category_start        = category_start,
+    plain_header          = plain_header,
     manual_italic_indent  = manual_italic_indent,
     manual_underline      = manual_underline,
     table_caption         = table_caption,
