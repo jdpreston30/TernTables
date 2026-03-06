@@ -9,6 +9,8 @@
 #' @param result A \code{ternP_result} object returned by \code{\link{ternP}}.
 #' @param filename Output file path ending in \code{.docx}.
 #'   Default is \code{"cleaning_summary.docx"} in the current working directory.
+#' @param font_family Character; font family for the Word document. Default \code{"Arial"}.
+#'   Can also be set via \code{options(TernTables.font_family = ...)}.
 #' @return Invisibly returns the path to the written Word file.
 #' @seealso \code{\link{ternP}}, \code{\link{write_methods_doc}}
 #' @examples
@@ -21,7 +23,8 @@
 #' }
 #' @export
 write_cleaning_doc <- function(result,
-                               filename = "cleaning_summary.docx") {
+                               filename = "cleaning_summary.docx",
+                               font_family = getOption("TernTables.font_family", "Arial")) {
 
   if (!inherits(result, "ternP_result")) {
     stop("`result` must be an object returned by `ternP()`.", call. = FALSE)
@@ -32,8 +35,8 @@ write_cleaning_doc <- function(result,
   n_cols  <- ncol(result$clean_data)
 
   # ── officer text / paragraph properties ─────────────────────────────────────
-  head_props   <- fp_text(font.size = 11, font.family = "Arial", bold = TRUE)
-  body_props   <- fp_text(font.size = 11, font.family = "Arial")
+  head_props   <- fp_text(font.size = 11, font.family = font_family, bold = TRUE)
+  body_props   <- fp_text(font.size = 11, font.family = font_family)
   bullet_par   <- fp_par(padding.left = 14)
 
   make_heading <- function(txt) fpar(ftext(txt, prop = head_props))

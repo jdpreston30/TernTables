@@ -68,6 +68,9 @@
 #'   document after saving. Default \code{TRUE}.
 #' @param citation Logical; if \code{TRUE} (default), appends the TernTables
 #'   citation line in the page footer. Default \code{TRUE}.
+#' @param font_family Character; font family name used for all Word output.
+#'   Defaults to \code{getOption("TernTables.font_family", "Arial")}.
+#'   See \code{\link{word_export}} for details.
 #' @return Invisibly returns the path to the written Word file.
 #' @examples
 #' \donttest{
@@ -108,7 +111,8 @@ ternStyle <- function(
     index_style           = "symbols",
     line_break_header     = FALSE,
     open_doc              = TRUE,
-    citation              = TRUE
+    citation              = TRUE,
+    font_family           = getOption("TernTables.font_family", "Arial")
 ) {
   stopifnot(is.data.frame(tbl))
   tbl <- tibble::as_tibble(tbl)
@@ -162,6 +166,7 @@ ternStyle <- function(
     index_style           = index_style,
     line_break_header     = line_break_header,
     open_doc              = open_doc,
-    citation              = citation
+    citation              = citation,
+    font_family           = font_family
   )
 }

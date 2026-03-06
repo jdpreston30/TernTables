@@ -23,6 +23,9 @@
 #' @param citation Logical; if \code{TRUE} (default), appends a citation line at the bottom
 #'   of each table footnote block and methods document: package version, authors, and links
 #'   to the GitHub repository and web interface. Set to \code{FALSE} to suppress.
+#' @param font_family Character; font family for all Word output. Any font name accepted by
+#'   the rendering system is valid. Can also be set via
+#'   \code{options(TernTables.font_family = "Garamond")}. Default \code{"Arial"}.
 #'
 #' @details
 #' \code{ternB()} works by replaying the exact \code{word_export()} call that
@@ -63,7 +66,8 @@
 ternB <- function(tables, output_docx, page_break = TRUE,
                   methods_doc = FALSE,
                   methods_filename = "TernTables_methods.docx",
-                  open_doc = TRUE, citation = TRUE) {
+                  open_doc = TRUE, citation = TRUE,
+                  font_family = getOption("TernTables.font_family", "Arial")) {
 
   # ── Input validation ──────────────────────────────────────────────────────
   if (!is.list(tables) || inherits(tables, "data.frame")) {
@@ -116,7 +120,8 @@ ternB <- function(tables, output_docx, page_break = TRUE,
         line_break_header     = if (is.null(meta$line_break_header)) getOption("TernTables.line_break_header", TRUE) else meta$line_break_header,
         page_break_after      = (i < length(temp_files)) && isTRUE(page_break),
         open_doc              = FALSE,
-        citation              = FALSE   # temp files only; prevents section-property bleed into combined doc
+        citation              = FALSE,   # temp files only; prevents section-property bleed into combined doc
+        font_family           = font_family
       ),
       error = function(e) {
         stop(
@@ -198,9 +203,9 @@ ternB <- function(tables, output_docx, page_break = TRUE,
     }
 
     # Build the Word document
-    hp <- fp_text(font.size = 11, font.family = "Arial", bold = TRUE)
-    bp <- fp_text(font.size = 11, font.family = "Arial")
-    fp <- fp_text(font.size = 9,  font.family = "Arial", italic = TRUE,
+    hp <- fp_text(font.size = 11, font.family = font_family, bold = TRUE)
+    bp <- fp_text(font.size = 11, font.family = font_family)
+    fp <- fp_text(font.size = 9,  font.family = font_family, italic = TRUE,
                   color = "#555555")
 
     pkg_ver <- .tern_pkg_version()
@@ -225,7 +230,7 @@ ternB <- function(tables, output_docx, page_break = TRUE,
       body_add_fpar(fpar(ftext(footer_txt, prop = fp)))
 
     if (isTRUE(citation)) {
-      cit_props <- fp_text(font.family = "Arial", font.size = 7,
+      cit_props <- fp_text(font.family = font_family, font.size = 7,
                            bold = TRUE, italic = TRUE, color = "black")
       doc <- body_set_default_section(
         doc,

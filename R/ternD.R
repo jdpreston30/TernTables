@@ -94,6 +94,11 @@
 #' @param citation Logical; if \code{TRUE} (default), appends a citation line at the bottom
 #'   of the table footnote block and at the end of the methods document: package version, authors,
 #'   and links to the GitHub repository and web interface. Set to \code{FALSE} to suppress.
+#' @param font_family Character; font family name used for all Word output (table,
+#'   captions, footnotes, methods document). Any font installed on the system that
+#'   renders the document may be used. Popular options include \code{"Arial"},
+#'   \code{"Helvetica"}, \code{"Times New Roman"}, \code{"Garamond"}, and
+#'   \code{"Calibri"}. Defaults to \code{getOption("TernTables.font_family", "Arial")}.
 #'
 #' @details
 #' The function always returns a tibble with a single \code{Total (N = n)} column format, regardless of the
@@ -159,7 +164,8 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
                   abbreviation_footnote = NULL, variable_footnote = NULL,
                   index_style = "symbols",
                   line_break_header = getOption("TernTables.line_break_header", TRUE),
-                  open_doc = TRUE, citation = TRUE) {
+                  open_doc = TRUE, citation = TRUE,
+                  font_family = getOption("TernTables.font_family", "Arial")) {
   stopifnot(is.data.frame(data))
   
   # Store total N for column header
@@ -453,8 +459,9 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
                                          index_style           = index_style,
                                          line_break_header     = line_break_header,
                                          open_doc              = open_doc,
-                                         citation              = citation)
-  if (methods_doc) write_methods_doc(out_tbl, methods_filename, source = "ternD", open_doc = open_doc, citation = citation)
+                                         citation              = citation,
+                                         font_family           = font_family)
+  if (methods_doc) write_methods_doc(out_tbl, methods_filename, source = "ternD", open_doc = open_doc, citation = citation, font_family = font_family)
 
   out_tbl <- dplyr::select(out_tbl, -dplyr::any_of(".indent"))
 
@@ -478,7 +485,8 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
     OR_col                = FALSE,
     OR_method             = "dynamic",
     post_hoc              = FALSE,
-    citation              = citation
+    citation              = citation,
+    font_family           = font_family
   )
 
   out_tbl

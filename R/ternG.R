@@ -129,6 +129,11 @@
 #' @param citation Logical; if \code{TRUE} (default), appends a citation line at the bottom
 #'   of the table footnote block and at the end of the methods document: package version, authors,
 #'   and links to the GitHub repository and web interface. Set to \code{FALSE} to suppress.
+#' @param font_family Character; font family name used for all Word output (table,
+#'   captions, footnotes, methods document). Any font installed on the system that
+#'   renders the document may be used. Popular options include \code{"Arial"},
+#'   \code{"Helvetica"}, \code{"Times New Roman"}, \code{"Garamond"}, and
+#'   \code{"Calibri"}. Defaults to \code{getOption("TernTables.font_family", "Arial")}.
 #'
 #' @return A tibble with one row per variable (multi-row for multi-level factors), showing summary statistics by group,
 #' P values, test type, and optionally odds ratios and total summary column.
@@ -205,7 +210,8 @@ ternG <- function(data,
                   post_hoc = FALSE,
                   p_adjust = FALSE,
                   p_adjust_display = "fdr_only",
-                  open_doc = TRUE, citation = TRUE) {
+                  open_doc = TRUE, citation = TRUE,
+                  font_family = getOption("TernTables.font_family", "Arial")) {
 
   # Helper function for proper rounding (0.5 always rounds up)
   round_up_half <- function(x, digits = 0) {
@@ -911,7 +917,7 @@ ternG <- function(data,
   
   # Write methods document if requested
   if (methods_doc) {
-    write_methods_doc(out_tbl, methods_filename, n_levels = n_levels, OR_col = OR_col, OR_method = OR_method, source = "ternG", post_hoc = post_hoc, p_adjust = p_adjust, open_doc = open_doc, citation = citation)
+    write_methods_doc(out_tbl, methods_filename, n_levels = n_levels, OR_col = OR_col, OR_method = OR_method, source = "ternG", post_hoc = post_hoc, p_adjust = p_adjust, open_doc = open_doc, citation = citation, font_family = font_family)
   }
 
   # -- Report normality test results -----------------------------------------
@@ -1000,7 +1006,7 @@ ternG <- function(data,
   if (length(notes) > 0L)
     effective_footnote <- if (is.null(table_footnote)) notes else c(notes, table_footnote)
 
-  if (!is.null(output_docx)) word_export(out_tbl, output_docx, round_intg = round_intg, font_size = table_font_size, category_start = category_start, plain_header = plain_header, manual_italic_indent = manual_italic_indent, manual_underline = manual_underline, table_caption = table_caption, table_footnote = effective_footnote, abbreviation_footnote = abbreviation_footnote, posthoc_footnote = posthoc_note, variable_footnote = variable_footnote, index_style = index_style, line_break_header = line_break_header, open_doc = open_doc, citation = citation)
+  if (!is.null(output_docx)) word_export(out_tbl, output_docx, round_intg = round_intg, font_size = table_font_size, category_start = category_start, plain_header = plain_header, manual_italic_indent = manual_italic_indent, manual_underline = manual_underline, table_caption = table_caption, table_footnote = effective_footnote, abbreviation_footnote = abbreviation_footnote, posthoc_footnote = posthoc_note, variable_footnote = variable_footnote, index_style = index_style, line_break_header = line_break_header, open_doc = open_doc, citation = citation, font_family = font_family)
 
   if (!indent_info_column) out_tbl <- dplyr::select(out_tbl, -dplyr::any_of(".indent"))
 
@@ -1027,7 +1033,8 @@ ternG <- function(data,
     post_hoc              = post_hoc,
     p_adjust              = p_adjust,
     p_adjust_display      = p_adjust_display,
-    citation              = citation
+    citation              = citation,
+    font_family           = font_family
   )
 
   return(out_tbl)

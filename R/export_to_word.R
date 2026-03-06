@@ -70,6 +70,11 @@
 #' @param citation Logical; if \code{TRUE} (default), appends a citation line at the bottom
 #'   of the table footnote block: package version, authors, and links to the GitHub repository
 #'   and web interface. Set to \code{FALSE} to suppress.
+#' @param font_family Character; font family used for the entire Word table and its caption,
+#'   footnote, and citation. Any font name accepted by the rendering system is valid (Word
+#'   will fall back to its default if the font is not installed). Can also be set package-wide
+#'   via \code{options(TernTables.font_family = "Garamond")}.
+#'   Default is \code{"Arial"}.
 #' @return Invisibly returns the path to the written Word file.
 #' @examples
 #' \donttest{
@@ -86,7 +91,7 @@
 #' )
 #' }
 #' @export
-word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, category_start = NULL, plain_header = NULL, subheader_rows = NULL, bold_rows = NULL, italic_rows = NULL, bold_cols = NULL, italic_cols = NULL, manual_italic_indent = NULL, manual_underline = NULL, table_caption = NULL, table_footnote = NULL, abbreviation_footnote = NULL, posthoc_footnote = NULL, variable_footnote = NULL, index_style = "symbols", page_break_after = FALSE, line_break_header = getOption("TernTables.line_break_header", TRUE), open_doc = TRUE, citation = TRUE) {
+word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, category_start = NULL, plain_header = NULL, subheader_rows = NULL, bold_rows = NULL, italic_rows = NULL, bold_cols = NULL, italic_cols = NULL, manual_italic_indent = NULL, manual_underline = NULL, table_caption = NULL, table_footnote = NULL, abbreviation_footnote = NULL, posthoc_footnote = NULL, variable_footnote = NULL, index_style = "symbols", page_break_after = FALSE, line_break_header = getOption("TernTables.line_break_header", TRUE), open_doc = TRUE, citation = TRUE, font_family = getOption("TernTables.font_family", "Arial")) {
   # Keep the table as-is
   modified_tbl <- tbl
 
@@ -319,7 +324,7 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
   
   # Create flextable
   ft <- flextable(modified_tbl) %>%
-    font(fontname = "Arial", part = "all") %>%
+    font(fontname = font_family, part = "all") %>%
     fontsize(size = font_size, part = "all") %>%
     bg(bg = "#cdcdcd", part = "header") %>%
     # Set body alignment: Variable column left, all others center
@@ -372,7 +377,7 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
       # Manually specified to be underlined (like multi-category header)
       ft <- ft %>% 
         padding(i = i, j = 1, padding.left = 6 + base_padding, part = "body") %>%
-        style(i = i, j = 1, pr_t = fp_text(underlined = TRUE, font.family = "Arial", font.size = font_size), part = "body")
+        style(i = i, j = 1, pr_t = fp_text(underlined = TRUE, font.family = font_family, font.size = font_size), part = "body")
     } else if (indent_level == 0) {
       # Category headers from tibble - just base padding
       ft <- ft %>% padding(i = i, j = 1, padding.left = base_padding, part = "body")
@@ -383,7 +388,7 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
         # Multi-category header (underlined)
         ft <- ft %>% 
           padding(i = i, j = 1, padding.left = 6 + base_padding, part = "body") %>%
-          style(i = i, j = 1, pr_t = fp_text(underlined = TRUE, font.family = "Arial", font.size = font_size), part = "body")
+          style(i = i, j = 1, pr_t = fp_text(underlined = TRUE, font.family = font_family, font.size = font_size), part = "body")
       } else {
         # Regular variable
         ft <- ft %>% padding(i = i, j = 1, padding.left = 6 + base_padding, part = "body")
@@ -419,7 +424,7 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
     for (ph_row_idx in plain_header_rows) {
       ft <- ft %>%
         padding(i = ph_row_idx, j = 1, padding.left = 6 + base_padding, part = "body") %>%
-        style(i = ph_row_idx, j = 1, pr_t = fp_text(underlined = TRUE, font.family = "Arial", font.size = font_size), part = "body")
+        style(i = ph_row_idx, j = 1, pr_t = fp_text(underlined = TRUE, font.family = font_family, font.size = font_size), part = "body")
     }
   }
   
@@ -490,9 +495,9 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
     sym        <- info$symbol
     cell_text  <- modified_tbl[[1]][row_idx]
     main_text  <- substr(cell_text, 1, nchar(cell_text) - nchar(sym))
-    main_props  <- fp_text(font.family = "Arial", font.size = font_size,
+    main_props  <- fp_text(font.family = font_family, font.size = font_size,
                            italic = isTRUE(info$is_italic))
-    super_props <- fp_text(font.family = "Arial",
+    super_props <- fp_text(font.family = font_family,
                            font.size = max(4L, as.integer(font_size) - 2L),
                            vertical.align = "superscript")
     ft <- compose(ft, i = row_idx, j = 1,
@@ -530,7 +535,7 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
       footnote_text <- paste(footnote_lines, collapse = "\n")
       ft <- ft %>%
         add_footer_lines(values = footnote_text) %>%
-        font(fontname = "Arial", part = "footer") %>%
+        font(fontname = font_family, part = "footer") %>%
         fontsize(size = 6, part = "footer") %>%
         italic(part = "footer") %>%
         align(align = "left", part = "footer") %>%
@@ -552,8 +557,8 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
     # Split into sentences on period + whitespace boundaries
     sentences <- strsplit(cap, "(?<=\\.)\\s+", perl = TRUE)[[1]]
 
-    bold_prop  <- fp_text(font.size = 11, font.family = "Arial", bold = TRUE,  italic = FALSE)
-    plain_prop <- fp_text(font.size = 11, font.family = "Arial", bold = FALSE, italic = FALSE)
+    bold_prop  <- fp_text(font.size = 11, font.family = font_family, bold = TRUE,  italic = FALSE)
+    plain_prop <- fp_text(font.size = 11, font.family = font_family, bold = FALSE, italic = FALSE)
 
     # Rule: if caption starts with "Table <n>." and has at least two sentences,
     # sentences 1-2 are bold and the remainder is plain weight.
@@ -592,7 +597,7 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
 
   # ── Word document page footer (citation line) ─────────────────────────────
   if (isTRUE(citation)) {
-    cit_props <- fp_text(font.family = "Arial", font.size = 8,
+    cit_props <- fp_text(font.family = font_family, font.size = 8,
                          bold = TRUE, italic = TRUE, color = "black")
     doc <- body_set_default_section(
       doc,

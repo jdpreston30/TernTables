@@ -46,6 +46,8 @@
 #' @param citation Logical; if \code{TRUE} (default), appends a citation line after the
 #'   document footer: package version, authors, and links to the GitHub repository and web
 #'   interface. Set to \code{FALSE} to suppress.
+#' @param font_family Character; font family for the Word document. Default \code{"Arial"}.
+#'   Can also be set via \code{options(TernTables.font_family = ...)}.
 #' @return Invisibly returns the methods paragraph text as a character string
 #'   (or, when \code{boilerplate = TRUE}, invisibly returns the output file path).
 #'   Useful for programmatic inspection or testing without opening the Word file.
@@ -65,17 +67,18 @@
 #' @export
 write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
                               OR_method = "dynamic", source = "ternG", post_hoc = FALSE,
-                              boilerplate = FALSE, p_adjust = FALSE, open_doc = TRUE, citation = TRUE) {
+                              boilerplate = FALSE, p_adjust = FALSE, open_doc = TRUE, citation = TRUE,
+                              font_family = getOption("TernTables.font_family", "Arial")) {
 
   # ── Boilerplate mode: comprehensive reference document, all configurations ──
   if (isTRUE(boilerplate)) {
 
     pkg_ver <- .tern_pkg_version()
 
-    hp  <- fp_text(font.size = 11, font.family = "Arial", bold = TRUE)
-    bp  <- fp_text(font.size = 11, font.family = "Arial")
-    fp  <- fp_text(font.size = 9,  font.family = "Arial", italic = TRUE, color = "#555555")
-    sp  <- fp_text(font.size = 10, font.family = "Arial", italic = TRUE, color = "#333333")
+    hp  <- fp_text(font.size = 11, font.family = font_family, bold = TRUE)
+    bp  <- fp_text(font.size = 11, font.family = font_family)
+    fp  <- fp_text(font.size = 9,  font.family = font_family, italic = TRUE, color = "#555555")
+    sp  <- fp_text(font.size = 10, font.family = font_family, italic = TRUE, color = "#333333")
 
     hd <- function(txt) fpar(ftext(txt, prop = hp))
     bd <- function(txt) fpar(ftext(txt, prop = bp))
@@ -197,7 +200,7 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
       body_add_fpar(fpar(ftext(footer_bp, prop = fp)))
 
     if (isTRUE(citation)) {
-      cit_props <- fp_text(font.family = "Arial", font.size = 7,
+      cit_props <- fp_text(font.family = font_family, font.size = 7,
                            bold = TRUE, italic = TRUE, color = "black")
       doc <- body_set_default_section(
         doc,
@@ -375,9 +378,9 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
   }
 
   # ── Build Word document ───────────────────────────────────────────────────────
-  head_props   <- fp_text(font.size = 11, font.family = "Arial", bold = TRUE)
-  body_props   <- fp_text(font.size = 11, font.family = "Arial")
-  footer_props <- fp_text(font.size = 9,  font.family = "Arial", italic = TRUE,
+  head_props   <- fp_text(font.size = 11, font.family = font_family, bold = TRUE)
+  body_props   <- fp_text(font.size = 11, font.family = font_family)
+  footer_props <- fp_text(font.size = 9,  font.family = font_family, italic = TRUE,
                           color = "#555555")
 
   # Read version from installed package and strip any development tag (.9000 etc.)
@@ -398,7 +401,7 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
     body_add_fpar(fpar(ftext(footer_txt, prop = footer_props)))
 
   if (isTRUE(citation)) {
-    cit_props <- fp_text(font.family = "Arial", font.size = 7,
+    cit_props <- fp_text(font.family = font_family, font.size = 7,
                          bold = TRUE, italic = TRUE, color = "black")
     doc <- body_set_default_section(
       doc,
