@@ -591,10 +591,7 @@ ternG <- function(data,
       # Only runs when omnibus (Kruskal-Wallis) is significant at alpha = 0.05
       if (post_hoc && n_levels >= 3L && is.null(test_result$error) &&
           !is.na(test_result$p_value) && test_result$p_value < 0.05) {
-        if (!requireNamespace("rstatix", quietly = TRUE) || !requireNamespace("multcompView", quietly = TRUE)) {
-          warning("post_hoc = TRUE requires 'rstatix' and 'multcompView'. Install with: install.packages(c('rstatix', 'multcompView'))")
-        } else {
-          # Sanitize column names for rstatix (spaced/special names break its formula parser)
+        # Sanitize column names for rstatix (spaced/special names break its formula parser)
           safe_var      <- make.names(var)
           safe_group    <- make.names(group_var)
           g_safe        <- g
@@ -623,7 +620,6 @@ ternG <- function(data,
             }
             posthoc_ran_display <<- c(posthoc_ran_display, result$Variable[1])
           }
-        }
       }
       if (grepl("simulated", test_result$test_name, fixed = FALSE))
         fisher_sim_display <<- c(fisher_sim_display, result$Variable[1])
@@ -810,9 +806,6 @@ ternG <- function(data,
     # Only runs when omnibus (Welch ANOVA) is significant at alpha = 0.05
     if (post_hoc && n_levels >= 3L && is.null(test_result$error) &&
         !is.na(test_result$p_value) && test_result$p_value < 0.05) {
-      if (!requireNamespace("rstatix", quietly = TRUE) || !requireNamespace("multcompView", quietly = TRUE)) {
-        warning("post_hoc = TRUE requires 'rstatix' and 'multcompView'. Install with: install.packages(c('rstatix', 'multcompView'))")
-      } else {
         # Sanitize column names for rstatix (spaced/special names break its formula parser)
         safe_var      <- make.names(var)
         safe_group    <- make.names(group_var)
@@ -840,7 +833,6 @@ ternG <- function(data,
           }
           posthoc_ran_display <<- c(posthoc_ran_display, result$Variable[1])
         }
-      }
     }
     return(result)
   }
