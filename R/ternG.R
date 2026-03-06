@@ -959,6 +959,9 @@ ternG <- function(data,
   # Apply smart variable name cleaning if requested
   if (smart_rename) {
     for (i in seq_len(nrow(out_tbl))) {
+      # Factor level sub-rows (.indent == 6) are user data — never run through
+      # name-cleaning rules or their casing/content will be corrupted.
+      if (out_tbl$.indent[i] == 6) next
       current_var <- out_tbl$Variable[i]
       if (grepl("^\\s+", current_var)) {
         padding <- stringr::str_extract(current_var, "^\\s+")
