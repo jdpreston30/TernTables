@@ -511,30 +511,34 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
     )
   }
 
-  # ── Assemble footnote: abbreviations → variable definitions → legacy table_footnote ─
+  # ── Assemble footnote: abbreviations → posthoc CLD → variable definitions → table_footnote ─
+  # Each group is a character vector of tightly-spaced lines; groups are then
+  # separated by a blank line (\n\n) so the sections are visually distinct.
   {
-    footnote_lines <- character(0)
+    footnote_sections <- list()
     if (!is.null(abbreviation_footnote) && length(abbreviation_footnote) > 0) {
       abbr_text <- trimws(paste(abbreviation_footnote, collapse = " "))
-      if (nchar(abbr_text) > 0) footnote_lines <- c(footnote_lines, abbr_text)
+      if (nchar(abbr_text) > 0) footnote_sections[[length(footnote_sections) + 1L]] <- abbr_text
     }
     if (!is.null(posthoc_footnote) && nchar(trimws(posthoc_footnote)) > 0) {
-      footnote_lines <- c(footnote_lines, trimws(posthoc_footnote))
+      footnote_sections[[length(footnote_sections) + 1L]] <- trimws(posthoc_footnote)
     }
     if (!is.null(variable_footnote) && length(variable_footnote) > 0) {
       vf_syms <- .footnote_symbol_seq(length(variable_footnote), index_style)
+      vf_lines <- character(length(variable_footnote))
       for (k in seq_along(variable_footnote)) {
-        footnote_lines <- c(footnote_lines,
-                            paste0(vf_syms[k], " ", variable_footnote[[k]]))
+        vf_lines[k] <- paste0(vf_syms[k], " ", variable_footnote[[k]])
       }
+      footnote_sections[[length(footnote_sections) + 1L]] <- paste(vf_lines, collapse = "\n")
     }
     if (!is.null(table_footnote) && length(table_footnote) > 0) {
-      footnote_lines <- c(footnote_lines,
-                          table_footnote[nchar(trimws(table_footnote)) > 0])
+      tf_clean <- table_footnote[nchar(trimws(table_footnote)) > 0]
+      if (length(tf_clean) > 0)
+        footnote_sections[[length(footnote_sections) + 1L]] <- paste(tf_clean, collapse = "\n")
     }
-    if (length(footnote_lines) > 0) {
+    if (length(footnote_sections) > 0) {
       dbl_border    <- fp_border(color = "black", width = 0.5, style = "double")
-      footnote_text <- paste(footnote_lines, collapse = "\n")
+      footnote_text <- paste(footnote_sections, collapse = "\n\n")
       ft <- ft %>%
         add_footer_lines(values = footnote_text) %>%
         font(fontname = font_family, part = "footer") %>%
