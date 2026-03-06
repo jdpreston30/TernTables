@@ -210,6 +210,13 @@
 
   if (grepl("[A-Z]$", term) && nchar(term) <= 5) return(term)
 
+  # Preserve parenthetical unit tokens with intentional mixed case (e.g. "(Gy)",
+  # "(mL)", "(mmHg)", "(kPa)") — the inner casing is a convention, not noise.
+  if (grepl("^\\(.*\\)$", term)) {
+    inner <- gsub("^\\(|\\)$", "", term)
+    if (inner != tolower(inner)) return(term)
+  }
+
   upper_terms <- c(
     "IT", "CPB", "NICM", "ICM", "IABP", "VA", "LVEF", "CVP",
     "MCS", "ICU", "LOS", "CRRT", "RRT", "UNOS", "PVR", "GFR",
