@@ -97,21 +97,32 @@ ternB <- function(tables, output_docx, page_break = TRUE,
 
     temp_files[i] <- tempfile(fileext = ".docx")
 
-    word_export(
-      tbl                   = meta$tbl,
-      filename              = temp_files[i],
-      round_intg            = meta$round_intg,
-      font_size             = meta$font_size,
-      category_start        = meta$category_start,
-      manual_italic_indent  = meta$manual_italic_indent,
-      manual_underline      = meta$manual_underline,
-      table_caption         = meta$table_caption,
-      table_footnote        = meta$table_footnote,
-      abbreviation_footnote = meta$abbreviation_footnote,
-      variable_footnote     = meta$variable_footnote,
-      index_style           = if (is.null(meta$index_style)) "symbols" else meta$index_style,
-      open_doc              = FALSE,
-      citation              = FALSE   # temp files only; prevents section-property bleed into combined doc
+    tryCatch(
+      word_export(
+        tbl                   = meta$tbl,
+        filename              = temp_files[i],
+        round_intg            = meta$round_intg,
+        font_size             = meta$font_size,
+        category_start        = meta$category_start,
+        manual_italic_indent  = meta$manual_italic_indent,
+        manual_underline      = meta$manual_underline,
+        table_caption         = meta$table_caption,
+        table_footnote        = meta$table_footnote,
+        abbreviation_footnote = meta$abbreviation_footnote,
+        variable_footnote     = meta$variable_footnote,
+        index_style           = if (is.null(meta$index_style)) "symbols" else meta$index_style,
+        line_break_header     = if (is.null(meta$line_break_header)) getOption("TernTables.line_break_header", TRUE) else meta$line_break_header,
+        open_doc              = FALSE,
+        citation              = FALSE   # temp files only; prevents section-property bleed into combined doc
+      ),
+      error = function(e) {
+        stop(
+          "ternB(): failed to render table ", i,
+          if (!is.null(meta$table_caption)) paste0(" (\"", substr(meta$table_caption, 1, 60), "\")") else "",
+          "\n", conditionMessage(e),
+          call. = FALSE
+        )
+      }
     )
   }
 
@@ -120,7 +131,7 @@ ternB <- function(tables, output_docx, page_break = TRUE,
   # Strip the default blank paragraph that officer inserts on read_docx() so
   # the first table starts at the top of page 1 with no leading empty line.
   doc <- officer::cursor_begin(doc)
-  doc <- officer::body_remove(doc)
+  suppressWarnings(doc <- officer::body_remove(doc))
 
   for (i in seq_along(temp_files)) {
     doc <- doc %>% body_add_docx(src = temp_files[i])
@@ -131,7 +142,7 @@ ternB <- function(tables, output_docx, page_break = TRUE,
       # next page, and the subsequent explicit break creates a second advance,
       # yielding a spurious blank page between tables.
       doc <- officer::cursor_end(doc)
-      doc <- officer::body_remove(doc)
+      suppressWarnings(doc <- officer::body_remove(doc))
       doc <- doc %>% body_add_break()
     }
   }
