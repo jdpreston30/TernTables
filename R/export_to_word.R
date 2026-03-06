@@ -495,8 +495,10 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
     sym        <- info$symbol
     cell_text  <- modified_tbl[[1]][row_idx]
     main_text  <- substr(cell_text, 1, nchar(cell_text) - nchar(sym))
+    is_underlined <- !is.null(plain_header_rows) && row_idx %in% plain_header_rows
     main_props  <- fp_text(font.family = font_family, font.size = font_size,
-                           italic = isTRUE(info$is_italic))
+                           italic = isTRUE(info$is_italic),
+                           underlined = is_underlined)
     super_props <- fp_text(font.family = font_family,
                            font.size = max(4L, as.integer(font_size) - 2L),
                            vertical.align = "superscript")
