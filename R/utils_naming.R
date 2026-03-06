@@ -201,6 +201,11 @@
 
   if (grepl("^[0-9.]+$", term)) return(term)
 
+  # Preserve single-letter lowercase unit abbreviations (e.g. "d)" for days,
+  # "h)" for hours) — strip surrounding punctuation to test the bare letter.
+  bare <- gsub("[^a-zA-Z]", "", term)
+  if (nchar(bare) == 1 && bare == tolower(bare)) return(term)
+
   if (nchar(term) >= 2 && term == toupper(term) && grepl("^[A-Z]+[0-9]*$", term)) return(term)
 
   if (grepl("[A-Z]$", term) && nchar(term) <= 5) return(term)
