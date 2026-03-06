@@ -136,13 +136,6 @@ ternB <- function(tables, output_docx, page_break = TRUE,
   for (i in seq_along(temp_files)) {
     doc <- doc %>% body_add_docx(src = temp_files[i])
     if (i < length(temp_files) && page_break) {
-      # Strip the trailing blank paragraph that officer appends after each
-      # body_add_docx import before inserting the page break.  Without this,
-      # a table that fills its page exactly pushes the trailing blank onto the
-      # next page, and the subsequent explicit break creates a second advance,
-      # yielding a spurious blank page between tables.
-      doc <- officer::cursor_end(doc)
-      suppressWarnings(doc <- officer::body_remove(doc))
       doc <- doc %>% body_add_break()
     }
   }
