@@ -1,0 +1,6 @@
+{
+  "chat.tools.terminal.autoApprove": {
+    "pdflatex": true,
+    "libreoffice": true
+  }
+}

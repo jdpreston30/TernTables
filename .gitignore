@@ -12,6 +12,7 @@ feature.R
 
 # Misc
 hx.txt
+Beamer
 # Test output
 /tests/testthat/Rplots.pdf
 

@@ -18,6 +18,7 @@
 ^CRAN-SUBMISSION$
 ^CRAN-checklist\.R$
 ^development$
+^Beamer$
 ^test\.csv$
 ^feature\.R$
 ^[^/]*\.csv$
