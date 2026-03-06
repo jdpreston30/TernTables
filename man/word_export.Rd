@@ -15,6 +15,7 @@ word_export(
   table_caption = NULL,
   table_footnote = NULL,
   abbreviation_footnote = NULL,
+  posthoc_footnote = NULL,
   variable_footnote = NULL,
   index_style = "symbols",
   page_break_after = FALSE,
@@ -56,6 +57,10 @@ footnote row. Default is \code{NULL} (no footnote).}
 \item{abbreviation_footnote}{Optional character string (or character vector, which will be
 collapsed with spaces) listing abbreviations to display at the top of the footnote block.
 Always printed first, before any variable-specific footnote lines. Default \code{NULL}.}
+
+\item{posthoc_footnote}{Optional character string describing post-hoc CLD superscript
+conventions. When supplied by \code{ternG()}, it is inserted after the abbreviations
+footnote and before the variable symbol footnotes. Default \code{NULL}.}
 
 \item{variable_footnote}{Optional named character vector. Names are display variable names as
 they appear in the table (case-insensitive match); values are the footnote definition text

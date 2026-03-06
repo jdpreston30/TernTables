@@ -971,16 +971,19 @@ ternG <- function(data,
 
   # Export to Word AFTER smart_rename so docx gets clean names
   # Auto-prepend post-hoc footnote only when at least one variable actually ran post-hoc
-  effective_footnote <- table_footnote
-  notes <- character(0)
+  # CLD note: positioned after abbreviations and before symbols in the footnote block
+  posthoc_note <- NULL
   if (length(posthoc_ran_display) > 0L) {
     vars_listed <- paste(unique(posthoc_ran_display), collapse = ", ")
-    notes <- c(notes, paste0(
+    posthoc_note <- paste0(
       "Superscript letters indicate pairwise post-hoc comparisons (",
       vars_listed,
       "; \u03b1\u00a0=\u00a00.05); groups sharing a letter are not significantly different."
-    ))
+    )
   }
+  # Other auto-notes (Fisher simulation, etc.) go into table_footnote slot
+  effective_footnote <- table_footnote
+  notes <- character(0)
   if (length(fisher_sim_display) > 0L) {
     sim_vars <- paste(unique(fisher_sim_display), collapse = ", ")
     notes <- c(notes, paste0(
@@ -993,7 +996,7 @@ ternG <- function(data,
   if (length(notes) > 0L)
     effective_footnote <- if (is.null(table_footnote)) notes else c(notes, table_footnote)
 
-  if (!is.null(output_docx)) word_export(out_tbl, output_docx, round_intg = round_intg, font_size = table_font_size, category_start = category_start, manual_italic_indent = manual_italic_indent, manual_underline = manual_underline, table_caption = table_caption, table_footnote = effective_footnote, abbreviation_footnote = abbreviation_footnote, variable_footnote = variable_footnote, index_style = index_style, line_break_header = line_break_header, open_doc = open_doc, citation = citation)
+  if (!is.null(output_docx)) word_export(out_tbl, output_docx, round_intg = round_intg, font_size = table_font_size, category_start = category_start, manual_italic_indent = manual_italic_indent, manual_underline = manual_underline, table_caption = table_caption, table_footnote = effective_footnote, abbreviation_footnote = abbreviation_footnote, posthoc_footnote = posthoc_note, variable_footnote = variable_footnote, index_style = index_style, line_break_header = line_break_header, open_doc = open_doc, citation = citation)
 
   if (!indent_info_column) out_tbl <- dplyr::select(out_tbl, -dplyr::any_of(".indent"))
 
@@ -1008,6 +1011,7 @@ ternG <- function(data,
     table_caption         = table_caption,
     table_footnote        = effective_footnote,
     abbreviation_footnote = abbreviation_footnote,
+    posthoc_footnote      = posthoc_note,
     variable_footnote     = variable_footnote,
     index_style           = index_style,
     line_break_header     = line_break_header,

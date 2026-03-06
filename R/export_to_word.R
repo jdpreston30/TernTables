@@ -23,6 +23,9 @@
 #' @param abbreviation_footnote Optional character string (or character vector, which will be
 #'   collapsed with spaces) listing abbreviations to display at the top of the footnote block.
 #'   Always printed first, before any variable-specific footnote lines. Default \code{NULL}.
+#' @param posthoc_footnote Optional character string describing post-hoc CLD superscript
+#'   conventions. When supplied by \code{ternG()}, it is inserted after the abbreviations
+#'   footnote and before the variable symbol footnotes. Default \code{NULL}.
 #' @param variable_footnote Optional named character vector. Names are display variable names as
 #'   they appear in the table (case-insensitive match); values are the footnote definition text
 #'   for that variable. Each entry is assigned the next symbol in the sequence (*, dagger,
@@ -64,7 +67,7 @@
 #' )
 #' }
 #' @export
-word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, category_start = NULL, manual_italic_indent = NULL, manual_underline = NULL, table_caption = NULL, table_footnote = NULL, abbreviation_footnote = NULL, variable_footnote = NULL, index_style = "symbols", page_break_after = FALSE, line_break_header = getOption("TernTables.line_break_header", TRUE), open_doc = TRUE, citation = TRUE) {
+word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, category_start = NULL, manual_italic_indent = NULL, manual_underline = NULL, table_caption = NULL, table_footnote = NULL, abbreviation_footnote = NULL, posthoc_footnote = NULL, variable_footnote = NULL, index_style = "symbols", page_break_after = FALSE, line_break_header = getOption("TernTables.line_break_header", TRUE), open_doc = TRUE, citation = TRUE) {
   # Keep the table as-is
   modified_tbl <- tbl
 
@@ -409,6 +412,9 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
     if (!is.null(abbreviation_footnote) && length(abbreviation_footnote) > 0) {
       abbr_text <- trimws(paste(abbreviation_footnote, collapse = " "))
       if (nchar(abbr_text) > 0) footnote_lines <- c(footnote_lines, abbr_text)
+    }
+    if (!is.null(posthoc_footnote) && nchar(trimws(posthoc_footnote)) > 0) {
+      footnote_lines <- c(footnote_lines, trimws(posthoc_footnote))
     }
     if (!is.null(variable_footnote) && length(variable_footnote) > 0) {
       vf_syms <- .footnote_symbol_seq(length(variable_footnote), index_style)
