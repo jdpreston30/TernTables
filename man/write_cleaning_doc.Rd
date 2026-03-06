@@ -4,13 +4,20 @@
 \alias{write_cleaning_doc}
 \title{Write a cleaning summary document for ternP output}
 \usage{
-write_cleaning_doc(result, filename = "cleaning_summary.docx")
+write_cleaning_doc(
+  result,
+  filename = "cleaning_summary.docx",
+  font_family = getOption("TernTables.font_family", "Arial")
+)
 }
 \arguments{
 \item{result}{A \code{ternP_result} object returned by \code{\link{ternP}}.}
 
 \item{filename}{Output file path ending in \code{.docx}.
 Default is \code{"cleaning_summary.docx"} in the current working directory.}
+
+\item{font_family}{Character; font family for the Word document. Default \code{"Arial"}.
+Can also be set via \code{options(TernTables.font_family = ...)}.}
 }
 \value{
 Invisibly returns the path to the written Word file.

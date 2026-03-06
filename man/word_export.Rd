@@ -27,7 +27,8 @@ word_export(
   page_break_after = FALSE,
   line_break_header = getOption("TernTables.line_break_header", TRUE),
   open_doc = TRUE,
-  citation = TRUE
+  citation = TRUE,
+  font_family = getOption("TernTables.font_family", "Arial")
 )
 }
 \arguments{
@@ -123,6 +124,12 @@ document in the system default application after saving. Set to \code{FALSE} to 
 \item{citation}{Logical; if \code{TRUE} (default), appends a citation line at the bottom
 of the table footnote block: package version, authors, and links to the GitHub repository
 and web interface. Set to \code{FALSE} to suppress.}
+
+\item{font_family}{Character; font family used for the entire Word table and its caption,
+footnote, and citation. Any font name accepted by the rendering system is valid (Word
+will fall back to its default if the font is not installed). Can also be set package-wide
+via \code{options(TernTables.font_family = "Garamond")}.
+Default is \code{"Arial"}.}
 }
 \value{
 Invisibly returns the path to the written Word file.

@@ -15,7 +15,8 @@ write_methods_doc(
   boilerplate = FALSE,
   p_adjust = FALSE,
   open_doc = TRUE,
-  citation = TRUE
+  citation = TRUE,
+  font_family = getOption("TernTables.font_family", "Arial")
 )
 }
 \arguments{
@@ -63,6 +64,9 @@ document in the system default application after saving. Set to \code{FALSE} to 
 \item{citation}{Logical; if \code{TRUE} (default), appends a citation line after the
 document footer: package version, authors, and links to the GitHub repository and web
 interface. Set to \code{FALSE} to suppress.}
+
+\item{font_family}{Character; font family for the Word document. Default \code{"Arial"}.
+Can also be set via \code{options(TernTables.font_family = ...)}.}
 }
 \value{
 Invisibly returns the methods paragraph text as a character string

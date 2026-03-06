@@ -26,7 +26,8 @@ ternStyle(
   index_style = "symbols",
   line_break_header = FALSE,
   open_doc = TRUE,
-  citation = TRUE
+  citation = TRUE,
+  font_family = getOption("TernTables.font_family", "Arial")
 )
 }
 \arguments{
@@ -109,6 +110,10 @@ document after saving. Default \code{TRUE}.}
 
 \item{citation}{Logical; if \code{TRUE} (default), appends the TernTables
 citation line in the page footer. Default \code{TRUE}.}
+
+\item{font_family}{Character; font family name used for all Word output.
+Defaults to \code{getOption("TernTables.font_family", "Arial")}.
+See \code{\link{word_export}} for details.}
 }
 \value{
 Invisibly returns the path to the written Word file.

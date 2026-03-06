@@ -42,7 +42,8 @@ ternG(
   p_adjust = FALSE,
   p_adjust_display = "fdr_only",
   open_doc = TRUE,
-  citation = TRUE
+  citation = TRUE,
+  font_family = getOption("TernTables.font_family", "Arial")
 )
 }
 \arguments{
@@ -206,6 +207,12 @@ Has no effect when \code{output_docx} is \code{NULL}.}
 \item{citation}{Logical; if \code{TRUE} (default), appends a citation line at the bottom
 of the table footnote block and at the end of the methods document: package version, authors,
 and links to the GitHub repository and web interface. Set to \code{FALSE} to suppress.}
+
+\item{font_family}{Character; font family name used for all Word output (table,
+captions, footnotes, methods document). Any font installed on the system that
+renders the document may be used. Popular options include \code{"Arial"},
+\code{"Helvetica"}, \code{"Times New Roman"}, \code{"Garamond"}, and
+\code{"Calibri"}. Defaults to \code{getOption("TernTables.font_family", "Arial")}.}
 }
 \value{
 A tibble with one row per variable (multi-row for multi-level factors), showing summary statistics by group,

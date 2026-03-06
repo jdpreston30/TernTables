@@ -11,7 +11,8 @@ ternB(
   methods_doc = FALSE,
   methods_filename = "TernTables_methods.docx",
   open_doc = TRUE,
-  citation = TRUE
+  citation = TRUE,
+  font_family = getOption("TernTables.font_family", "Arial")
 )
 }
 \arguments{
@@ -40,6 +41,10 @@ Set to \code{FALSE} to suppress.}
 \item{citation}{Logical; if \code{TRUE} (default), appends a citation line at the bottom
 of each table footnote block and methods document: package version, authors, and links
 to the GitHub repository and web interface. Set to \code{FALSE} to suppress.}
+
+\item{font_family}{Character; font family for all Word output. Any font name accepted by
+the rendering system is valid. Can also be set via
+\code{options(TernTables.font_family = "Garamond")}. Default \code{"Arial"}.}
 }
 \value{
 Invisibly returns the path to the written Word file.

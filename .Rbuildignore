@@ -1,5 +1,6 @@
 ^TernTables\.Rproj$
 ^\.Rproj\.user$
+^\.github$
 ^LICENSE\.md$
 ^blood_storage_raw\.xlsx$
 ^\~\$blood_storage_raw\.xlsx$

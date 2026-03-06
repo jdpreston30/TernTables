@@ -4,7 +4,6 @@
 *.RData
 *.Ruserdata
 feature.R
-feature-font-family.md
 
 # devtools/roxygen build artifacts
 /doc/
