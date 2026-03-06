@@ -20,6 +20,7 @@ ternD(
   methods_doc = TRUE,
   methods_filename = "TernTables_methods.docx",
   category_start = NULL,
+  plain_header = NULL,
   table_font_size = 9,
   manual_italic_indent = NULL,
   manual_underline = NULL,
@@ -100,6 +101,10 @@ original column name (e.g. \code{"Age_Years"}) or the cleaned display name
 (e.g. \code{"Age (yr)"}). Both forms are accepted.
 Example: \code{c("Demographics" = "Age_Years", "Clinical Measures" = "bmi")}.
 Default is \code{NULL} (no category headers).}
+
+\item{plain_header}{Named character vector, same interface as \code{category_start}. Names are
+the label text; values are the anchor variable to insert before. Inserts a label-only row
+with underline formatting and no bold, merge, or border treatments. Default \code{NULL}.}
 
 \item{table_font_size}{Numeric; font size for Word document output tables. Default is 9.}
 

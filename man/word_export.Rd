@@ -10,6 +10,12 @@ word_export(
   round_intg = FALSE,
   font_size = 9,
   category_start = NULL,
+  plain_header = NULL,
+  subheader_rows = NULL,
+  bold_rows = NULL,
+  italic_rows = NULL,
+  bold_cols = NULL,
+  italic_cols = NULL,
   manual_italic_indent = NULL,
   manual_underline = NULL,
   table_caption = NULL,
@@ -36,6 +42,31 @@ word_export(
 \item{category_start}{Named character vector specifying category headers. Names are header
 label text; values are anchor variable names -- either the original column name or the
 cleaned display name (both forms accepted).}
+
+\item{plain_header}{Named character vector, same interface as \code{category_start}. Names are
+the label text to display; values are the anchor variable to insert before. The inserted row
+has text only in column 1 (all other cells blank) and receives \emph{underline} formatting --
+identical to \code{manual_underline} -- but no bold, merge, or border treatments.
+Default is \code{NULL} (none).}
+
+\item{subheader_rows}{Character vector of labels that already exist as rows in the table and
+should be formatted as full category section headers (merged across all columns, bold, with a
+bottom border line). Unlike \code{category_start}, no new row is inserted -- the matching
+existing row is formatted in place. Intended for use with \code{ternStyle()} where section-
+divider rows are pre-built into the tibble. Case-insensitive match. Default \code{NULL}.}
+
+\item{bold_rows}{Integer vector of body row indices (1-based, in the final rendered table) to
+bold across every column. Applied as the last formatting pass so it overrides structural
+formatting. Default \code{NULL}.}
+
+\item{italic_rows}{Integer vector of body row indices to italicize across every column.
+Default \code{NULL}.}
+
+\item{bold_cols}{Integer vector of column indices (1-based) to bold across all body rows.
+Default \code{NULL}.}
+
+\item{italic_cols}{Integer vector of column indices to italicize across all body rows.
+Default \code{NULL}.}
 
 \item{manual_italic_indent}{Character vector of display variable names (post-cleaning) to force into
 italicized and indented formatting, matching the appearance of factor sub-category rows (e.g., levels

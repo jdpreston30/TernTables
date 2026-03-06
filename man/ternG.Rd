@@ -27,6 +27,7 @@ ternG(
   methods_doc = TRUE,
   methods_filename = "TernTables_methods.docx",
   category_start = NULL,
+  plain_header = NULL,
   manual_italic_indent = NULL,
   manual_underline = NULL,
   indent_info_column = FALSE,
@@ -127,6 +128,10 @@ original column name (e.g. \code{"Age_Years"}) or the cleaned display name
 (e.g. \code{"Age (yr)"}). Both forms are accepted.
 Example: \code{c("Demographics" = "Age_Years", "Clinical" = "bmi")}.
 Default is \code{NULL} (no category headers).}
+
+\item{plain_header}{Named character vector, same interface as \code{category_start}. Names are
+the label text; values are the anchor variable to insert before. Inserts a label-only row
+with underline formatting and no bold, merge, or border treatments. Default \code{NULL}.}
 
 \item{manual_italic_indent}{Character vector of display variable names (post-cleaning) that should be
 formatted as italicized and indented in Word output -- matching the appearance of factor sub-category

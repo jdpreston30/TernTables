@@ -12,6 +12,20 @@
 #'   has text only in column 1 (all other cells blank) and receives \emph{underline} formatting --
 #'   identical to \code{manual_underline} -- but no bold, merge, or border treatments.
 #'   Default is \code{NULL} (none).
+#' @param subheader_rows Character vector of labels that already exist as rows in the table and
+#'   should be formatted as full category section headers (merged across all columns, bold, with a
+#'   bottom border line). Unlike \code{category_start}, no new row is inserted -- the matching
+#'   existing row is formatted in place. Intended for use with \code{ternStyle()} where section-
+#'   divider rows are pre-built into the tibble. Case-insensitive match. Default \code{NULL}.
+#' @param bold_rows Integer vector of body row indices (1-based, in the final rendered table) to
+#'   bold across every column. Applied as the last formatting pass so it overrides structural
+#'   formatting. Default \code{NULL}.
+#' @param italic_rows Integer vector of body row indices to italicize across every column.
+#'   Default \code{NULL}.
+#' @param bold_cols Integer vector of column indices (1-based) to bold across all body rows.
+#'   Default \code{NULL}.
+#' @param italic_cols Integer vector of column indices to italicize across all body rows.
+#'   Default \code{NULL}.
 #' @param manual_italic_indent Character vector of display variable names (post-cleaning) to force into
 #'   italicized and indented formatting, matching the appearance of factor sub-category rows (e.g., levels
 #'   of a multi-category variable). Use this for rows that should visually appear as sub-items but are not
@@ -72,7 +86,7 @@
 #' )
 #' }
 #' @export
-word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, category_start = NULL, plain_header = NULL, manual_italic_indent = NULL, manual_underline = NULL, table_caption = NULL, table_footnote = NULL, abbreviation_footnote = NULL, posthoc_footnote = NULL, variable_footnote = NULL, index_style = "symbols", page_break_after = FALSE, line_break_header = getOption("TernTables.line_break_header", TRUE), open_doc = TRUE, citation = TRUE) {
+word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, category_start = NULL, plain_header = NULL, subheader_rows = NULL, bold_rows = NULL, italic_rows = NULL, bold_cols = NULL, italic_cols = NULL, manual_italic_indent = NULL, manual_underline = NULL, table_caption = NULL, table_footnote = NULL, abbreviation_footnote = NULL, posthoc_footnote = NULL, variable_footnote = NULL, index_style = "symbols", page_break_after = FALSE, line_break_header = getOption("TernTables.line_break_header", TRUE), open_doc = TRUE, citation = TRUE) {
   # Keep the table as-is
   modified_tbl <- tbl
 
@@ -194,6 +208,16 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
       trimmed_vars <- sapply(modified_tbl[[1]], function(x) trimws(x, which = "both"))
       ph_idx <- which(trimmed_vars == ph_label)
       if (length(ph_idx) > 0) plain_header_rows <- c(plain_header_rows, ph_idx)
+    }
+  }
+
+  # Treat subheader_rows labels as full category headers (format-only, no insertion)
+  if (!is.null(subheader_rows) && length(subheader_rows) > 0) {
+    trimmed_vars <- sapply(modified_tbl[[1]], function(x) trimws(x, which = "both"))
+    for (sr_label in subheader_rows) {
+      sr_idx <- which(trimmed_vars == sr_label)
+      if (length(sr_idx) == 0) sr_idx <- which(tolower(trimmed_vars) == tolower(sr_label))
+      if (length(sr_idx) > 0) category_rows <- c(category_rows, sr_idx)
     }
   }
 
@@ -436,6 +460,13 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
       ft <- bold(ft, i = sig_or_rows, j = or_col_index, part = "body")
     }
   }
+
+  # ── Manual bold/italic overrides ──────────────────────────────────────────────
+  # Applied last so they unconditionally override all structural formatting above.
+  if (!is.null(bold_rows)   && length(bold_rows)   > 0) ft <- bold(ft,   i = bold_rows,   part = "body")
+  if (!is.null(italic_rows) && length(italic_rows) > 0) ft <- italic(ft, i = italic_rows, part = "body")
+  if (!is.null(bold_cols)   && length(bold_cols)   > 0) ft <- bold(ft,   j = bold_cols,   part = "body")
+  if (!is.null(italic_cols) && length(italic_cols) > 0) ft <- italic(ft, j = italic_cols, part = "body")
 
   # Shrink all columns to fit their content, then lock row heights exactly.
   # height() and hrule() must come AFTER autofit() -- autofit resets row heights
