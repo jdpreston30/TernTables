@@ -112,6 +112,7 @@ ternB <- function(tables, output_docx, page_break = TRUE,
         variable_footnote     = meta$variable_footnote,
         index_style           = if (is.null(meta$index_style)) "symbols" else meta$index_style,
         line_break_header     = if (is.null(meta$line_break_header)) getOption("TernTables.line_break_header", TRUE) else meta$line_break_header,
+        page_break_after      = (i < length(temp_files)) && isTRUE(page_break),
         open_doc              = FALSE,
         citation              = FALSE   # temp files only; prevents section-property bleed into combined doc
       ),
@@ -135,9 +136,6 @@ ternB <- function(tables, output_docx, page_break = TRUE,
 
   for (i in seq_along(temp_files)) {
     doc <- doc %>% body_add_docx(src = temp_files[i])
-    if (i < length(temp_files) && page_break) {
-      doc <- doc %>% body_add_break()
-    }
   }
 
   dir.create(dirname(output_docx), recursive = TRUE, showWarnings = FALSE)
