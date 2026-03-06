@@ -17,6 +17,7 @@ word_export(
   abbreviation_footnote = NULL,
   variable_footnote = NULL,
   index_style = "symbols",
+  page_break_after = FALSE,
   line_break_header = getOption("TernTables.line_break_header", TRUE),
   open_doc = TRUE,
   citation = TRUE
@@ -68,6 +69,11 @@ uses *, dagger, double-dagger, section, pilcrow, double-vertical-bar, then doubl
 \code{"*"} is appended as plain text; all others are rendered as true Word superscripts.
 \code{"alphabet"} uses Unicode superscript letters (a, b, c, ...) which render as raised
 glyphs without explicit superscript formatting.}
+
+\item{page_break_after}{Logical; if \code{TRUE}, a page break is appended at the end of the
+Word document after the table. Used internally by \code{ternB()} to embed page breaks inside
+each table's temp file rather than injecting them into the combined document body, which
+avoids double-break artifacts when tables do not fill the page. Default is \code{FALSE}.}
 
 \item{line_break_header}{Logical; if \code{TRUE} (default), column headers are wrapped with
 \code{\\n} -- group names break on spaces, sample size counts move to a second line, and
