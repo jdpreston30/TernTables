@@ -25,6 +25,7 @@ word_export(
   variable_footnote = NULL,
   index_style = "symbols",
   page_break_after = FALSE,
+  col1_header = NULL,
   line_break_header = getOption("TernTables.line_break_header", TRUE),
   open_doc = TRUE,
   citation = TRUE,
@@ -111,6 +112,11 @@ glyphs without explicit superscript formatting.}
 Word document after the table. Used internally by \code{ternB()} to embed page breaks inside
 each table's temp file rather than injecting them into the combined document body, which
 avoids double-break artifacts when tables do not fill the page. Default is \code{FALSE}.}
+
+\item{col1_header}{Optional character string. Overrides the top-left header cell text.
+When \code{NULL} (default), the cell shows \code{"Category\\n   Variable"} (the standard
+two-line label). Supply any string, including \code{"\\n"} line breaks, to customise.
+Example: \code{"Variable\\n   Index Management Strategy"}.}
 
 \item{line_break_header}{Logical; if \code{TRUE} (default), column headers are wrapped with
 \code{\\n} -- group names break on spaces, sample size counts move to a second line, and

@@ -59,6 +59,9 @@
 #' @param index_style Character; \code{"symbols"} (default) or
 #'   \code{"alphabet"}. Controls the footnote symbol sequence. See
 #'   \code{word_export} for details.
+#' @param col1_header Optional character string. Overrides the top-left header
+#'   cell. When \code{NULL} (default), the standard \code{"Category\\n   Variable"}
+#'   label is used. Example: \code{"Variable\\n   Index Management Strategy"}.
 #' @param line_break_header Logical; if \code{TRUE}, column headers are wrapped
 #'   with \code{\\n} and the first column header shows the two-line
 #'   \code{"Category / Variable"} label. For custom tibbles the column names are
@@ -71,7 +74,10 @@
 #' @param font_family Character; font family name used for all Word output.
 #'   Defaults to \code{getOption("TernTables.font_family", "Arial")}.
 #'   See \code{\link{word_export}} for details.
-#' @return Invisibly returns the path to the written Word file.
+#' @return Invisibly returns the input tibble (after renaming and coercion)
+#'   with a \code{"ternB_meta"} attribute attached. This makes the result
+#'   directly passable to \code{\link{ternB}} for bundling with other tables
+#'   into a combined Word document.
 #' @examples
 #' \donttest{
 #' library(tibble)
@@ -109,6 +115,7 @@ ternStyle <- function(
     abbreviation_footnote = NULL,
     variable_footnote     = NULL,
     index_style           = "symbols",
+    col1_header           = NULL,
     line_break_header     = FALSE,
     open_doc              = TRUE,
     citation              = TRUE,
@@ -164,9 +171,43 @@ ternStyle <- function(
     posthoc_footnote      = NULL,
     variable_footnote     = variable_footnote,
     index_style           = index_style,
+    col1_header           = col1_header,
     line_break_header     = line_break_header,
     open_doc              = open_doc,
     citation              = citation,
     font_family           = font_family
   )
+
+  # ── Attach ternB_meta so this table can be passed to ternB() ─────────────
+  # tbl at this point already has the .indent column set (see above), which is
+  # exactly what word_export() / ternB() needs to replay the rendering.
+  # ternStyle tables have no statistical test machinery, so OR_col, post_hoc,
+  # p_adjust, etc. are set to their safe no-op defaults (matching ternD).
+  attr(tbl, "ternB_meta") <- list(
+    tbl                   = tbl,
+    round_intg            = round_intg,
+    font_size             = font_size,
+    category_start        = category_start,
+    plain_header          = plain_header,
+    manual_italic_indent  = manual_italic_indent,
+    manual_underline      = manual_underline,
+    table_caption         = table_caption,
+    table_footnote        = table_footnote,
+    abbreviation_footnote = abbreviation_footnote,
+    posthoc_footnote      = NULL,
+    variable_footnote     = variable_footnote,
+    index_style           = index_style,
+    line_break_header     = line_break_header,
+    source                = "ternD",    # ternStyle has no group comparisons; use ternD methods paragraph
+    n_levels              = 1L,
+    OR_col                = FALSE,
+    OR_method             = "dynamic",
+    post_hoc              = FALSE,
+    p_adjust              = FALSE,
+    p_adjust_display      = "replace",
+    citation              = citation,
+    font_family           = font_family
+  )
+
+  invisible(tbl)
 }

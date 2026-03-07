@@ -60,6 +60,10 @@
 #'   Word document after the table. Used internally by \code{ternB()} to embed page breaks inside
 #'   each table's temp file rather than injecting them into the combined document body, which
 #'   avoids double-break artifacts when tables do not fill the page. Default is \code{FALSE}.
+#' @param col1_header Optional character string. Overrides the top-left header cell text.
+#'   When \code{NULL} (default), the cell shows \code{"Category\\n   Variable"} (the standard
+#'   two-line label). Supply any string, including \code{"\\n"} line breaks, to customise.
+#'   Example: \code{"Variable\\n   Index Management Strategy"}.
 #' @param line_break_header Logical; if \code{TRUE} (default), column headers are wrapped with
 #'   \code{\\n} -- group names break on spaces, sample size counts move to a second line, and
 #'   the first column header includes a category hierarchy label. Set to \code{FALSE} to suppress
@@ -91,7 +95,7 @@
 #' )
 #' }
 #' @export
-word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, category_start = NULL, plain_header = NULL, subheader_rows = NULL, bold_rows = NULL, italic_rows = NULL, bold_cols = NULL, italic_cols = NULL, manual_italic_indent = NULL, manual_underline = NULL, table_caption = NULL, table_footnote = NULL, abbreviation_footnote = NULL, posthoc_footnote = NULL, variable_footnote = NULL, index_style = "symbols", page_break_after = FALSE, line_break_header = getOption("TernTables.line_break_header", TRUE), open_doc = TRUE, citation = TRUE, font_family = getOption("TernTables.font_family", "Arial")) {
+word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, category_start = NULL, plain_header = NULL, subheader_rows = NULL, bold_rows = NULL, italic_rows = NULL, bold_cols = NULL, italic_cols = NULL, manual_italic_indent = NULL, manual_underline = NULL, table_caption = NULL, table_footnote = NULL, abbreviation_footnote = NULL, posthoc_footnote = NULL, variable_footnote = NULL, index_style = "symbols", page_break_after = FALSE, col1_header = NULL, line_break_header = getOption("TernTables.line_break_header", TRUE), open_doc = TRUE, citation = TRUE, font_family = getOption("TernTables.font_family", "Arial")) {
   # Keep the table as-is
   modified_tbl <- tbl
 
@@ -258,7 +262,7 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
 
   if (line_break_header) {
     # Replace first column header with category hierarchy
-    new_colnames[1] <- "Category\n   Variable"
+    new_colnames[1] <- if (!is.null(col1_header)) col1_header else "Category\n   Variable"
 
     # Add line breaks for sample sizes and multi-word group names
     for (i in 2:length(new_colnames)) {
@@ -302,7 +306,7 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
     # line_break_header = FALSE: keep group names as-is (no word-splitting),
     # but still move (n = ...) count onto its own line and rename P column.
     # The top-left header always uses the two-line label regardless.
-    new_colnames[1] <- "Category\n   Variable"
+    new_colnames[1] <- if (!is.null(col1_header)) col1_header else "Category\n   Variable"
     for (i in 2:length(new_colnames)) {
       if (!new_colnames[i] %in% c("P", "test", "OR", "OR_method") && !grepl("^Total", new_colnames[i])) {
         new_colnames[i] <- gsub(" \\(n = ", "\n(n = ", new_colnames[i])

@@ -24,6 +24,7 @@ ternStyle(
   abbreviation_footnote = NULL,
   variable_footnote = NULL,
   index_style = "symbols",
+  col1_header = NULL,
   line_break_header = FALSE,
   open_doc = TRUE,
   citation = TRUE,
@@ -99,6 +100,10 @@ footnote definitions. Default \code{NULL}.}
 \code{"alphabet"}. Controls the footnote symbol sequence. See
 \code{word_export} for details.}
 
+\item{col1_header}{Optional character string. Overrides the top-left header
+cell. When \code{NULL} (default), the standard \code{"Category\\n   Variable"}
+label is used. Example: \code{"Variable\\n   Index Management Strategy"}.}
+
 \item{line_break_header}{Logical; if \code{TRUE}, column headers are wrapped
 with \code{\\n} and the first column header shows the two-line
 \code{"Category / Variable"} label. For custom tibbles the column names are
@@ -116,7 +121,10 @@ Defaults to \code{getOption("TernTables.font_family", "Arial")}.
 See \code{\link{word_export}} for details.}
 }
 \value{
-Invisibly returns the path to the written Word file.
+Invisibly returns the input tibble (after renaming and coercion)
+  with a \code{"ternB_meta"} attribute attached. This makes the result
+  directly passable to \code{\link{ternB}} for bundling with other tables
+  into a combined Word document.
 }
 \description{
 \code{ternStyle()} renders any user-built tibble into a Word document with
