@@ -163,8 +163,12 @@ ternB <- function(tables, output_docx, page_break = TRUE,
     # Generate a methods paragraph for each table individually, capturing the
     # returned text string (write_methods_doc returns invisible(methods_body)).
     # Each call writes to a discarded tempfile; only the text is kept.
+    # ternStyle tables carry no statistical test information and are skipped
+    # (NA is returned for them; they are filtered out before building sections).
     para_texts <- vapply(seq_along(all_metas), function(i) {
       m <- all_metas[[i]]
+      src <- if (is.null(m$source)) "ternG" else m$source
+      if (src == "ternStyle") return(NA_character_)
       suppressMessages(
         write_methods_doc(
           tbl       = m$tbl,
@@ -172,7 +176,7 @@ ternB <- function(tables, output_docx, page_break = TRUE,
           n_levels  = if (is.null(m$n_levels))   2L            else m$n_levels,
           OR_col    = if (is.null(m$OR_col))      FALSE         else m$OR_col,
           OR_method = if (is.null(m$OR_method))   "dynamic"     else m$OR_method,
-          source    = if (is.null(m$source))      "ternG"       else m$source,
+          source    = src,
           post_hoc  = if (is.null(m$post_hoc))    FALSE         else m$post_hoc,
           p_adjust  = if (is.null(m$p_adjust))    FALSE         else m$p_adjust,
           open_doc  = FALSE,
@@ -180,6 +184,10 @@ ternB <- function(tables, output_docx, page_break = TRUE,
         )
       )
     }, character(1))
+
+    # Drop ternStyle tables (NA) before deduplication / section building
+    keep_idx   <- which(!is.na(para_texts))
+    para_texts <- para_texts[keep_idx]
 
     # Derive a short label for each table: extract just "Table N" from the
     # start of the caption. Fall back to "Table i" if no match.
@@ -192,6 +200,9 @@ ternB <- function(tables, output_docx, page_break = TRUE,
         paste0("Table ", i)
       }
     }, character(1))
+
+    # Keep only the labels for tables that produced a methods paragraph
+    labels <- labels[keep_idx]
 
     # Group tables that produced identical paragraph text to avoid redundancy.
     # Result: list of (heading, paragraph) pairs in first-occurrence order.
