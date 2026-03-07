@@ -26,6 +26,9 @@
 #'   Default \code{NULL}.
 #' @param italic_cols Integer vector of column indices to italicize across all body rows.
 #'   Default \code{NULL}.
+#' @param header_format_follow Logical; if \code{TRUE}, any columns listed in \code{bold_cols}
+#'   or \code{italic_cols} also have their header cell bolded or italicized, respectively.
+#'   Default \code{FALSE}.
 #' @param manual_italic_indent Character vector of display variable names (post-cleaning) to force into
 #'   italicized and indented formatting, matching the appearance of factor sub-category rows (e.g., levels
 #'   of a multi-category variable). Use this for rows that should visually appear as sub-items but are not
@@ -95,7 +98,7 @@
 #' )
 #' }
 #' @export
-word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, category_start = NULL, plain_header = NULL, subheader_rows = NULL, bold_rows = NULL, italic_rows = NULL, bold_cols = NULL, italic_cols = NULL, manual_italic_indent = NULL, manual_underline = NULL, table_caption = NULL, table_footnote = NULL, abbreviation_footnote = NULL, posthoc_footnote = NULL, variable_footnote = NULL, index_style = "symbols", page_break_after = FALSE, col1_header = NULL, line_break_header = getOption("TernTables.line_break_header", TRUE), open_doc = TRUE, citation = TRUE, font_family = getOption("TernTables.font_family", "Arial")) {
+word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, category_start = NULL, plain_header = NULL, subheader_rows = NULL, bold_rows = NULL, italic_rows = NULL, bold_cols = NULL, italic_cols = NULL, header_format_follow = FALSE, manual_italic_indent = NULL, manual_underline = NULL, table_caption = NULL, table_footnote = NULL, abbreviation_footnote = NULL, posthoc_footnote = NULL, variable_footnote = NULL, index_style = "symbols", page_break_after = FALSE, col1_header = NULL, line_break_header = getOption("TernTables.line_break_header", TRUE), open_doc = TRUE, citation = TRUE, font_family = getOption("TernTables.font_family", "Arial")) {
   # Keep the table as-is
   modified_tbl <- tbl
 
@@ -476,6 +479,10 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
   if (!is.null(italic_rows) && length(italic_rows) > 0) ft <- italic(ft, i = italic_rows, part = "body")
   if (!is.null(bold_cols)   && length(bold_cols)   > 0) ft <- bold(ft,   j = bold_cols,   part = "body")
   if (!is.null(italic_cols) && length(italic_cols) > 0) ft <- italic(ft, j = italic_cols, part = "body")
+  if (isTRUE(header_format_follow)) {
+    if (!is.null(bold_cols)   && length(bold_cols)   > 0) ft <- bold(ft,   j = bold_cols,   part = "header")
+    if (!is.null(italic_cols) && length(italic_cols) > 0) ft <- italic(ft, j = italic_cols, part = "header")
+  }
 
   # Shrink all columns to fit their content, then lock row heights exactly.
   # height() and hrule() must come AFTER autofit() -- autofit resets row heights

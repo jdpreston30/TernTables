@@ -34,6 +34,9 @@
 #'   all body rows. Default \code{NULL}.
 #' @param italic_cols Integer vector of column indices to italicize across all
 #'   body rows. Default \code{NULL}.
+#' @param header_format_follow Logical; if \code{TRUE}, columns listed in
+#'   \code{bold_cols} or \code{italic_cols} also have their header cell bolded
+#'   or italicized. Default \code{FALSE}.
 #' @param round_intg Logical; passed to \code{word_export}. Default \code{FALSE}.
 #' @param font_size Numeric; font size for table body. Default \code{9}.
 #' @param category_start Named character vector; same as in \code{word_export}.
@@ -104,6 +107,7 @@ ternStyle <- function(
     italic_rows           = NULL,
     bold_cols             = NULL,
     italic_cols           = NULL,
+    header_format_follow  = FALSE,
     round_intg            = FALSE,
     font_size             = 9,
     category_start        = NULL,
@@ -163,6 +167,7 @@ ternStyle <- function(
     italic_rows           = italic_rows,
     bold_cols             = bold_cols,
     italic_cols           = italic_cols,
+    header_format_follow  = header_format_follow,
     manual_italic_indent  = manual_italic_indent,
     manual_underline      = manual_underline,
     table_caption         = table_caption,
