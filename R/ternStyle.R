@@ -14,7 +14,9 @@
 #'   column (rendered as "Variable" unless renamed via \code{col1_name}).
 #'   All columns are coerced to character before rendering; \code{NA} values
 #'   become empty strings.
-#' @param filename Output file path ending in \code{.docx}.
+#' @param filename Output file path ending in \code{.docx}. Pass \code{NULL}
+#'   (default) to write to a temporary file and suppress auto-opening -- useful
+#'   when the result will be passed directly to \code{\link{ternB}} for bundling.
 #' @param col1_name Optional character string. If supplied, the first column is
 #'   renamed to this label in the rendered table. The column need not be named
 #'   \code{"Variable"} in the input; any name is accepted and renamed here.
@@ -100,7 +102,7 @@
 #' @export
 ternStyle <- function(
     tbl,
-    filename,
+    filename              = NULL,
     col1_name             = NULL,
     subheader_rows        = NULL,
     bold_rows             = NULL,
@@ -155,6 +157,12 @@ ternStyle <- function(
     }
   }
 
+  # ── Resolve filename ────────────────────────────────────────────────────
+  if (is.null(filename)) {
+    filename <- tempfile(fileext = ".docx")
+    open_doc <- FALSE
+  }
+
   word_export(
     tbl                   = tbl,
     filename              = filename,
@@ -203,7 +211,14 @@ ternStyle <- function(
     variable_footnote     = variable_footnote,
     index_style           = index_style,
     line_break_header     = line_break_header,
-    source                = "ternD",    # ternStyle has no group comparisons; use ternD methods paragraph
+    subheader_rows        = subheader_rows,
+    bold_rows             = bold_rows,
+    italic_rows           = italic_rows,
+    bold_cols             = bold_cols,
+    italic_cols           = italic_cols,
+    header_format_follow  = header_format_follow,
+    col1_header           = col1_header,
+    source                = "ternStyle",
     n_levels              = 1L,
     OR_col                = FALSE,
     OR_method             = "dynamic",

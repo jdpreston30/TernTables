@@ -16,6 +16,7 @@ word_export(
   italic_rows = NULL,
   bold_cols = NULL,
   italic_cols = NULL,
+  header_format_follow = FALSE,
   manual_italic_indent = NULL,
   manual_underline = NULL,
   table_caption = NULL,
@@ -69,6 +70,10 @@ Default \code{NULL}.}
 
 \item{italic_cols}{Integer vector of column indices to italicize across all body rows.
 Default \code{NULL}.}
+
+\item{header_format_follow}{Logical; if \code{TRUE}, any columns listed in \code{bold_cols}
+or \code{italic_cols} also have their header cell bolded or italicized, respectively.
+Default \code{FALSE}.}
 
 \item{manual_italic_indent}{Character vector of display variable names (post-cleaning) to force into
 italicized and indented formatting, matching the appearance of factor sub-category rows (e.g., levels

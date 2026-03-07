@@ -6,13 +6,14 @@
 \usage{
 ternStyle(
   tbl,
-  filename,
+  filename = NULL,
   col1_name = NULL,
   subheader_rows = NULL,
   bold_rows = NULL,
   italic_rows = NULL,
   bold_cols = NULL,
   italic_cols = NULL,
+  header_format_follow = FALSE,
   round_intg = FALSE,
   font_size = 9,
   category_start = NULL,
@@ -37,7 +38,9 @@ column (rendered as "Variable" unless renamed via \code{col1_name}).
 All columns are coerced to character before rendering; \code{NA} values
 become empty strings.}
 
-\item{filename}{Output file path ending in \code{.docx}.}
+\item{filename}{Output file path ending in \code{.docx}. Pass \code{NULL}
+(default) to write to a temporary file and suppress auto-opening -- useful
+when the result will be passed directly to \code{\link{ternB}} for bundling.}
 
 \item{col1_name}{Optional character string. If supplied, the first column is
 renamed to this label in the rendered table. The column need not be named
@@ -63,6 +66,10 @@ all body rows. Default \code{NULL}.}
 
 \item{italic_cols}{Integer vector of column indices to italicize across all
 body rows. Default \code{NULL}.}
+
+\item{header_format_follow}{Logical; if \code{TRUE}, columns listed in
+\code{bold_cols} or \code{italic_cols} also have their header cell bolded
+or italicized. Default \code{FALSE}.}
 
 \item{round_intg}{Logical; passed to \code{word_export}. Default \code{FALSE}.}
 
