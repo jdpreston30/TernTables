@@ -40,10 +40,12 @@
   # Contact / location
   # No \\b anchors — underscores are word characters and would block matching
   # on column names like patient_phone, mailing_address, cell_number, etc.
-  "phone", "telephone", "tel", "mobile", "cell.?num", "cell.?phone",
+  # "tel" and "city" use word-boundary anchors to prevent false positives on
+  # legitimate clinical column names such as "Platelet", "Ethnicity", "Velocity".
+  "phone", "telephone", "\\btel\\b", "mobile", "cell.?num", "cell.?phone",
   "fax",
   "email", "e.?mail",
-  "address", "street", "city", "zip", "zip.?code", "postal.?code",
+  "address", "street", "\\bcity\\b", "zip", "zip.?code", "postal.?code",
 
   # Geography smaller than state
   "county", "district", "precinct",
@@ -52,7 +54,9 @@
   "fingerprint", "retina", "voiceprint", "photo", "image", "biometric",
 
   # Device / IP
-  "device.?id", "serial.?number", "ip.?address", "mac.?address", "url"
+  # "device.?id" uses a more specific pattern to avoid matching medical implant
+  # fields like "Unique Device Identifier (UDI)" which are not patient identifiers.
+  "device.?id(?!entifier)", "serial.?number", "ip.?address", "mac.?address", "url"
 )
 
 #' Check a data frame for PHI column names
