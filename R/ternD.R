@@ -103,6 +103,11 @@
 #'   renders the document may be used. Popular options include \code{"Arial"},
 #'   \code{"Helvetica"}, \code{"Times New Roman"}, \code{"Garamond"}, and
 #'   \code{"Calibri"}. Defaults to \code{getOption("TernTables.font_family", "Arial")}.
+#' @param show_missing Logical; if \code{TRUE}, appends a \code{"Missing"} row after each
+#'   variable's data rows showing the count and percentage of missing observations
+#'   (denominator is the total N). Only emitted when at least one observation is missing.
+#'   A footnote is automatically appended noting that missing values are reported.
+#'   Default is \code{FALSE}.
 #'
 #' @details
 #' The function always returns a tibble with a single \code{Total (N = n)} column format, regardless of the
@@ -170,7 +175,8 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
                   index_style = "symbols",
                   line_break_header = getOption("TernTables.line_break_header", TRUE),
                   open_doc = TRUE, citation = TRUE,
-                  font_family = getOption("TernTables.font_family", "Arial")) {
+                  font_family = getOption("TernTables.font_family", "Arial"),
+                  show_missing = FALSE) {
   stopifnot(is.data.frame(data))
   
   # Store total N for column header
@@ -222,6 +228,17 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
   summarize_variable <- function(df, var) {
     v <- df[[var]]
 
+    # Build a "Missing" row to append when show_missing = TRUE
+    .make_missing_row <- function() {
+      n_miss <- sum(is.na(v))
+      if (!isTRUE(show_missing) || n_miss == 0) return(NULL)
+      pct <- round(n_miss / total_n * 100)
+      row <- tibble::tibble(Variable = "Missing", .indent = 6L,
+                            Summary  = paste0(n_miss, " (", pct, "%)"))
+      if (print_normality) row$SW_p <- NA_real_
+      row
+    }
+
     # Auto-detect binary numeric (0/1) as categorical Y/N
     # Skipped when the variable is listed in force_continuous
     if (is.numeric(v) && length(unique(stats::na.omit(v))) == 2 && all(stats::na.omit(v) %in% c(0, 1)) &&
@@ -237,7 +254,7 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
         # all missing
         out <- tibble::tibble(Variable = .clean_variable_name_for_header(var), .indent = 2, Summary = "0 (0%)")
         if (print_normality) out$SW_p <- NA_real_
-        return(out)
+        return(dplyr::bind_rows(out, .make_missing_row()))
       }
       pct <- round(100 * prop.table(tab))
       
@@ -321,7 +338,7 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
         rows <- list(row)
         out <- dplyr::bind_rows(rows)
       }
-      return(out)
+      return(dplyr::bind_rows(out, .make_missing_row()))
     }
 
     # ---------- NUMERIC ----------
@@ -390,7 +407,7 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
       Summary  = summary_str
     )
     if (print_normality) out$SW_p <- sw
-    return(out)
+    return(dplyr::bind_rows(out, .make_missing_row()))
   }
 
   norm_tested <- 0
@@ -456,6 +473,13 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
   # Save with .indent intact for ternB multi-table export metadata
   out_tbl_with_indent <- out_tbl
 
+  # Auto-footnote when show_missing is active
+  effective_footnote <- table_footnote
+  if (isTRUE(show_missing)) {
+    missing_note <- "Missing: n (%) of missing observations."
+    effective_footnote <- if (is.null(table_footnote)) missing_note else c(missing_note, table_footnote)
+  }
+
   if (!is.null(output_xlsx)) export_to_excel(out_tbl, output_xlsx)
   if (!is.null(output_docx)) word_export(out_tbl, output_docx, font_size = table_font_size,
                                          category_start        = category_start,
@@ -463,7 +487,7 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
                                          manual_italic_indent  = manual_italic_indent,
                                          manual_underline      = manual_underline,
                                          table_caption         = table_caption,
-                                         table_footnote        = table_footnote,
+                                         table_footnote        = effective_footnote,
                                          abbreviation_footnote = abbreviation_footnote,
                                          variable_footnote     = variable_footnote,
                                          index_style           = index_style,
@@ -485,7 +509,7 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
     manual_italic_indent  = manual_italic_indent,
     manual_underline      = manual_underline,
     table_caption         = table_caption,
-    table_footnote        = table_footnote,
+    table_footnote        = effective_footnote,
     abbreviation_footnote = abbreviation_footnote,
     variable_footnote     = variable_footnote,
     index_style           = index_style,
@@ -497,7 +521,8 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
     post_hoc              = FALSE,
     citation              = citation,
     font_family           = font_family,
-    force_continuous      = force_continuous
+    force_continuous      = force_continuous,
+    show_missing          = show_missing
   )
 
   out_tbl

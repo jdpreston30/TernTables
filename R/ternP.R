@@ -177,7 +177,7 @@ ternP <- function(data) {
     "not available", "not applicable",
     "none", "null", "nil",
     "-", "--", "---",
-    ".", "?", "99", "999", "9999", "-9", "-99", "-999"
+    ".", "?"
   )
 
   # Count total occurrences and record which columns are affected before cleaning.

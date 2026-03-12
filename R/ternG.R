@@ -140,6 +140,11 @@
 #'   renders the document may be used. Popular options include \code{"Arial"},
 #'   \code{"Helvetica"}, \code{"Times New Roman"}, \code{"Garamond"}, and
 #'   \code{"Calibri"}. Defaults to \code{getOption("TernTables.font_family", "Arial")}.
+#' @param show_missing Logical; if \code{TRUE}, appends a \code{"Missing"} row after each
+#'   variable's data rows showing the count and percentage of missing observations per group
+#'   (denominator is each group's total N). Missing rows display \code{"-"} in the P and OR
+#'   columns. A footnote is automatically appended noting that missing values are reported.
+#'   Default is \code{FALSE}.
 #'
 #' @return A tibble with one row per variable (multi-row for multi-level factors), showing summary statistics by group,
 #' P values, test type, and optionally odds ratios and total summary column.
@@ -218,7 +223,8 @@ ternG <- function(data,
                   p_adjust = FALSE,
                   p_adjust_display = "fdr_only",
                   open_doc = TRUE, citation = TRUE,
-                  font_family = getOption("TernTables.font_family", "Arial")) {
+                  font_family = getOption("TernTables.font_family", "Arial"),
+                  show_missing = FALSE) {
 
   # Helper function for proper rounding (0.5 always rounds up)
   round_up_half <- function(x, digits = 0) {
@@ -270,6 +276,36 @@ ternG <- function(data,
   fisher_sim_display  <- character(0)
 
   .summarize_var_internal <- function(df, var, force_ordinal = NULL, force_continuous = NULL, show_test = FALSE, round_intg = FALSE, show_total = FALSE) {
+
+    # Count missings per group BEFORE the NA filter below (used when show_missing = TRUE)
+    .missing_row <- function(result_tbl) {
+      if (!isTRUE(show_missing)) return(result_tbl)
+      miss_n   <- sapply(group_levels, function(g_lvl) {
+        grp_data <- df[!is.na(df[[group_var]]) & df[[group_var]] == g_lvl, ]
+        sum(is.na(grp_data[[var]]))
+      })
+      grp_n    <- sapply(group_levels, function(g_lvl) {
+        sum(!is.na(df[[group_var]]) & df[[group_var]] == g_lvl)
+      })
+      miss_pct <- round(miss_n / grp_n * 100)
+      # Only emit the row when at least one group has missing values
+      if (!any(miss_n > 0)) return(result_tbl)
+      mrow <- tibble(Variable = "Missing", .indent = 6L)
+      for (g_lvl in group_levels) {
+        mrow[[group_labels[g_lvl]]] <- paste0(miss_n[g_lvl], " (", miss_pct[g_lvl], "%)")
+      }
+      mrow$P      <- "-"
+      mrow$.p_raw <- NA_real_
+      if (show_test)  mrow$test      <- "-"
+      if (OR_col)     mrow$OR        <- "-"
+      if (show_test && OR_col) mrow$OR_method <- "-"
+      if (show_total) {
+        total_miss <- sum(miss_n)
+        total_grp  <- sum(grp_n)
+        mrow$Total <- paste0(total_miss, " (", round(total_miss / total_grp * 100), "%)")
+      }
+      bind_rows(result_tbl, mrow)
+    }
 
     g <- df %>% filter(!is.na(.data[[var]]), !is.na(.data[[group_var]]))
     if (nrow(g) == 0) return(NULL)
@@ -537,7 +573,7 @@ ternG <- function(data,
       }
       if (grepl("simulated", test_result$test_name, fixed = FALSE))
         fisher_sim_display <<- c(fisher_sim_display, result$Variable[1])
-      return(result)
+      return(.missing_row(result))
     }
 
     # ----- Force ordinal -----
@@ -642,7 +678,7 @@ ternG <- function(data,
       }
       if (grepl("simulated", test_result$test_name, fixed = FALSE))
         fisher_sim_display <<- c(fisher_sim_display, result$Variable[1])
-      return(result)
+      return(.missing_row(result))
     }
 
     # ----- Normality assessment -----
@@ -853,7 +889,7 @@ ternG <- function(data,
           posthoc_ran_display <<- c(posthoc_ran_display, result$Variable[1])
         }
     }
-    return(result)
+    return(.missing_row(result))
   }
 
   out_tbl <- suppressWarnings({
@@ -1003,7 +1039,7 @@ ternG <- function(data,
       "; \u03b1\u00a0=\u00a00.05); groups sharing a letter are not significantly different."
     )
   }
-  # Other auto-notes (Fisher simulation, etc.) go into table_footnote slot
+  # Other auto-notes (Fisher simulation, show_missing) go into table_footnote slot
   effective_footnote <- table_footnote
   notes <- character(0)
   if (length(fisher_sim_display) > 0L) {
@@ -1014,6 +1050,9 @@ ternG <- function(data,
       ") was used where exact enumeration was computationally infeasible: ",
       sim_vars, "."
     ))
+  }
+  if (isTRUE(show_missing)) {
+    notes <- c(notes, "Missing: n (%) of missing observations per group.")
   }
   if (length(notes) > 0L)
     effective_footnote <- if (is.null(table_footnote)) notes else c(notes, table_footnote)
@@ -1047,7 +1086,8 @@ ternG <- function(data,
     p_adjust_display      = p_adjust_display,
     citation              = citation,
     font_family           = font_family,
-    force_continuous      = force_continuous
+    force_continuous      = force_continuous,
+    show_missing          = show_missing
   )
 
   return(out_tbl)

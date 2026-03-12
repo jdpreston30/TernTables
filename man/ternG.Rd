@@ -44,7 +44,8 @@ ternG(
   p_adjust_display = "fdr_only",
   open_doc = TRUE,
   citation = TRUE,
-  font_family = getOption("TernTables.font_family", "Arial")
+  font_family = getOption("TernTables.font_family", "Arial"),
+  show_missing = FALSE
 )
 }
 \arguments{
@@ -221,6 +222,12 @@ captions, footnotes, methods document). Any font installed on the system that
 renders the document may be used. Popular options include \code{"Arial"},
 \code{"Helvetica"}, \code{"Times New Roman"}, \code{"Garamond"}, and
 \code{"Calibri"}. Defaults to \code{getOption("TernTables.font_family", "Arial")}.}
+
+\item{show_missing}{Logical; if \code{TRUE}, appends a \code{"Missing"} row after each
+variable's data rows showing the count and percentage of missing observations per group
+(denominator is each group's total N). Missing rows display \code{"-"} in the P and OR
+columns. A footnote is automatically appended noting that missing values are reported.
+Default is \code{FALSE}.}
 }
 \value{
 A tibble with one row per variable (multi-row for multi-level factors), showing summary statistics by group,
