@@ -484,13 +484,10 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
     if (!is.null(italic_cols) && length(italic_cols) > 0) ft <- italic(ft, j = italic_cols, part = "header")
   }
 
-  # Size columns to content, then scale to fill the full page text width (6.5 in,
-  # Letter portrait with 1-in margins) — equivalent to Word's "AutoFit to Window".
-  # This stretches narrow tables to use the full width AND reins in tables that
-  # overflow, keeping font and style unchanged.
-  # Row heights are locked AFTER fit_to_width because it adjusts column widths.
+  # Shrink all columns to fit their content, then lock row heights exactly.
+  # height() and hrule() must come AFTER autofit() -- autofit resets row heights
+  # as a side effect of its column-width calculation.
   ft <- autofit(ft)
-  ft <- flextable::fit_to_width(ft, max_width = 6.5)
   ft <- ft %>%
     height(height = font_size / 72 * 1.5, part = "body") %>%
     flextable::hrule(rule = "exact", part = "body")
