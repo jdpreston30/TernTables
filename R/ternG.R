@@ -11,6 +11,12 @@
 #' @param exclude_vars Character vector of variable(s) to exclude. \code{group_var} is automatically excluded.
 #' @param group_var Character, the grouping variable (factor or character with >=2 levels).
 #' @param force_ordinal Character vector of variables to treat as ordinal (i.e., use medians/IQR and nonparametric tests).
+#' @param force_continuous Character vector of variables to force treatment as continuous (mean \eqn{\pm} SD and
+#'   parametric tests), bypassing the automatic binary \code{0/1} detection that would otherwise convert
+#'   them to categorical Y/N. Useful when a numeric variable with only two unique values (e.g. \code{0}/\code{1}
+#'   dose levels) should be analysed as a continuous measurement rather than a dichotomous category.
+#'   Takes priority over automatic type detection but does not override \code{force_ordinal} (if a variable
+#'   appears in both, \code{force_ordinal} wins). Default is \code{NULL}.
 #' @param group_order Optional character vector to specify a custom group level order.
 #' @param output_xlsx Optional filename to export the table as an Excel file.
 #' @param output_docx Optional filename to export the table as a Word document.
@@ -181,6 +187,7 @@ ternG <- function(data,
                   exclude_vars = NULL,
                   group_var,
                   force_ordinal = NULL,
+                  force_continuous = NULL,
                   group_order = NULL,
                   output_xlsx = NULL,
                   output_docx = NULL,
@@ -262,14 +269,16 @@ ternG <- function(data,
   # Track which variables used Monte Carlo Fisher's exact (workspace limit fallback)
   fisher_sim_display  <- character(0)
 
-  .summarize_var_internal <- function(df, var, force_ordinal = NULL, show_test = FALSE, round_intg = FALSE, show_total = FALSE) {
+  .summarize_var_internal <- function(df, var, force_ordinal = NULL, force_continuous = NULL, show_test = FALSE, round_intg = FALSE, show_total = FALSE) {
 
     g <- df %>% filter(!is.na(.data[[var]]), !is.na(.data[[group_var]]))
     if (nrow(g) == 0) return(NULL)
     v <- g[[var]]
 
     # Auto-detect binary numeric (0/1) as categorical Y/N
-    if (is.numeric(v) && length(unique(stats::na.omit(v))) == 2 && all(stats::na.omit(v) %in% c(0, 1))) {
+    # Skipped when the variable is listed in force_continuous
+    if (is.numeric(v) && length(unique(stats::na.omit(v))) == 2 && all(stats::na.omit(v) %in% c(0, 1)) &&
+        !(var %in% force_continuous)) {
       v <- factor(v, levels = c(0, 1), labels = c("N", "Y"))
       g[[var]] <- v
     }
@@ -848,7 +857,7 @@ ternG <- function(data,
   }
 
   out_tbl <- suppressWarnings({
-    result <- bind_rows(lapply(vars, function(v) .summarize_var_internal(data, v, force_ordinal, show_test, round_intg, show_total)))
+    result <- bind_rows(lapply(vars, function(v) .summarize_var_internal(data, v, force_ordinal, force_continuous, show_test, round_intg, show_total)))
     cli::cli_alert_info("Multi-level categorical variables occupy more than one row in the output table.")
     result
   })
@@ -1037,7 +1046,8 @@ ternG <- function(data,
     p_adjust              = p_adjust,
     p_adjust_display      = p_adjust_display,
     citation              = citation,
-    font_family           = font_family
+    font_family           = font_family,
+    force_continuous      = force_continuous
   )
 
   return(out_tbl)

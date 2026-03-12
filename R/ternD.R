@@ -11,6 +11,10 @@
 #' @param force_ordinal Character vector of variables to treat as ordinal (i.e., use median [IQR]) 
 #'   regardless of the \code{consider_normality} setting. This parameter takes priority over 
 #'   normality testing when \code{consider_normality = "ROBUST"} or \code{TRUE}.
+#' @param force_continuous Character vector of variables to force treatment as continuous (mean \eqn{\pm} SD),
+#'   bypassing the automatic binary \code{0/1} detection that would otherwise convert them to categorical Y/N.
+#'   Useful when a numeric variable with only two unique values (e.g. \code{0}/\code{1} dose levels) should
+#'   be analysed as a continuous measurement rather than a dichotomous category. Default is \code{NULL}.
 #' @param output_xlsx Optional Excel filename to export the table.
 #' @param output_docx Optional Word filename to export the table.
 #' @param consider_normality Character or logical; controls routing of continuous variables to
@@ -153,6 +157,7 @@
 #' }
 #' @export
 ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
+                  force_continuous = NULL,
                   output_xlsx = NULL, output_docx = NULL,
                   consider_normality = "ROBUST", print_normality = FALSE,
                   round_intg = FALSE, smart_rename = TRUE, insert_subheads = TRUE,
@@ -218,7 +223,9 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
     v <- df[[var]]
 
     # Auto-detect binary numeric (0/1) as categorical Y/N
-    if (is.numeric(v) && length(unique(stats::na.omit(v))) == 2 && all(stats::na.omit(v) %in% c(0, 1))) {
+    # Skipped when the variable is listed in force_continuous
+    if (is.numeric(v) && length(unique(stats::na.omit(v))) == 2 && all(stats::na.omit(v) %in% c(0, 1)) &&
+        !(var %in% force_continuous)) {
       v <- factor(v, levels = c(0, 1), labels = c("N", "Y"))
     }
 
@@ -489,7 +496,8 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
     OR_method             = "dynamic",
     post_hoc              = FALSE,
     citation              = citation,
-    font_family           = font_family
+    font_family           = font_family,
+    force_continuous      = force_continuous
   )
 
   out_tbl

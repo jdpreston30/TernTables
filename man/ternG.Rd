@@ -10,6 +10,7 @@ ternG(
   exclude_vars = NULL,
   group_var,
   force_ordinal = NULL,
+  force_continuous = NULL,
   group_order = NULL,
   output_xlsx = NULL,
   output_docx = NULL,
@@ -56,6 +57,13 @@ ternG(
 \item{group_var}{Character, the grouping variable (factor or character with >=2 levels).}
 
 \item{force_ordinal}{Character vector of variables to treat as ordinal (i.e., use medians/IQR and nonparametric tests).}
+
+\item{force_continuous}{Character vector of variables to force treatment as continuous (mean \eqn{\pm} SD and
+parametric tests), bypassing the automatic binary \code{0/1} detection that would otherwise convert
+them to categorical Y/N. Useful when a numeric variable with only two unique values (e.g. \code{0}/\code{1}
+dose levels) should be analysed as a continuous measurement rather than a dichotomous category.
+Takes priority over automatic type detection but does not override \code{force_ordinal} (if a variable
+appears in both, \code{force_ordinal} wins). Default is \code{NULL}.}
 
 \item{group_order}{Optional character vector to specify a custom group level order.}
 

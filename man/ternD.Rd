@@ -9,6 +9,7 @@ ternD(
   vars = NULL,
   exclude_vars = NULL,
   force_ordinal = NULL,
+  force_continuous = NULL,
   output_xlsx = NULL,
   output_docx = NULL,
   consider_normality = "ROBUST",
@@ -45,6 +46,11 @@ ternD(
 \item{force_ordinal}{Character vector of variables to treat as ordinal (i.e., use median [IQR]) 
 regardless of the \code{consider_normality} setting. This parameter takes priority over 
 normality testing when \code{consider_normality = "ROBUST"} or \code{TRUE}.}
+
+\item{force_continuous}{Character vector of variables to force treatment as continuous (mean \eqn{\pm} SD),
+bypassing the automatic binary \code{0/1} detection that would otherwise convert them to categorical Y/N.
+Useful when a numeric variable with only two unique values (e.g. \code{0}/\code{1} dose levels) should
+be analysed as a continuous measurement rather than a dichotomous category. Default is \code{NULL}.}
 
 \item{output_xlsx}{Optional Excel filename to export the table.}
 

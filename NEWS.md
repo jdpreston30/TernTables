@@ -1,3 +1,21 @@
+# TernTables 1.6.3.9019 (development)
+
+## New features
+
+* **`force_continuous` parameter** — `ternG()` and `ternD()` now accept a
+  `force_continuous` character vector. Variables listed here bypass the automatic
+  binary numeric detection that would otherwise convert a `{0, 1}` column to a
+  categorical Y/N variable. Instead, they are analysed as continuous measurements
+  (mean ± SD and parametric tests, subject to the `consider_normality` setting).
+  This is useful when a numeric variable with only two unique values represents
+  a measurement or dose level rather than a dichotomous category. If a variable
+  appears in both `force_continuous` and `force_ordinal`, `force_ordinal` wins.
+  The parameter is stored in the `ternB_meta` attribute and is emitted in the
+  generated `_reproduce.R` script. In the web app, users can override the detected
+  type for any numeric variable via a dropdown in the Table Layout step.
+
+---
+
 # TernTables 1.6.3.9009 (development)
 
 ## New features
