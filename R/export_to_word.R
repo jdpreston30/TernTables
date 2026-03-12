@@ -484,10 +484,17 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
     if (!is.null(italic_cols) && length(italic_cols) > 0) ft <- italic(ft, j = italic_cols, part = "header")
   }
 
-  # Shrink all columns to fit their content, then lock row heights exactly.
-  # height() and hrule() must come AFTER autofit() -- autofit resets row heights
-  # as a side effect of its column-width calculation.
+  # Size columns to content, then scale down to fit the page text width (6.5 in,
+  # Letter portrait with 1-in margins) if the table is too wide.
+  # Column 1 (variable names) gets word-wrap so long names wrap within a
+  # reasonable width rather than forcing the whole table wider.
+  # Row heights are locked AFTER fit_to_width because fit_to_width may adjust widths.
   ft <- autofit(ft)
+  tbl_width <- sum(flextable::flextable_dim(ft)$widths)
+  page_width <- 6.5  # inches: Letter page (8.5) minus 1-in margins each side
+  if (tbl_width > page_width) {
+    ft <- flextable::fit_to_width(ft, max_width = page_width)
+  }
   ft <- ft %>%
     height(height = font_size / 72 * 1.5, part = "body") %>%
     flextable::hrule(rule = "exact", part = "body")
