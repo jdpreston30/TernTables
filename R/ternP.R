@@ -167,24 +167,36 @@ ternP <- function(data) {
 
   # ---------------------------------------------------------------------------
   # Step 1: Convert string NA values to NA
-  #   "NA", "na", "Na", "unk" in any character column are treated as missing.
+  #   Common text representations of missing data in any character column are
+  #   coerced to NA. Matching is case-insensitive via a vectorised tolower()
+  #   comparison so the list below covers all capitalisation variants.
   # ---------------------------------------------------------------------------
-  string_na_values <- c("NA", "na", "Na", "unk")
+  string_na_values <- c(
+    "na", "n/a", "n\\a", "nan",
+    "missing", "unknown", "unk",
+    "not available", "not applicable",
+    "none", "null", "nil",
+    "-", "--", "---",
+    ".", "?", "99", "999", "9999", "-9", "-99", "-999"
+  )
 
   # Count total occurrences and record which columns are affected before cleaning.
+  # Matching is case-insensitive: compare tolower(value) against the lowercase list.
+  .is_sna <- function(x) !is.na(x) & (tolower(trimws(x)) %in% string_na_values)
+
   sna_cols  <- Filter(function(nm) {
     col <- data[[nm]]
-    is.character(col) && any(col %in% string_na_values, na.rm = TRUE)
+    is.character(col) && any(.is_sna(col))
   }, names(data))
   sna_total <- sum(vapply(sna_cols, function(nm) {
-    sum(data[[nm]] %in% string_na_values, na.rm = TRUE)
+    sum(.is_sna(data[[nm]]))
   }, integer(1)))
 
   data <- dplyr::mutate(
     data,
     dplyr::across(
       dplyr::where(is.character),
-      ~ dplyr::if_else(. %in% string_na_values, NA_character_, .)
+      ~ dplyr::if_else(.is_sna(.), NA_character_, .)
     )
   )
 
