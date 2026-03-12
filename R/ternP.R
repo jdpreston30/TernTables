@@ -7,6 +7,10 @@
 #'
 #' @section Cleaning pipeline (in order):
 #' \enumerate{
+#'   \item Date columns are detected (R \code{Date}/\code{POSIXct} types, or
+#'     character columns where ≥80\% of values match a common date pattern) and
+#'     reported in \code{feedback$date_cols_detected}. They are not dropped
+#'     automatically — the caller decides whether to exclude or keep them.
 #'   \item String NA values (\code{"NA"}, \code{"na"}, \code{"Na"},
 #'     \code{"unk"}) are converted to \code{NA}.
 #'   \item Leading and trailing whitespace is trimmed from all character
@@ -63,11 +67,16 @@
 #'         \code{cols} (character vector of affected column names) and
 #'         \code{detail} (a named list per column, each with
 #'         \code{changed_from} and \code{changed_to} character vectors
-#'         showing the exact value changes), or \code{NULL} if none.}
-#'       \item{\code{dropped_empty_cols}}{Character vector of column names
-#'         (or \code{""} for unnamed columns) that were dropped because they
-#'         were 100\% empty, or \code{NULL} if none.}
-#'     }}
+#'         showing the exact value changes), or \code{NULL} if none.}  #'       \item{\code{dropped_empty_cols}}{Character vector of column names
+  #'         (or \code{""} for unnamed columns) that were dropped because they
+  #'         were 100\% empty, or \code{NULL} if none.}
+  #'       \item{\code{date_cols_detected}}{Character vector of column names
+  #'         that appear to contain date values — either R \code{Date}/\code{POSIXct}
+  #'         types (from Excel) or character columns where ≥80\% of non-NA values
+  #'         match a common date pattern (from CSV). These columns are \emph{not}
+  #'         dropped automatically; the caller should decide whether to exclude
+  #'         them or keep them as categorical variables.}
+  #'     }}
 #' }
 #'
 #' @seealso \code{\link{ternG}} for grouped comparisons, \code{\link{ternD}} for descriptive statistics.
@@ -114,8 +123,47 @@ ternP <- function(data) {
     blank_rows_removed   = NULL,
     sparse_rows_flagged  = NULL,
     case_normalized_vars = NULL,
-    dropped_empty_cols   = NULL
+    dropped_empty_cols   = NULL,
+    date_cols_detected   = NULL
   )
+
+  # ---------------------------------------------------------------------------
+  # Step 0: Detect date columns
+  #   Flags columns that are R Date/POSIXct types (from Excel) or character
+  #   columns where ≥80% of non-NA values match a common date pattern (CSV).
+  #   Detected columns are reported in feedback but NOT dropped here — the
+  #   caller decides what to do with them (exclude or keep as categorical).
+  # ---------------------------------------------------------------------------
+  .date_patterns <- c(
+    "^\\d{4}-\\d{2}-\\d{2}$",                          # YYYY-MM-DD
+    "^\\d{2}/\\d{2}/\\d{4}$",                          # MM/DD/YYYY or DD/MM/YYYY
+    "^\\d{2}-\\d{2}-\\d{4}$",                          # MM-DD-YYYY or DD-MM-YYYY
+    "^\\d{1,2}[/-]\\d{1,2}[/-]\\d{2,4}$",             # M/D/YY variants
+    "^\\d{1,2}\\s+[A-Za-z]{3,9}\\s+\\d{4}$",          # 15 March 2021
+    "^[A-Za-z]{3,9}\\s+\\d{1,2},?\\s+\\d{4}$",        # March 15, 2021
+    "^\\d{1,2}-[A-Za-z]{3}-\\d{4}$",                   # 15-Mar-2021
+    "^[A-Za-z]{3}-\\d{1,2}-\\d{4}$",                   # Mar-15-2021
+    "^\\d{8}$"                                          # YYYYMMDD compact
+  )
+
+  .is_date_type  <- function(col) inherits(col, c("Date", "POSIXct", "POSIXlt"))
+  .is_date_chars <- function(col) {
+    if (!is.character(col)) return(FALSE)
+    non_na <- col[!is.na(col)]
+    if (length(non_na) == 0) return(FALSE)
+    matched <- vapply(.date_patterns, function(p) {
+      mean(grepl(p, non_na)) >= 0.80
+    }, logical(1))
+    any(matched)
+  }
+
+  date_col_names <- names(data)[vapply(names(data), function(nm) {
+    .is_date_type(data[[nm]]) || .is_date_chars(data[[nm]])
+  }, logical(1))]
+
+  if (length(date_col_names) > 0) {
+    feedback$date_cols_detected <- date_col_names
+  }
 
   # ---------------------------------------------------------------------------
   # Step 1: Convert string NA values to NA
@@ -263,6 +311,14 @@ ternP <- function(data) {
       "No transformations required. Data passed through unchanged."
     )
   } else {
+    if (!is.null(fb$date_cols_detected)) {
+      dc <- fb$date_cols_detected
+      cli::cli_alert_warning(
+        "{length(dc)} potential date column{?s} detected: {.val {dc}}. \\
+Review these columns — date values cannot be summarised statistically. \\
+Exclude them or keep as categorical."
+      )
+    }
     if (!is.null(fb$string_na_converted)) {
       sna <- fb$string_na_converted
       cli::cli_alert_info(

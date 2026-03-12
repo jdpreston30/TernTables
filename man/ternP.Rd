@@ -40,10 +40,15 @@ A named list with three elements:
         \code{cols} (character vector of affected column names) and
         \code{detail} (a named list per column, each with
         \code{changed_from} and \code{changed_to} character vectors
-        showing the exact value changes), or \code{NULL} if none.}
-      \item{\code{dropped_empty_cols}}{Character vector of column names
+        showing the exact value changes), or \code{NULL} if none.}  #'       \item{\code{dropped_empty_cols}}{Character vector of column names
         (or \code{""} for unnamed columns) that were dropped because they
         were 100\% empty, or \code{NULL} if none.}
+      \item{\code{date_cols_detected}}{Character vector of column names
+        that appear to contain date values — either R \code{Date}/\code{POSIXct}
+        types (from Excel) or character columns where ≥80\% of non-NA values
+        match a common date pattern (from CSV). These columns are \emph{not}
+        dropped automatically; the caller should decide whether to exclude
+        them or keep them as categorical variables.}
     }}
 }
 }
@@ -56,6 +61,10 @@ checks before the data is passed to \code{\link{ternG}} or
 \section{Cleaning pipeline (in order)}{
 
 \enumerate{
+  \item Date columns are detected (R \code{Date}/\code{POSIXct} types, or
+    character columns where ≥80\% of values match a common date pattern) and
+    reported in \code{feedback$date_cols_detected}. They are not dropped
+    automatically — the caller decides whether to exclude or keep them.
   \item String NA values (\code{"NA"}, \code{"na"}, \code{"Na"},
     \code{"unk"}) are converted to \code{NA}.
   \item Leading and trailing whitespace is trimmed from all character
