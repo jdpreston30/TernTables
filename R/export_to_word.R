@@ -626,9 +626,9 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
     doc <- body_set_default_section(
       doc,
       value = prop_section(
-        page_size    = page_size(width = 8.5, height = 11, orient = "portrait"),
-        page_margins = page_mar(top = 1, bottom = 1, left = 1, right = 1,
-                                header = 0.5, footer = 0.5, gutter = 0),
+        page_size    = officer::page_size(width = 8.5, height = 11, orient = "portrait"),
+        page_margins = officer::page_mar(top = 1, bottom = 1, left = 1, right = 1,
+                                         header = 0.5, footer = 0.5, gutter = 0),
         footer_default = block_list(
           fpar(ftext(.tern_citation_line(), prop = cit_props))
         )
@@ -638,9 +638,9 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
     doc <- body_set_default_section(
       doc,
       value = prop_section(
-        page_size    = page_size(width = 8.5, height = 11, orient = "portrait"),
-        page_margins = page_mar(top = 1, bottom = 1, left = 1, right = 1,
-                                header = 0.5, footer = 0.5, gutter = 0)
+        page_size    = officer::page_size(width = 8.5, height = 11, orient = "portrait"),
+        page_margins = officer::page_mar(top = 1, bottom = 1, left = 1, right = 1,
+                                         header = 0.5, footer = 0.5, gutter = 0)
       )
     )
   }
