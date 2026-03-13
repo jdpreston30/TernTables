@@ -488,6 +488,14 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
   # height() and hrule() must come AFTER autofit() -- autofit resets row heights
   # as a side effect of its column-width calculation.
   ft <- autofit(ft)
+  # If the autofit width exceeds the usable page width (6.5 in = Letter - 1in
+  # margins each side), scale the table down so it fits on the page without
+  # overflowing. This prevents cut-off columns in Word / PDF / the preview PNG.
+  ft_dims <- flextable::flextable_dim(ft)
+  page_width_in <- 6.5
+  if (!is.null(ft_dims$widths) && sum(ft_dims$widths) > page_width_in) {
+    ft <- flextable::fit_to_width(ft, max_width = page_width_in)
+  }
   ft <- ft %>%
     height(height = font_size / 72 * 1.5, part = "body") %>%
     flextable::hrule(rule = "exact", part = "body")
