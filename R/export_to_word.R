@@ -484,10 +484,15 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
     if (!is.null(italic_cols) && length(italic_cols) > 0) ft <- italic(ft, j = italic_cols, part = "header")
   }
 
-  # Shrink all columns to fit their content, then lock row heights exactly.
-  # height() and hrule() must come AFTER autofit() -- autofit resets row heights
-  # as a side effect of its column-width calculation.
+  # Size columns to content, then scale proportionally to fill the usable page
+  # width (Letter portrait: 8.5in - 1in margins each side = 6.5in).
+  # fit_to_width() only redistributes column widths — font size is never touched.
+  # For tables narrower than 6.5in it stretches them to fill the page (no white
+  # space on the right). For tables wider than 6.5in it scales them down to fit
+  # (prevents LibreOffice PDF overflow and magick preview failures).
+  # Row heights are locked AFTER fit_to_width because it adjusts column widths.
   ft <- autofit(ft)
+  ft <- flextable::fit_to_width(ft, max_width = 6.5)
   ft <- ft %>%
     height(height = font_size / 72 * 1.5, part = "body") %>%
     flextable::hrule(rule = "exact", part = "body")
@@ -612,16 +617,30 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
     doc <- doc %>% body_add_break()
   }
 
-  # ── Word document page footer (citation line) ─────────────────────────────
+  # ── Word document page setup + footer (citation line) ────────────────────
+  # Always set explicit Letter portrait margins (1in each side) so the 6.5in
+  # fit_to_width above is guaranteed to match what Word renders.
   if (isTRUE(citation)) {
     cit_props <- fp_text(font.family = font_family, font.size = 8,
                          bold = TRUE, italic = TRUE, color = "black")
     doc <- body_set_default_section(
       doc,
       value = prop_section(
+        page_size    = page_size(width = 8.5, height = 11, orient = "portrait"),
+        page_margins = page_mar(top = 1, bottom = 1, left = 1, right = 1,
+                                header = 0.5, footer = 0.5, gutter = 0),
         footer_default = block_list(
           fpar(ftext(.tern_citation_line(), prop = cit_props))
         )
+      )
+    )
+  } else {
+    doc <- body_set_default_section(
+      doc,
+      value = prop_section(
+        page_size    = page_size(width = 8.5, height = 11, orient = "portrait"),
+        page_margins = page_mar(top = 1, bottom = 1, left = 1, right = 1,
+                                header = 0.5, footer = 0.5, gutter = 0)
       )
     )
   }
