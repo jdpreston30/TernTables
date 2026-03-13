@@ -1,4 +1,38 @@
-# TernTables 1.6.3.9019 (development)
+# TernTables 1.6.3.9021 (development)
+
+## New features
+
+* **Bold-convention footnote in grouped tables**: `ternG()` now automatically
+  appends an explanatory note to the footnote block of every grouped table
+  describing the bold formatting convention. When a P value column is present,
+  the note reads *"Bold p-values indicate statistical significance (p < 0.05)."*
+  When an OR column is also present, it reads *"Bold values indicate statistical
+  significance (p < 0.05); bold OR indicates 95% CI excludes 1."* The note is
+  prepended to `abbreviation_footnote` and stored in `ternB_meta` so `ternB()`
+  replays it correctly in combined documents.
+
+## Bug fixes
+
+* **Wide-table page overflow**: `word_export()` now measures the total table
+  width via `flextable::flextable_dim()` after `autofit()`. If the width exceeds
+  6.5 inches (Letter page minus 1-inch margins), `fit_to_width(max_width = 6.5)`
+  is applied to proportionally scale all columns down to fit the page. Tables
+  that fit within 6.5 inches are unaffected. This prevents columns from being
+  cut off in Word, PDF exports, and the web app preview PNG for datasets with
+  many variables or long variable names.
+
+* **Multi-page preview PNG crash**: The preview PNG pipeline in the Plumber API
+  used `img[[i]]` (double-bracket) to index into a magick image vector when
+  stacking multiple pages. Magick image vectors require single-bracket `[i]`
+  subsetting — double-bracket returns the raw internal object, not a valid
+  magick image, causing the error *"The 'image' argument is not a magick image
+  object"* for any table that rendered to more than one page. Fixed by
+  processing each page individually with `img[i]` inside a `lapply` loop before
+  stacking with `image_append`. Single-page tables were unaffected.
+
+---
+
+# TernTables 1.6.3.9020 (development)
 
 ## New features
 
