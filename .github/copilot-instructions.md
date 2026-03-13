@@ -410,7 +410,15 @@ When you add a new argument to `ternG()`/`ternD()`, the issue file **must** note
 
 ## 14. Deployment Notes (context only)
 
-The service runs on AWS Lightsail (`tern-tables.com`). Package updates only take effect on the server after running `./scripts/deploy.sh --update-pkg`. Merging to `main` in the package repo does not auto-deploy anything.
+The service runs on AWS Lightsail (`tern-tables.com`). Package updates only take effect on the server after installing via `remotes::install_github` and restarting the service. Merging to `main` in the package repo does not auto-deploy anything.
+
+**Standard server deploy flow** (use the `deploy-pkg` shortcut):
+1. `git push origin main` — local
+2. `sudo Rscript -e "remotes::install_github('jdpreston30/TernTables', force = TRUE)"` — server
+3. `sudo systemctl restart terntables-r` — server
+
+SSH key: `~/.ssh/LightsailDefaultKey-us-east-1-1.pem`, user: `ubuntu@tern-tables.com`
+Service name: `terntables-r`
 
 ---
 
@@ -436,6 +444,22 @@ Walk through the full parameter wiring checklist (Section 6) for the named param
 
 ### `issue <feature-name>`
 Create a new issue document at `development/issues/<feature-name>.md` using the template in Section 8. Pre-fill the PACKAGE changes section based on recent work, leave APP changes sections as prompts to fill in.
+
+### `deploy-pkg`
+Push the current local package to GitHub, then install it on the server and restart the service. Run these steps **in sequence**, stopping and reporting if any step errors:
+
+1. `git push origin main` — push local commits to GitHub
+2. SSH to server and run:
+   ```bash
+   sudo Rscript -e "remotes::install_github('jdpreston30/TernTables', force = TRUE)"
+   sudo systemctl restart terntables-r
+   sudo systemctl status terntables-r --no-pager | head -6
+   ```
+
+SSH key: `~/.ssh/LightsailDefaultKey-us-east-1-1.pem`
+Server: `ubuntu@tern-tables.com`
+
+> **Note:** This is the standard server deploy flow. Do NOT use `R CMD build` + `scp` + `R CMD INSTALL` unless `remotes::install_github` fails.
 
 ---
 

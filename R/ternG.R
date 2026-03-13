@@ -1058,7 +1058,9 @@ ternG <- function(data,
     effective_footnote <- if (is.null(table_footnote)) notes else c(notes, table_footnote)
 
   # Auto-append bold-convention note to abbreviation_footnote
-  has_p_col  <- "p_value" %in% colnames(out_tbl) || "P value" %in% colnames(out_tbl)
+  # The p-value column is named "P" in out_tbl (renamed to "P value" only inside word_export).
+  # FDR-corrected variant is "P value (FDR corrected)".
+  has_p_col  <- any(c("P", "P value (FDR corrected)") %in% colnames(out_tbl))
   has_or_col <- isTRUE(OR_col) && "OR" %in% colnames(out_tbl)
   bold_note  <- if (has_p_col && has_or_col) {
     "Bold values indicate statistical significance (p\u00a0<\u00a00.05); bold OR indicates 95% CI excludes 1."
