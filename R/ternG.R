@@ -1057,7 +1057,23 @@ ternG <- function(data,
   if (length(notes) > 0L)
     effective_footnote <- if (is.null(table_footnote)) notes else c(notes, table_footnote)
 
-  if (!is.null(output_docx)) word_export(out_tbl, output_docx, round_intg = round_intg, font_size = table_font_size, category_start = category_start, plain_header = plain_header, manual_italic_indent = manual_italic_indent, manual_underline = manual_underline, table_caption = table_caption, table_footnote = effective_footnote, abbreviation_footnote = abbreviation_footnote, posthoc_footnote = posthoc_note, variable_footnote = variable_footnote, index_style = index_style, line_break_header = line_break_header, open_doc = open_doc, citation = citation, font_family = font_family)
+  # Auto-append bold-convention note to abbreviation_footnote
+  has_p_col  <- "p_value" %in% colnames(out_tbl) || "P value" %in% colnames(out_tbl)
+  has_or_col <- isTRUE(OR_col) && "OR" %in% colnames(out_tbl)
+  bold_note  <- if (has_p_col && has_or_col) {
+    "Bold values indicate statistical significance (p\u00a0<\u00a00.05); bold OR indicates 95% CI excludes 1."
+  } else if (has_p_col) {
+    "Bold p-values indicate statistical significance (p\u00a0<\u00a00.05)."
+  } else {
+    NULL
+  }
+  effective_abbr <- if (!is.null(bold_note)) {
+    if (is.null(abbreviation_footnote)) bold_note else c(abbreviation_footnote, bold_note)
+  } else {
+    abbreviation_footnote
+  }
+
+  if (!is.null(output_docx)) word_export(out_tbl, output_docx, round_intg = round_intg, font_size = table_font_size, category_start = category_start, plain_header = plain_header, manual_italic_indent = manual_italic_indent, manual_underline = manual_underline, table_caption = table_caption, table_footnote = effective_footnote, abbreviation_footnote = effective_abbr, posthoc_footnote = posthoc_note, variable_footnote = variable_footnote, index_style = index_style, line_break_header = line_break_header, open_doc = open_doc, citation = citation, font_family = font_family)
 
   if (!indent_info_column) out_tbl <- dplyr::select(out_tbl, -dplyr::any_of(".indent"))
 
@@ -1072,7 +1088,7 @@ ternG <- function(data,
     manual_underline      = manual_underline,
     table_caption         = table_caption,
     table_footnote        = effective_footnote,
-    abbreviation_footnote = abbreviation_footnote,
+    abbreviation_footnote = effective_abbr,
     posthoc_footnote      = posthoc_note,
     variable_footnote     = variable_footnote,
     index_style           = index_style,
