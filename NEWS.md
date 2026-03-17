@@ -62,7 +62,7 @@
   generated dynamically: the package version is resolved at runtime with the
   development suffix stripped (e.g. `1.6.3.9009` → `1.6.3`). Set
   `citation = FALSE` to suppress. Citation format:
-  *Preston JD, Abadiotakis H, Tang A, Aslam MV, Rust CJ, Chan JL.
+  *Preston JD, Abadiotakis H, Tang A, Rust CJ, Chan JL.
   TernTables: Publication-ready summary tables and statistical testing for
   clinical research. R package version 1.6.3, 2026. Available at:
   https://github.com/jdpreston30/TernTables (Web interface:
