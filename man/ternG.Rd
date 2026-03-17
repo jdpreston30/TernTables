@@ -240,6 +240,15 @@ can be treated as ordinal via \code{force_ordinal}. Includes options to
 calculate P values and odds ratios. For descriptive
 (ungrouped) tables, use \code{ternD}.
 }
+\details{
+\strong{Independence assumption:} all statistical tests applied by this
+function (Welch's \emph{t}-test, Wilcoxon rank-sum, Welch ANOVA,
+Kruskal-Wallis, chi-squared, and Fisher's exact) assume that observations
+are independent — each row must represent a distinct, unrelated subject.
+\code{ternG} is not appropriate for repeated-measures, longitudinal, or
+clustered data (e.g. pre/post measurements, matched pairs, or patients
+nested within sites).
+}
 \examples{
 data(tern_colon)
 

@@ -8,7 +8,7 @@
 #' @section Cleaning pipeline (in order):
 #' \enumerate{
 #'   \item Date columns are detected (R \code{Date}/\code{POSIXct} types, or
-#'     character columns where ≥80\% of values match a common date pattern) and
+#'     character columns where \eqn{\geq}80\% of values match a common date pattern) and
 #'     reported in \code{feedback$date_cols_detected}. They are not dropped
 #'     automatically — the caller decides whether to exclude or keep them.
 #'   \item String NA values (\code{"NA"}, \code{"na"}, \code{"Na"},
@@ -72,7 +72,7 @@
   #'         were 100\% empty, or \code{NULL} if none.}
   #'       \item{\code{date_cols_detected}}{Character vector of column names
   #'         that appear to contain date values — either R \code{Date}/\code{POSIXct}
-  #'         types (from Excel) or character columns where ≥80\% of non-NA values
+  #'         types (from Excel) or character columns where \eqn{\geq}80\% of non-NA values
   #'         match a common date pattern (from CSV). These columns are \emph{not}
   #'         dropped automatically; the caller should decide whether to exclude
   #'         them or keep them as categorical variables.}
@@ -327,7 +327,7 @@ ternP <- function(data) {
       dc <- fb$date_cols_detected
       cli::cli_alert_warning(
         "{length(dc)} potential date column{?s} detected: {.val {dc}}. \\
-Review these columns — date values cannot be summarised statistically. \\
+Review these columns \u2014 date values cannot be summarised statistically. \\
 Exclude them or keep as categorical."
       )
     }

@@ -6,6 +6,14 @@
 #' calculate P values and odds ratios. For descriptive
 #' (ungrouped) tables, use \code{ternD}.
 #'
+#' \strong{Independence assumption:} all statistical tests applied by this
+#' function (Welch's \emph{t}-test, Wilcoxon rank-sum, Welch ANOVA,
+#' Kruskal-Wallis, chi-squared, and Fisher's exact) assume that observations
+#' are independent — each row must represent a distinct, unrelated subject.
+#' \code{ternG} is not appropriate for repeated-measures, longitudinal, or
+#' clustered data (e.g. pre/post measurements, matched pairs, or patients
+#' nested within sites).
+#'
 #' @param data Tibble containing all variables.
 #' @param vars Character vector of variables to summarize. Defaults to all except \code{group_var} and \code{exclude_vars}.
 #' @param exclude_vars Character vector of variable(s) to exclude. \code{group_var} is automatically excluded.

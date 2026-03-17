@@ -3,6 +3,7 @@
 *.Rhistory
 *.RData
 *.Ruserdata
+*.tar.gz
 feature.R
 
 # devtools/roxygen build artifacts

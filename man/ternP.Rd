@@ -45,7 +45,7 @@ A named list with three elements:
         were 100\% empty, or \code{NULL} if none.}
       \item{\code{date_cols_detected}}{Character vector of column names
         that appear to contain date values — either R \code{Date}/\code{POSIXct}
-        types (from Excel) or character columns where ≥80\% of non-NA values
+        types (from Excel) or character columns where \eqn{\geq}80\% of non-NA values
         match a common date pattern (from CSV). These columns are \emph{not}
         dropped automatically; the caller should decide whether to exclude
         them or keep them as categorical variables.}
@@ -62,7 +62,7 @@ checks before the data is passed to \code{\link{ternG}} or
 
 \enumerate{
   \item Date columns are detected (R \code{Date}/\code{POSIXct} types, or
-    character columns where ≥80\% of values match a common date pattern) and
+    character columns where \eqn{\geq}80\% of values match a common date pattern) and
     reported in \code{feedback$date_cols_detected}. They are not dropped
     automatically — the caller decides whether to exclude or keep them.
   \item String NA values (\code{"NA"}, \code{"na"}, \code{"Na"},

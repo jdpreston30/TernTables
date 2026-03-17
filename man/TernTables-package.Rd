@@ -27,15 +27,30 @@ Numeric variables can be designated as ordinal via \code{force_ordinal}.
 \section{Statistical tests applied}{
 
 \describe{
-  \item{Continuous (2 groups)}{Welch's \emph{t}-test or Wilcoxon rank-sum, routed by ROBUST logic.}
-  \item{Continuous (3+ groups)}{Welch ANOVA or Kruskal-Wallis, routed by ROBUST logic per group.}
-  \item{Binary / Categorical}{Chi-squared or Fisher's exact, based on expected cell counts.}
-  \item{Ordinal (forced)}{Wilcoxon rank-sum (2 groups) or Kruskal-Wallis (3+ groups).}
+  \item{Binary / Categorical}{Chi-squared or Fisher's exact, based on expected cell counts (Cochran criterion).}
+  \item{Numeric, normal (2 groups)}{Welch's \emph{t}-test, routed by ROBUST logic.}
+  \item{Numeric, normal (3+ groups)}{Welch ANOVA, routed by ROBUST logic per group.}
+  \item{Numeric, non-normal (2 groups)}{Wilcoxon rank-sum, routed by ROBUST logic or forced via \code{force_ordinal}.}
+  \item{Numeric, non-normal (3+ groups)}{Kruskal-Wallis, routed by ROBUST logic or forced via \code{force_ordinal}.}
 }
 ROBUST routing uses four gates: (1) n < 3 \eqn{\Rightarrow} non-parametric (fail-safe);
 (2) |skewness| > 2 in any group \eqn{\Rightarrow} non-parametric;
 (3) all groups n \eqn{\geq} 30 \eqn{\Rightarrow} parametric (CLT);
 (4) otherwise Shapiro-Wilk p > 0.05 in all groups \eqn{\Rightarrow} parametric.
+}
+
+\section{Scope and limitations}{
+
+All statistical tests applied by \code{\link{ternG}} assume
+\strong{independent observations} — that is, each row of the data frame
+represents a distinct, unrelated subject with no dependencies between rows.
+TernTables is \strong{not} designed for repeated-measures, longitudinal, or
+clustered data where the same subject contributes multiple rows (e.g.
+pre/post measurements, matched pairs, or patients nested within clinical
+sites). Applying it to such data would violate the independence assumption
+shared by all tests in the package (Welch's \emph{t}-test, Wilcoxon
+rank-sum, Welch ANOVA, Kruskal-Wallis, chi-squared, and Fisher's exact)
+and would produce invalid p-values.
 }
 
 \section{Getting started}{
@@ -70,7 +85,6 @@ Authors:
 \itemize{
   \item Helen Abadiotakis (\href{https://orcid.org/0009-0002-8268-927X}{ORCID})
   \item Ailin Tang (\href{https://orcid.org/0009-0007-8715-1678}{ORCID})
-  \item Maria V. Aslam (\href{https://orcid.org/0000-0002-0036-3851}{ORCID})
   \item Clayton J. Rust (\href{https://orcid.org/0000-0001-5929-0733}{ORCID})
   \item Joshua L. Chan (\href{https://orcid.org/0000-0001-7220-561X}{ORCID})
 }

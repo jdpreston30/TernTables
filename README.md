@@ -116,6 +116,8 @@ tbl_descriptive <- ternD(
 
 ### `ternG()` — Grouped comparison table
 
+> **Independence assumption:** all tests applied by `ternG()` assume each row represents a distinct, unrelated subject. TernTables is not designed for repeated-measures, longitudinal, or clustered data (e.g. pre/post measurements, matched pairs, or patients nested within sites), where the independence assumption is violated and *P* values would be invalid.
+
 Use `ternG()` to compare variables between two or more groups. Set `OR_col = TRUE` to add unadjusted odds ratios with 95% CI for any two-level variable in two-group comparisons — including binary variables (Y/N, 0/1) and two-level categoricals such as Male/Female or Present/Absent. The reference level (factor level 1, or alphabetical first for non-factors) shows `1.00 (ref.)`; the non-reference level shows the computed OR with 95% CI. Fisher's exact or Wald method is chosen automatically based on expected cell counts (Cochran criterion). Unadjusted odds ratios are not available for 3+ groups.
 
 Set `p_adjust = TRUE` to apply Benjamini-Hochberg (BH) false discovery rate (FDR) correction to all omnibus *P* values after testing (Benjamini & Hochberg, 1995). The correction pool is one *P* value per variable; post-hoc pairwise *P* values are excluded. Use `p_adjust_display = "fdr_only"` (default) to show only FDR-corrected values — the *P* value column is renamed to `"P value (FDR corrected)"`. Use `p_adjust_display = "both"` to show original and corrected values side by side. The auto-generated methods paragraph is updated automatically when `p_adjust = TRUE`.
@@ -165,10 +167,11 @@ Statistical tests applied automatically:
 
 | Variable type | 2 groups | 3+ groups | Post-hoc (3+ groups, `post_hoc = TRUE`, omnibus *p* < 0.05) |
 |---|---|---|---|
-| Continuous, normal | Welch's *t*-test | Welch ANOVA | Games-Howell |
-| Continuous, non-normal | Wilcoxon rank-sum | Kruskal-Wallis | Dunn's + Holm |
 | Binary / Categorical | Fisher's exact or Chi-squared | Fisher's exact or Chi-squared | — |
-| Ordinal (`force_ordinal`) | Wilcoxon rank-sum | Kruskal-Wallis | Dunn's + Holm |
+| Numeric, normal | Welch's *t*-test | Welch ANOVA | Games-Howell |
+| Numeric, non-normal† | Wilcoxon rank-sum | Kruskal-Wallis | Dunn's + Holm |
+
+†Includes variables designated as ordinal via `force_ordinal`, which bypass normality testing and always use non-parametric methods.
 
 Fisher's exact is used when any expected cell count is < 5 (Cochran criterion). If the exact algorithm cannot complete (workspace limit exceeded for large tables), Fisher's exact with Monte Carlo simulation (B = 10,000; seed fixed via `getOption("TernTables.seed")`, default 42) is used automatically.
 

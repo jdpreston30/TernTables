@@ -107,10 +107,11 @@ first?</mark>
 
 | Variable type | Test (2 groups) | Test (3+ groups) | Post-hoc (omnibus *p* < 0.05) |
 |---|---|---|---|
-| Continuous, normal | Welch's *t*-test | Welch ANOVA | Games-Howell |
-| Continuous, non-normal | Wilcoxon rank-sum | Kruskal-Wallis | Dunn's + Holm |
 | Binary / Categorical | Fisher's exact or Chi-squared† | Fisher's exact or Chi-squared† | — |
-| Ordinal (`force_ordinal`) | Wilcoxon rank-sum | Kruskal-Wallis | Dunn's + Holm |
+| Numeric, normal | Welch's *t*-test | Welch ANOVA | Games-Howell |
+| Numeric, non-normal‡ | Wilcoxon rank-sum | Kruskal-Wallis | Dunn's + Holm |
+
+‡Includes variables designated as ordinal via `force_ordinal`, which bypass normality testing and always use non-parametric methods.
 
 †Fisher's exact when any expected cell < 5 (Cochran criterion). If the exact
 algorithm exceeds its workspace limit (e.g. 3×4+ tables), Monte Carlo

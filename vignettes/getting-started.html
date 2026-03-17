@@ -385,6 +385,15 @@ session, making every analysis fully transparent and reproducible. For
 scripted or reproducible workflows, the R package (this vignette)
 remains the canonical reference.</p>
 </blockquote>
+<blockquote>
+<p><strong>Scope — independent observations only:</strong> all
+statistical tests in <code>ternG()</code> assume each row represents a
+distinct, unrelated subject. TernTables is <strong>not</strong> designed
+for repeated-measures, longitudinal, or clustered data (e.g. pre/post
+measurements, matched pairs, or patients nested within sites). Applying
+it to such data would violate the independence assumption shared by all
+tests in the package and produce invalid <em>P</em> values.</p>
+</blockquote>
 </div>
 <div id="example-dataset" class="section level2">
 <h2>Example Dataset</h2>
@@ -755,31 +764,28 @@ normality:</p>
 </thead>
 <tbody>
 <tr class="odd">
-<td>Continuous, normal</td>
-<td>Welch’s <em>t</em>-test</td>
-<td>Welch ANOVA</td>
-<td>Games-Howell</td>
-</tr>
-<tr class="even">
-<td>Continuous, non-normal</td>
-<td>Wilcoxon rank-sum</td>
-<td>Kruskal-Wallis</td>
-<td>Dunn’s + Holm</td>
-</tr>
-<tr class="odd">
 <td>Binary / Categorical</td>
 <td>Fisher’s exact or Chi-squared*</td>
 <td>Fisher’s exact or Chi-squared*</td>
 <td>—</td>
 </tr>
 <tr class="even">
-<td>Ordinal (<code>force_ordinal</code>)</td>
+<td>Numeric, normal</td>
+<td>Welch’s <em>t</em>-test</td>
+<td>Welch ANOVA</td>
+<td>Games-Howell</td>
+</tr>
+<tr class="odd">
+<td>Numeric, non-normal†</td>
 <td>Wilcoxon rank-sum</td>
 <td>Kruskal-Wallis</td>
 <td>Dunn’s + Holm</td>
 </tr>
 </tbody>
 </table>
+<p>†Includes variables designated as ordinal via
+<code>force_ordinal</code>, which bypass normality testing and always
+use non-parametric methods.</p>
 <p>*Fisher’s exact is used when any expected cell count is &lt; 5
 (Cochran criterion). If the exact algorithm cannot complete (workspace
 limit exceeded for large tables), Fisher’s exact with Monte Carlo
