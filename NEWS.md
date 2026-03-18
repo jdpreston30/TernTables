@@ -1,3 +1,16 @@
+# TernTables 1.6.3.9025 (development)
+
+## Internal changes
+
+* **Monte Carlo Fisher seed scoping**: The `set.seed()` call inside the Monte
+  Carlo Fisher's exact fallback (`fisher.test(simulate.p.value = TRUE)`) has
+  been replaced with `withr::with_seed()`. This scopes the seed locally and
+  restores the user's RNG state after the call, eliminating unintended side
+  effects on the broader R session. Results are identical; reproducibility is
+  preserved. `withr` added to `Imports`.
+
+---
+
 # TernTables 1.6.3.9024 (development)
 
 ## New features

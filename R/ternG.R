@@ -353,8 +353,10 @@ ternG <- function(data,
             error = function(e) {
               # Workspace limit exceeded for large tables — fall back to Monte Carlo
               sim_used <<- TRUE
-              set.seed(getOption("TernTables.seed", 42L))
-              stats::fisher.test(tab, simulate.p.value = TRUE, B = 10000L)
+              withr::with_seed(
+                getOption("TernTables.seed", 42L),
+                stats::fisher.test(tab, simulate.p.value = TRUE, B = 10000L)
+              )
             }
           )
           list(p_value = ft$p.value,

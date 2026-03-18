@@ -6,6 +6,7 @@
 #' @importFrom officer read_docx body_add_par body_add_fpar body_add_break body_add_docx fpar ftext fp_text fp_par fp_border body_set_default_section prop_section block_list
 #' @importFrom stats chisq.test median na.omit p.adjust quantile sd setNames
 #' @importFrom utils globalVariables
+#' @importFrom withr with_seed
 #' @importFrom magrittr %>%
 #' @importFrom stringr str_extract str_trim str_to_lower str_to_title
 NULL
