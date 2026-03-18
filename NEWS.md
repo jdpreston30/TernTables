@@ -1,3 +1,17 @@
+# TernTables 1.6.3.9026 (development)
+
+## Internal changes
+
+* **CLD letter ordering**: Removed center-based letter re-mapping from
+  `.compute_cld()`. CLD letters now follow the default `multcompLetters()`
+  ordering (alphabetical by group name) rather than being re-labeled so
+  that "a" = highest-center group. This aligns with standard CLD conventions
+  and avoids potential misinterpretation in clinical contexts where higher
+  values represent worse outcomes (e.g., mortality, creatinine, infection rate).
+  The `centers` argument has been removed from `.compute_cld()`.
+
+---
+
 # TernTables 1.6.3.9025 (development)
 
 ## Internal changes

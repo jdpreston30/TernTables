@@ -684,7 +684,7 @@ ternG <- function(data,
               p.adj  = ph_res$p.adj,
               stringsAsFactors = FALSE
             )
-            cld <- .compute_cld(as.character(group_levels), centers_vec[as.character(group_levels)], ph_df)
+            cld <- .compute_cld(as.character(group_levels), ph_df)
             for (g_lvl in group_levels) {
               sup <- .superscript_letters(cld[as.character(g_lvl)])
               if (!is.null(sup) && nzchar(sup))
@@ -869,7 +869,7 @@ ternG <- function(data,
             p.adj  = ph_res$p.adj,
             stringsAsFactors = FALSE
           )
-          cld <- .compute_cld(as.character(group_levels), centers_vec[as.character(group_levels)], ph_df)
+          cld <- .compute_cld(as.character(group_levels), ph_df)
           for (g_lvl in group_levels) {
             sup <- .superscript_letters(cld[as.character(g_lvl)])
             if (!is.null(sup) && nzchar(sup))

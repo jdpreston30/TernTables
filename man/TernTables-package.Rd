@@ -10,7 +10,8 @@ TernTables generates publication-ready summary tables for descriptive
 statistics and group comparisons. It automatically detects variable types
 (continuous, binary, or categorical), selects appropriate
 statistical tests, and formats results for direct export to Word or Excel.
-Numeric variables can be designated as ordinal via \code{force_ordinal}.
+Numeric variables can be designated as ordinal via \code{force_ordinal}, or
+forced to parametric treatment via \code{force_normal}.
 }
 \section{Main functions}{
 
@@ -30,8 +31,8 @@ Numeric variables can be designated as ordinal via \code{force_ordinal}.
   \item{Binary / Categorical}{Chi-squared or Fisher's exact, based on expected cell counts (Cochran criterion).}
   \item{Numeric, normal (2 groups)}{Welch's \emph{t}-test, routed by ROBUST logic.}
   \item{Numeric, normal (3+ groups)}{Welch ANOVA, routed by ROBUST logic per group.}
-  \item{Numeric, non-normal (2 groups)}{Wilcoxon rank-sum, routed by ROBUST logic or forced via \code{force_ordinal}.}
-  \item{Numeric, non-normal (3+ groups)}{Kruskal-Wallis, routed by ROBUST logic or forced via \code{force_ordinal}.}
+  \item{Numeric, non-normal (2 groups)}{Wilcoxon rank-sum, routed by ROBUST logic or forced via \code{force_ordinal}; override to parametric via \code{force_normal}.}
+  \item{Numeric, non-normal (3+ groups)}{Kruskal-Wallis, routed by ROBUST logic or forced via \code{force_ordinal}; override to parametric via \code{force_normal}.}
 }
 ROBUST routing uses four gates: (1) n < 3 \eqn{\Rightarrow} non-parametric (fail-safe);
 (2) |skewness| > 2 or |excess kurtosis| > 7 in any group \eqn{\Rightarrow} non-parametric;
