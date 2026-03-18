@@ -1,4 +1,4 @@
-# Feature: ROBUST Normality Gate — Kurtosis Addition + External Module
+# Package Integration: ROBUST Normality Gate — Kurtosis Addition + External Module
 
 Package version: 1.6.3.9023
 

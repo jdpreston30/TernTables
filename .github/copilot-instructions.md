@@ -224,8 +224,20 @@ Every **major PACKAGE change** that affects user-facing functionality (new argum
 
 ### Issue file format
 
+The title must use one of the following label prefixes, matching the repo's GitHub labels:
+
+| Prefix | When to use |
+|---|---|
+| `Package Integration:` | An R package change requires a corresponding web app change |
+| `App Update:` | UI/app/website change not linked to an R package change |
+| `Bug:` | A bug in the app, website, UI, or package-app integration |
+| `Documentation:` | Small note changes on the About page or UI text throughout |
+| `Idea:` | Low-priority long-term goal, not immediately actionable |
+| `Planned:` | Not yet possible but will be implemented in the future |
+| `Reminder/Note:` | Informational note, no action required |
+
 ```markdown
-# Feature: <short name>
+# <Label>: <short name>
 
 ## What changed in the package
 - Which function(s) were modified
@@ -256,7 +268,7 @@ Every **major PACKAGE change** that affects user-facing functionality (new argum
 ```
 
 ### File naming
-`development/issues/<feature-name>.md` — e.g., `feature-font-family.md`, `feature-plain-header.md`
+`development/issues/<label-kebab-name>.md` — e.g., `package-integration-font-family.md`, `documentation-normality-about-page.md`, `bug-fisher-trigger.md`
 
 These docs are committed to the repo (inside `development/`, which is excluded from the R package build via `.Rbuildignore`).
 
