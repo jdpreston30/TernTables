@@ -256,7 +256,8 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
     normality_context_skewness,
     "as extreme skewness indicates a distribution for which parametric assumptions are inappropriate irrespective of the Central Limit Theorem; ",
     normality_context_clt,
-    normality_context_sw
+    normality_context_sw,
+    " This normality routing algorithm is a pragmatic, automated heuristic intended to support consistent and transparent reporting in routine clinical descriptive analyses; it does not constitute a formal distributional inference, and investigators requiring non-standard normality handling may override routing for individual variables using the force_ordinal argument or globally via consider_normality."
   )
 
   # ── Helper: categorical comparison sentence ──────────────────────────────────

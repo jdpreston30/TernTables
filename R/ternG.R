@@ -201,6 +201,7 @@ ternG <- function(data,
                   exclude_vars = NULL,
                   group_var,
                   force_ordinal = NULL,
+                  force_normal = NULL,
                   force_continuous = NULL,
                   group_order = NULL,
                   output_xlsx = NULL,
@@ -693,9 +694,15 @@ ternG <- function(data,
     # ----- Normality assessment -----
     sw_p_all <- list()
     is_normal <- TRUE
-    
+
+    # force_normal: bypass all normality assessment for listed variables
+    # force_ordinal takes priority if a variable appears in both
+    if (!is.null(force_normal) && var %in% force_normal &&
+        (is.null(force_ordinal) || !var %in% force_ordinal)) {
+      numeric_vars_tested <<- numeric_vars_tested + 1
+      is_normal <- TRUE
     # Handle different consider_normality options
-    if (consider_normality == "FORCE") {
+    } else if (consider_normality == "FORCE") {
       # Test normality for baseline statistics but force all to be treated as ordinal
       sw_p_all <- tryCatch({
         out <- lapply(group_levels, function(g_lvl) {
@@ -1080,6 +1087,7 @@ ternG <- function(data,
     citation              = citation,
     font_family           = font_family,
     force_continuous      = force_continuous,
+    force_normal      = force_normal,
     show_missing          = show_missing
   )
 

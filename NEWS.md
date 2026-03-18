@@ -1,3 +1,17 @@
+# TernTables 1.6.3.9024 (development)
+
+## New features
+
+* **`force_normal` parameter**: `ternG()` and `ternD()` now accept a
+  `force_normal` character vector. Variables listed here bypass all normality
+  assessment (Gates 1–4 under ROBUST, or Shapiro-Wilk under `consider_normality = TRUE`)
+  and are always summarized as mean ± SD and compared with Welch's *t*-test (2 groups)
+  or Welch ANOVA (3+ groups). This is the per-variable parametric counterpart to the
+  existing `force_ordinal` argument. `force_ordinal` takes priority if a variable
+  appears in both. Default is `NULL`.
+
+---
+
 # TernTables 1.6.3.9021 (development)
 
 ## New features

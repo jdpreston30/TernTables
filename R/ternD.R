@@ -11,6 +11,10 @@
 #' @param force_ordinal Character vector of variables to treat as ordinal (i.e., use median [IQR]) 
 #'   regardless of the \code{consider_normality} setting. This parameter takes priority over 
 #'   normality testing when \code{consider_normality = "ROBUST"} or \code{TRUE}.
+#' @param force_normal Character vector of variable names to treat as normally distributed, bypassing all
+#'   normality assessment. Listed variables are summarized as mean \eqn{\pm} SD regardless of the
+#'   \code{consider_normality} setting. Takes priority over \code{consider_normality} but not over
+#'   \code{force_ordinal} (if a variable appears in both, \code{force_ordinal} wins). Default is \code{NULL}.
 #' @param force_continuous Character vector of variables to force treatment as continuous (mean \eqn{\pm} SD),
 #'   bypassing the automatic binary \code{0/1} detection that would otherwise convert them to categorical Y/N.
 #'   Useful when a numeric variable with only two unique values (e.g. \code{0}/\code{1} dose levels) should
@@ -163,6 +167,7 @@
 #' }
 #' @export
 ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
+                  force_normal = NULL,
                   force_continuous = NULL,
                   output_xlsx = NULL, output_docx = NULL,
                   consider_normality = "ROBUST", print_normality = FALSE,
@@ -353,6 +358,10 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
       norm_tested <<- norm_tested + 1
       norm_failed <<- norm_failed + 1
       summary_str <- fmt_median_iqr(x)
+    } else if (!is.null(force_normal) && var %in% force_normal) {
+      # Force parametric: use mean/SD regardless of consider_normality setting
+      norm_tested <<- norm_tested + 1
+      summary_str <- fmt_mean_sd(x)
     } else if (consider_normality == "ROBUST") {
       # ROBUST: four-gate decision tree — see R/utils_normality.R
       norm_tested <<- norm_tested + 1
@@ -500,6 +509,7 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
     citation              = citation,
     font_family           = font_family,
     force_continuous      = force_continuous,
+    force_normal      = force_normal,
     show_missing          = show_missing
   )
 

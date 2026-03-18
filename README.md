@@ -171,7 +171,7 @@ Statistical tests applied automatically:
 | Numeric, normal | Welch's *t*-test | Welch ANOVA | Games-Howell |
 | Numeric, non-normal† | Wilcoxon rank-sum | Kruskal-Wallis | Dunn's + Holm |
 
-†Includes variables designated as ordinal via `force_ordinal`, which bypass normality testing and always use non-parametric methods.
+†Includes variables designated as ordinal via `force_ordinal`, which bypass normality testing and always use non-parametric methods. Variables overridden to parametric via `force_normal` always appear in the normal row.
 
 Fisher's exact is used when any expected cell count is < 5 (Cochran criterion). If the exact algorithm cannot complete (workspace limit exceeded for large tables), Fisher's exact with Monte Carlo simulation (B = 10,000; seed fixed via `getOption("TernTables.seed")`, default 42) is used automatically.
 
@@ -189,6 +189,8 @@ Set `consider_normality = TRUE` to use Shapiro-Wilk alone (original behaviour).
 | 2 | \|skewness\| > 2 **or** \|excess kurtosis\| > 7 in any group | Non-parametric | Distribution shape precludes parametric assumptions regardless of n |
 | 3 | All groups n ≥ 30 | Parametric | Central Limit Theorem |
 | 4 | Shapiro-Wilk p > 0.05 in **all** groups | Parametric (pass) / Non-parametric (fail) | Valid only when 3 ≤ n ≤ 5,000; n outside this range routes non-parametric |
+
+> **Note:** This routing algorithm is a pragmatic heuristic for automated clinical reporting, not a formal distributional inference. Individual variables can be overridden to non-parametric via `force_ordinal`, to parametric via `force_normal`, or globally via `consider_normality`.
 
 BH FDR correction (Benjamini & Hochberg, 1995) is available via `p_adjust = TRUE`.
 
