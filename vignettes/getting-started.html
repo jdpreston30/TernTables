@@ -785,7 +785,8 @@ normality:</p>
 </table>
 <p>†Includes variables designated as ordinal via
 <code>force_ordinal</code>, which bypass normality testing and always
-use non-parametric methods.</p>
+use non-parametric methods. Variables overridden to parametric via
+<code>force_normal</code> always appear in the normal row.</p>
 <p>*Fisher’s exact is used when any expected cell count is &lt; 5
 (Cochran criterion). If the exact algorithm cannot complete (workspace
 limit exceeded for large tables), Fisher’s exact with Monte Carlo
@@ -853,6 +854,17 @@ non-parametric</td>
 </tr>
 </tbody>
 </table>
+<blockquote>
+<p><strong>Note:</strong> The ROBUST algorithm is a pragmatic, automated
+heuristic designed for consistent clinical reporting — not a formal
+distributional inference. Gate 3 applies the Central Limit Theorem to
+the sampling distribution of the mean; it does not assert that the
+underlying data are normally distributed. Variables with unusual
+distributions can be overridden individually via
+<code>force_ordinal</code> (to non-parametric) or
+<code>force_normal</code> (to parametric), or globally via
+<code>consider_normality</code>.</p>
+</blockquote>
 <p>When comparing many variables simultaneously, set
 <code>p_adjust = TRUE</code> to apply Benjamini-Hochberg (BH) FDR
 correction to all omnibus <em>P</em> values. Use

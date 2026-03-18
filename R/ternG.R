@@ -19,6 +19,11 @@
 #' @param exclude_vars Character vector of variable(s) to exclude. \code{group_var} is automatically excluded.
 #' @param group_var Character, the grouping variable (factor or character with >=2 levels).
 #' @param force_ordinal Character vector of variables to treat as ordinal (i.e., use medians/IQR and nonparametric tests).
+#' @param force_normal Character vector of variable names to treat as normally distributed, bypassing all
+#'   normality assessment (Gates 1--4 under \code{"ROBUST"}, or Shapiro-Wilk under \code{TRUE}). Listed
+#'   variables are summarized as mean \eqn{\pm} SD and compared with Welch tests regardless of the
+#'   \code{consider_normality} setting. Takes priority over \code{consider_normality} but not over
+#'   \code{force_ordinal} (if a variable appears in both, \code{force_ordinal} wins). Default is \code{NULL}.
 #' @param force_continuous Character vector of variables to force treatment as continuous (mean \eqn{\pm} SD and
 #'   parametric tests), bypassing the automatic binary \code{0/1} detection that would otherwise convert
 #'   them to categorical Y/N. Useful when a numeric variable with only two unique values (e.g. \code{0}/\code{1}

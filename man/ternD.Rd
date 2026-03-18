@@ -9,6 +9,7 @@ ternD(
   vars = NULL,
   exclude_vars = NULL,
   force_ordinal = NULL,
+  force_normal = NULL,
   force_continuous = NULL,
   output_xlsx = NULL,
   output_docx = NULL,
@@ -47,6 +48,11 @@ ternD(
 \item{force_ordinal}{Character vector of variables to treat as ordinal (i.e., use median [IQR]) 
 regardless of the \code{consider_normality} setting. This parameter takes priority over 
 normality testing when \code{consider_normality = "ROBUST"} or \code{TRUE}.}
+
+\item{force_normal}{Character vector of variable names to treat as normally distributed, bypassing all
+normality assessment. Listed variables are summarized as mean \eqn{\pm} SD regardless of the
+\code{consider_normality} setting. Takes priority over \code{consider_normality} but not over
+\code{force_ordinal} (if a variable appears in both, \code{force_ordinal} wins). Default is \code{NULL}.}
 
 \item{force_continuous}{Character vector of variables to force treatment as continuous (mean \eqn{\pm} SD),
 bypassing the automatic binary \code{0/1} detection that would otherwise convert them to categorical Y/N.
