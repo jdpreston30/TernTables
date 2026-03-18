@@ -182,7 +182,7 @@ tbl_descriptive
 ```
 
 Continuous variables show mean ± SD or median [IQR] based on the four-gate
-ROBUST normality algorithm (n < 3 fail-safe, skewness check, CLT at n ≥ 30,
+ROBUST normality algorithm (n < 3 fail-safe, skewness/kurtosis check, CLT at n ≥ 30,
 Shapiro-Wilk for small samples). Columns whose values are exactly Y/N,
 YES/NO, or numeric 0/1 are detected as binary and shown as a single n (%) row
 (the positive/yes count). All other categorical variables — including two-level
@@ -248,7 +248,7 @@ The same `ternG()` function handles three or more groups automatically,
 switching from t-test/Wilcoxon to Welch ANOVA/Kruskal-Wallis as appropriate.
 Odds ratios are not available for 3+ group comparisons. `consider_normality`
 controls normality routing; the default (`"ROBUST"`) applies the four-gate
-algorithm (n < 3 fail-safe → skewness → CLT → Shapiro-Wilk). `FALSE` forces parametric tests
+algorithm (n < 3 fail-safe → skewness/kurtosis → CLT → Shapiro-Wilk). `FALSE` forces parametric tests
 throughout; `"FORCE"` forces nonparametric throughout.
 
 Set `post_hoc = TRUE` to run pairwise post-hoc tests automatically when the
@@ -395,9 +395,10 @@ TernTables selects tests automatically based on variable type and normality:
 
 Normality routing uses `consider_normality = "ROBUST"` (the default) — a
 four-gate decision applied per group: (1) any group n < 3 → non-parametric
-(conservative fail-safe); (2) absolute skewness > 2 in any group → non-parametric
-regardless of sample size; (3) all groups n ≥ 30 → parametric via the Central
-Limit Theorem; (4) otherwise Shapiro-Wilk p > 0.05 in all groups → parametric. For 3+ group comparisons,
+(conservative fail-safe); (2) absolute skewness > 2 or excess kurtosis > 7 in
+any group → non-parametric regardless of sample size; (3) all groups n ≥ 30 →
+parametric via the Central Limit Theorem; (4) otherwise Shapiro-Wilk p > 0.05
+in all groups → parametric. For 3+ group comparisons,
 omnibus *P* values are reported. When `post_hoc = TRUE`, pairwise comparisons
 are performed automatically for continuous and ordinal variables when omnibus
 *P* < 0.05, using the test paired to the omnibus (Games-Howell or Dunn's +
@@ -405,6 +406,13 @@ Holm). CLD superscript letters are appended to cell values; groups sharing a
 letter are not significantly different. Categorical variables never receive
 post-hoc testing. `post_hoc` defaults to `FALSE`.
 Set `consider_normality = TRUE` to use Shapiro-Wilk alone (original behaviour).
+
+| Gate | Condition checked | Routes to | Note |
+|---|---|---|---|
+| 1 | Any group n < 3 | Non-parametric | Conservative fail-safe; insufficient data to assess |
+| 2 | \|skewness\| > 2 **or** \|excess kurtosis\| > 7 in any group | Non-parametric | Distribution shape precludes parametric assumptions regardless of n |
+| 3 | All groups n ≥ 30 | Parametric | Central Limit Theorem |
+| 4 | Shapiro-Wilk p > 0.05 in **all** groups | Parametric (pass) / Non-parametric (fail) | Valid only when 3 ≤ n ≤ 5,000; n outside this range routes non-parametric |
 
 When comparing many variables simultaneously, set `p_adjust = TRUE` to apply
 Benjamini-Hochberg (BH) FDR correction to all omnibus *P* values. Use

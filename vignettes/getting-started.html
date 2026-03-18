@@ -559,12 +559,12 @@ name or the cleaned display label.</p>
 <span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>)</span>
 <span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>tbl_descriptive</span></code></pre></div>
 <p>Continuous variables show mean ± SD or median [IQR] based on the
-four-gate ROBUST normality algorithm (n &lt; 3 fail-safe, skewness
-check, CLT at n ≥ 30, Shapiro-Wilk for small samples). Columns whose
-values are exactly Y/N, YES/NO, or numeric 0/1 are detected as binary
-and shown as a single n (%) row (the positive/yes count). All other
-categorical variables — including two-level variables like Male/Female —
-are shown with each level as an indented sub-row.</p>
+four-gate ROBUST normality algorithm (n &lt; 3 fail-safe,
+skewness/kurtosis check, CLT at n ≥ 30, Shapiro-Wilk for small samples).
+Columns whose values are exactly Y/N, YES/NO, or numeric 0/1 are
+detected as binary and shown as a single n (%) row (the positive/yes
+count). All other categorical variables — including two-level variables
+like Male/Female — are shown with each level as an indented sub-row.</p>
 <p>Variable names are automatically cleaned for display
 (<code>smart_rename = TRUE</code> by default) — underscores replaced
 with spaces, capitalisation normalised, and common medical abbreviations
@@ -621,7 +621,7 @@ automatically, switching from t-test/Wilcoxon to Welch
 ANOVA/Kruskal-Wallis as appropriate. Odds ratios are not available for
 3+ group comparisons. <code>consider_normality</code> controls normality
 routing; the default (<code>&quot;ROBUST&quot;</code>) applies the four-gate
-algorithm (n &lt; 3 fail-safe → skewness → CLT → Shapiro-Wilk).
+algorithm (n &lt; 3 fail-safe → skewness/kurtosis → CLT → Shapiro-Wilk).
 <code>FALSE</code> forces parametric tests throughout;
 <code>&quot;FORCE&quot;</code> forces nonparametric throughout.</p>
 <p>Set <code>post_hoc = TRUE</code> to run pairwise post-hoc tests
@@ -795,18 +795,64 @@ automatically.</p>
 <p>Normality routing uses <code>consider_normality = &quot;ROBUST&quot;</code>
 (the default) — a four-gate decision applied per group: (1) any group n
 &lt; 3 → non-parametric (conservative fail-safe); (2) absolute skewness
-&gt; 2 in any group → non-parametric regardless of sample size; (3) all
-groups n ≥ 30 → parametric via the Central Limit Theorem; (4) otherwise
-Shapiro-Wilk p &gt; 0.05 in all groups → parametric. For 3+ group
-comparisons, omnibus <em>P</em> values are reported. When
-<code>post_hoc = TRUE</code>, pairwise comparisons are performed
-automatically for continuous and ordinal variables when omnibus
-<em>P</em> &lt; 0.05, using the test paired to the omnibus (Games-Howell
-or Dunn’s + Holm). CLD superscript letters are appended to cell values;
-groups sharing a letter are not significantly different. Categorical
-variables never receive post-hoc testing. <code>post_hoc</code> defaults
-to <code>FALSE</code>. Set <code>consider_normality = TRUE</code> to use
-Shapiro-Wilk alone (original behaviour).</p>
+&gt; 2 or excess kurtosis &gt; 7 in any group → non-parametric
+regardless of sample size; (3) all groups n ≥ 30 → parametric via the
+Central Limit Theorem; (4) otherwise Shapiro-Wilk p &gt; 0.05 in all
+groups → parametric. For 3+ group comparisons, omnibus <em>P</em> values
+are reported. When <code>post_hoc = TRUE</code>, pairwise comparisons
+are performed automatically for continuous and ordinal variables when
+omnibus <em>P</em> &lt; 0.05, using the test paired to the omnibus
+(Games-Howell or Dunn’s + Holm). CLD superscript letters are appended to
+cell values; groups sharing a letter are not significantly different.
+Categorical variables never receive post-hoc testing.
+<code>post_hoc</code> defaults to <code>FALSE</code>. Set
+<code>consider_normality = TRUE</code> to use Shapiro-Wilk alone
+(original behaviour).</p>
+<table>
+<colgroup>
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Gate</th>
+<th>Condition checked</th>
+<th>Routes to</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>Any group n &lt; 3</td>
+<td>Non-parametric</td>
+<td>Conservative fail-safe; insufficient data to assess</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>|skewness| &gt; 2 <strong>or</strong> |excess kurtosis| &gt; 7 in
+any group</td>
+<td>Non-parametric</td>
+<td>Distribution shape precludes parametric assumptions regardless of
+n</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>All groups n ≥ 30</td>
+<td>Parametric</td>
+<td>Central Limit Theorem</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>Shapiro-Wilk p &gt; 0.05 in <strong>all</strong> groups</td>
+<td>Parametric (pass) / Non-parametric (fail)</td>
+<td>Valid only when 3 ≤ n ≤ 5,000; n outside this range routes
+non-parametric</td>
+</tr>
+</tbody>
+</table>
 <p>When comparing many variables simultaneously, set
 <code>p_adjust = TRUE</code> to apply Benjamini-Hochberg (BH) FDR
 correction to all omnibus <em>P</em> values. Use

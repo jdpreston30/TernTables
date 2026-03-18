@@ -25,7 +25,7 @@
 #'   \item{Numeric, non-normal (3+ groups)}{Kruskal-Wallis, routed by ROBUST logic or forced via \code{force_ordinal}.}
 #' }
 #' ROBUST routing uses four gates: (1) n < 3 \eqn{\Rightarrow} non-parametric (fail-safe);
-#' (2) |skewness| > 2 in any group \eqn{\Rightarrow} non-parametric;
+#' (2) |skewness| > 2 or |excess kurtosis| > 7 in any group \eqn{\Rightarrow} non-parametric;
 #' (3) all groups n \eqn{\geq} 30 \eqn{\Rightarrow} parametric (CLT);
 #' (4) otherwise Shapiro-Wilk p > 0.05 in all groups \eqn{\Rightarrow} parametric.
 #'

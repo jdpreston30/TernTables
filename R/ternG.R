@@ -43,9 +43,10 @@
 #'   parametric vs. non-parametric tests.
 #'   \code{"ROBUST"} (default) applies a four-gate decision consistent with standard biostatistical
 #'   practice: (1) any group n < 3 is a conservative fail-safe to non-parametric; (2) absolute skewness
-#'   > 2 in any group routes to non-parametric regardless of sample size (catches LOS, counts, etc.);
-#'   (3) all groups n \eqn{\geq} 30 routes to parametric via the Central Limit Theorem; (4) otherwise
-#'   Shapiro-Wilk p > 0.05 in all groups routes to parametric. Normal variables use mean \eqn{\pm} SD
+#'   > 2 or excess kurtosis > 7 in any group routes to non-parametric regardless of sample size
+#'   (catches heavy-tailed distributions and LOS/count-style skews in which the CLT guarantee is
+#'   compromised); (3) all groups n \eqn{\geq} 30 routes to parametric via the Central Limit Theorem;
+#'   (4) otherwise Shapiro-Wilk p > 0.05 in all groups routes to parametric. Normal variables use mean \eqn{\pm} SD
 #'   and Welch t-test (2 groups) or Welch ANOVA (3+ groups); non-normal variables use median [IQR] and
 #'   Wilcoxon rank-sum (2 groups) or Kruskal-Wallis (3+ groups).
 #'   If \code{TRUE}, uses Shapiro-Wilk alone (p > 0.05 in all groups = normal). Conservative at large n.
@@ -715,52 +716,18 @@ ternG <- function(data,
       # Force all to be treated as ordinal regardless of normality
       is_normal <- FALSE
     } else if (consider_normality == "ROBUST") {
-      # ROBUST: four-gate decision tree
-      #   Gate 1 (fail-safe): any group n < 3 → non-parametric (explicit)
-      #   Gate 2: |skewness| > 2 in any group → non-parametric
-      #   Gate 3: all groups n >= 30 → CLT → parametric
-      #   Gate 4: small-sample fallback → Shapiro-Wilk
-      calc_skewness <- function(x) {
-        x <- x[!is.na(x)]
-        n <- length(x)
-        if (n < 3) return(NA_real_)
-        m <- mean(x)
-        s <- stats::sd(x)
-        if (s == 0) return(NA_real_)
-        (sum((x - m)^3) / n) / s^3
-      }
+      # ROBUST: four-gate decision tree — see R/utils_normality.R
       group_vals <- lapply(group_levels, function(g_lvl) {
         g %>% filter(.data[[group_var]] == g_lvl) %>% pull(.data[[var]])
       })
-      group_ns       <- sapply(group_vals, function(v) sum(!is.na(v)))
-      group_skewness <- sapply(group_vals, calc_skewness)
+      names(group_vals) <- group_levels
 
       numeric_vars_tested <<- numeric_vars_tested + 1
 
-      if (any(group_ns < 3)) {
-        # Gate 1: any group too small to test — non-parametric (conservative fail-safe)
-        is_normal <- FALSE
-        numeric_vars_failed <<- numeric_vars_failed + 1
-      } else if (any(abs(group_skewness) > 2, na.rm = TRUE)) {
-        # Gate 2: extreme skewness — non-parametric regardless of n
-        is_normal <- FALSE
-        numeric_vars_failed <<- numeric_vars_failed + 1
-      } else if (all(group_ns >= 30)) {
-        # Gate 3: CLT applies — parametric
-        is_normal <- TRUE
-      } else {
-        # Gate 4: at least one small group — use Shapiro-Wilk
-        sw_p_all <- tryCatch({
-          out <- lapply(seq_along(group_levels), function(i) {
-            x <- group_vals[[i]]
-            pval <- if (length(x) >= 3 && length(x) <= 5000) stats::shapiro.test(x)$p.value else NA_real_
-            setNames(pval, paste0("SW_p_", group_levels[i]))
-          })
-          do.call(c, out)
-        }, error = function(e) rep(NA_real_, n_levels))
-        is_normal <- all(!is.na(sw_p_all) & sw_p_all > 0.05)
-        if (!is_normal) numeric_vars_failed <<- numeric_vars_failed + 1
-      }
+      robust_result <- .robust_normality(group_vals)
+      is_normal      <- robust_result$is_normal
+      if (!is.null(robust_result$sw_pvalues)) sw_p_all <- robust_result$sw_pvalues
+      if (!is_normal) numeric_vars_failed <<- numeric_vars_failed + 1
     } else if (isTRUE(consider_normality)) {
       # TRUE: Shapiro-Wilk only (conservative at large n)
       sw_p_all <- tryCatch({

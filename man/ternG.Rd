@@ -89,9 +89,10 @@ regardless of expected cell counts.}
 parametric vs. non-parametric tests.
 \code{"ROBUST"} (default) applies a four-gate decision consistent with standard biostatistical
 practice: (1) any group n < 3 is a conservative fail-safe to non-parametric; (2) absolute skewness
-> 2 in any group routes to non-parametric regardless of sample size (catches LOS, counts, etc.);
-(3) all groups n \eqn{\geq} 30 routes to parametric via the Central Limit Theorem; (4) otherwise
-Shapiro-Wilk p > 0.05 in all groups routes to parametric. Normal variables use mean \eqn{\pm} SD
+> 2 or excess kurtosis > 7 in any group routes to non-parametric regardless of sample size
+(catches heavy-tailed distributions and LOS/count-style skews in which the CLT guarantee is
+compromised); (3) all groups n \eqn{\geq} 30 routes to parametric via the Central Limit Theorem;
+(4) otherwise Shapiro-Wilk p > 0.05 in all groups routes to parametric. Normal variables use mean \eqn{\pm} SD
 and Welch t-test (2 groups) or Welch ANOVA (3+ groups); non-normal variables use median [IQR] and
 Wilcoxon rank-sum (2 groups) or Kruskal-Wallis (3+ groups).
 If \code{TRUE}, uses Shapiro-Wilk alone (p > 0.05 in all groups = normal). Conservative at large n.

@@ -177,10 +177,18 @@ Fisher's exact is used when any expected cell count is < 5 (Cochran criterion). 
 
 Normality routing uses `consider_normality = "ROBUST"` (default) — a four-gate
 decision: (1) any group n < 3 → non-parametric (conservative fail-safe);
-(2) absolute skewness > 2 in any group → non-parametric; (3) all groups
+(2) absolute skewness > 2 or excess kurtosis > 7 in any group → non-parametric;
+(3) all groups
 n ≥ 30 → parametric via the Central Limit Theorem; (4) otherwise Shapiro-Wilk
 p > 0.05 in all groups → parametric.
 Set `consider_normality = TRUE` to use Shapiro-Wilk alone (original behaviour).
+
+| Gate | Condition checked | Routes to | Note |
+|---|---|---|---|
+| 1 | Any group n < 3 | Non-parametric | Conservative fail-safe; insufficient data to assess |
+| 2 | \|skewness\| > 2 **or** \|excess kurtosis\| > 7 in any group | Non-parametric | Distribution shape precludes parametric assumptions regardless of n |
+| 3 | All groups n ≥ 30 | Parametric | Central Limit Theorem |
+| 4 | Shapiro-Wilk p > 0.05 in **all** groups | Parametric (pass) / Non-parametric (fail) | Valid only when 3 ≤ n ≤ 5,000; n outside this range routes non-parametric |
 
 BH FDR correction (Benjamini & Hochberg, 1995) is available via `p_adjust = TRUE`.
 

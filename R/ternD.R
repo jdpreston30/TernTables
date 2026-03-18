@@ -2,7 +2,7 @@
 #'
 #' Creates a descriptive summary table with a single "Total" column format.
 #' By default (\code{consider_normality = "ROBUST"}), continuous variables are shown
-#' as mean +/- SD or median [IQR] based on a four-gate decision (n < 3 fail-safe, skewness, CLT, and Shapiro-Wilk).
+#' as mean +/- SD or median [IQR] based on a four-gate decision (n < 3 fail-safe, skewness/kurtosis, CLT, and Shapiro-Wilk).
 #' This can be overridden via \code{consider_normality} and \code{force_ordinal}.
 #'
 #' @param data Tibble with variables.
@@ -20,7 +20,8 @@
 #' @param consider_normality Character or logical; controls routing of continuous variables to
 #'   mean \eqn{\pm} SD vs median [IQR].
 #'   \code{"ROBUST"} (default) applies a four-gate decision: (1) n < 3 \eqn{\rightarrow} non-parametric
-#'   (conservative fail-safe); (2) absolute skewness > 2 \eqn{\rightarrow} non-parametric regardless of n;
+#'   (conservative fail-safe); (2) absolute skewness > 2 or excess kurtosis > 7
+#'   \eqn{\rightarrow} non-parametric regardless of n;
 #'   (3) n \eqn{\geq} 30 \eqn{\rightarrow} parametric via the Central Limit Theorem;
 #'   (4) otherwise Shapiro-Wilk p > 0.05 \eqn{\rightarrow} parametric.
 #'   If \code{TRUE}, uses Shapiro-Wilk alone (can be over-sensitive at large n).
@@ -114,7 +115,7 @@
 #' \code{consider_normality} setting. The behavior for numeric variables follows this priority:
 #' \enumerate{
 #'   \item Variables in \code{force_ordinal}: Always use median [IQR]
-#'   \item When \code{consider_normality = "ROBUST"}: Four-gate decision (n<3 fail-safe, skewness, CLT, Shapiro-Wilk)
+#'   \item When \code{consider_normality = "ROBUST"}: Four-gate decision (n<3 fail-safe, skewness/kurtosis, CLT, Shapiro-Wilk)
 #'   \item When \code{consider_normality = TRUE}: Use Shapiro-Wilk test to choose format
 #'   \item When \code{consider_normality = FALSE}: Default to mean +/- SD
 #' }
@@ -353,37 +354,14 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
       norm_failed <<- norm_failed + 1
       summary_str <- fmt_median_iqr(x)
     } else if (consider_normality == "ROBUST") {
-      # ROBUST: four-gate decision tree applied to full variable vector
-      calc_skewness <- function(x) {
-        x <- x[!is.na(x)]
-        n <- length(x)
-        if (n < 3) return(NA_real_)
-        m <- mean(x); s <- stats::sd(x)
-        if (s == 0) return(NA_real_)
-        (sum((x - m)^3) / n) / s^3
-      }
-      n_obs    <- sum(!is.na(x))
-      skewness <- calc_skewness(x)
+      # ROBUST: four-gate decision tree — see R/utils_normality.R
       norm_tested <<- norm_tested + 1
-      if (n_obs < 3) {
-        # Gate 1: too few observations — non-parametric (conservative fail-safe)
+      robust_result <- .robust_normality(list(x))
+      if (!robust_result$is_normal) {
         norm_failed <<- norm_failed + 1
         summary_str <- fmt_median_iqr(x)
-      } else if (!is.na(skewness) && abs(skewness) > 2) {
-        # Gate 2: extreme skewness — non-parametric regardless of n
-        norm_failed <<- norm_failed + 1
-        summary_str <- fmt_median_iqr(x)
-      } else if (n_obs >= 30) {
-        # Gate 3: CLT — parametric
-        summary_str <- fmt_mean_sd(x)
       } else {
-        # Gate 4: Shapiro-Wilk
-        if (!is.na(sw) && sw > 0.05) {
-          summary_str <- fmt_mean_sd(x)
-        } else {
-          norm_failed <<- norm_failed + 1
-          summary_str <- fmt_median_iqr(x)
-        }
+        summary_str <- fmt_mean_sd(x)
       }
     } else if (isTRUE(consider_normality)) {
       norm_tested <<- norm_tested + 1

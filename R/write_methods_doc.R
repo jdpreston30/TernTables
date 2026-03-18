@@ -91,8 +91,8 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
       "Categorical variables are presented as n (%). ",
       "Distribution of each continuous variable was evaluated using a sequential four-gate algorithm: ",
       "variables with fewer than three available observations were treated as non-normally distributed (conservative fail-safe); ",
-      "variables with absolute skewness exceeding 2.0 were treated as non-normally distributed regardless of sample size, ",
-      "as extreme skewness indicates a distribution for which parametric assumptions are inappropriate irrespective of the Central Limit Theorem; ",
+      "variables with absolute skewness exceeding 2.0 or excess kurtosis exceeding 7.0 were treated as non-normally distributed regardless of sample size, ",
+      "as extreme skewness or heavy-tailed distributions indicate departures from normality for which parametric assumptions are inappropriate irrespective of the Central Limit Theorem; ",
       "variables with 30 or more non-missing observations were treated as normally distributed on the basis of the Central Limit Theorem; ",
       "for all remaining variables, the Shapiro-Wilk test was applied and p\u2009>\u20090.05 was used as the threshold for normality."
     )
@@ -102,8 +102,8 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
       "Categorical variables are presented as n (%). ",
       "Distribution of each continuous variable was evaluated using a sequential four-gate algorithm: ",
       "variables with fewer than three observations in any comparison group were treated as non-normally distributed (conservative fail-safe); ",
-      "variables where any comparison group had absolute skewness exceeding 2.0 were treated as non-normally distributed regardless of sample size, ",
-      "as extreme skewness indicates a distribution for which parametric assumptions are inappropriate irrespective of the Central Limit Theorem; ",
+      "variables where any comparison group had absolute skewness exceeding 2.0 or excess kurtosis exceeding 7.0 were treated as non-normally distributed regardless of sample size, ",
+      "as extreme skewness or heavy-tailed distributions indicate departures from normality for which parametric assumptions are inappropriate irrespective of the Central Limit Theorem; ",
       "variables where all comparison groups comprised 30 or more observations were treated as normally distributed on the basis of the Central Limit Theorem; ",
       "for all remaining variables, the Shapiro-Wilk test was applied within each comparison group, and p\u2009>\u20090.05 in all groups was used as the threshold for normality."
     )
@@ -238,12 +238,12 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
   # descriptive-only analyses reference "all available observations".
   if (source == "ternG") {
     normality_context_n3       <- "variables with fewer than three observations in any comparison group were treated as non-normally distributed (conservative fail-safe); "
-    normality_context_skewness <- "variables where any comparison group had absolute skewness exceeding 2.0 were treated as non-normally distributed regardless of sample size, "
+    normality_context_skewness <- "variables where any comparison group had absolute skewness exceeding 2.0 or excess kurtosis exceeding 7.0 were treated as non-normally distributed regardless of sample size, "
     normality_context_clt      <- "variables where all comparison groups comprised 30 or more observations were treated as normally distributed on the basis of the Central Limit Theorem; "
     normality_context_sw       <- "for all remaining variables, the Shapiro-Wilk test was applied within each comparison group, and p\u2009>\u20090.05 in all groups was used as the threshold for normality."
   } else {
     normality_context_n3       <- "variables with fewer than three available observations were treated as non-normally distributed (conservative fail-safe); "
-    normality_context_skewness <- "variables with absolute skewness exceeding 2.0 were treated as non-normally distributed regardless of sample size, "
+    normality_context_skewness <- "variables with absolute skewness exceeding 2.0 or excess kurtosis exceeding 7.0 were treated as non-normally distributed regardless of sample size, "
     normality_context_clt      <- "variables with 30 or more non-missing observations were treated as normally distributed on the basis of the Central Limit Theorem; "
     normality_context_sw       <- "for all remaining variables, the Shapiro-Wilk test was applied and p\u2009>\u20090.05 was used as the threshold for normality."
   }
