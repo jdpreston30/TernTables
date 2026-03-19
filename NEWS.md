@@ -1,3 +1,14 @@
+# TernTables 1.6.3.9029 (development)
+
+## New features
+
+* **`zero_to_dash` parameter in `ternG()` and `ternD()`**: New logical argument
+  (default `FALSE`) that replaces any categorical cell displaying `"0 (0%)"`
+  with `"-"` in the output table. Useful when zero counts in a group are not
+  meaningful to display numerically.
+
+---
+
 # TernTables 1.6.3.9028 (development)
 
 ## New features

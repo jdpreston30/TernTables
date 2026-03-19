@@ -35,7 +35,8 @@ ternD(
   open_doc = TRUE,
   citation = TRUE,
   font_family = getOption("TernTables.font_family", "Arial"),
-  show_missing = FALSE
+  show_missing = FALSE,
+  zero_to_dash = FALSE
 )
 }
 \arguments{
@@ -178,6 +179,10 @@ variable's data rows showing the count and percentage of missing observations
 (denominator is the total N). Only emitted when at least one observation is missing.
 A footnote is automatically appended noting that missing values are reported.
 Default is \code{FALSE}.}
+
+\item{zero_to_dash}{Logical; if \code{TRUE}, replaces any categorical cell that would display
+\code{"0 (0\%)"} with \code{"-"} in the output table. Useful when zero counts are not
+meaningful to report numerically. Default is \code{FALSE}.}
 }
 \value{
 A tibble with one row per variable (multi-row for factors), containing:

@@ -114,6 +114,9 @@
 #'   (denominator is the total N). Only emitted when at least one observation is missing.
 #'   A footnote is automatically appended noting that missing values are reported.
 #'   Default is \code{FALSE}.
+#' @param zero_to_dash Logical; if \code{TRUE}, replaces any categorical cell that would display
+#'   \code{"0 (0\%)"} with \code{"-"} in the output table. Useful when zero counts are not
+#'   meaningful to report numerically. Default is \code{FALSE}.
 #'
 #' @details
 #' The function always returns a tibble with a single \code{Total (N = n)} column format, regardless of the
@@ -183,7 +186,8 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
                   line_break_header = getOption("TernTables.line_break_header", TRUE),
                   open_doc = TRUE, citation = TRUE,
                   font_family = getOption("TernTables.font_family", "Arial"),
-                  show_missing = FALSE) {
+                  show_missing = FALSE,
+                  zero_to_dash = FALSE) {
   stopifnot(is.data.frame(data))
   
   # Store total N for column header
@@ -455,8 +459,12 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
 
   # Replace "0 (NaN%)" with "-" for structurally impossible cells
   # (e.g. a subgroup that cannot logically have any observations in a given column)
+  # Also replace "0 (0%)" when zero_to_dash = TRUE.
   out_tbl <- out_tbl %>%
-    dplyr::mutate(dplyr::across(dplyr::where(is.character), ~ gsub("0 \\(NaN%\\)", "-", .x)))
+    dplyr::mutate(dplyr::across(dplyr::where(is.character), ~ {
+      x <- gsub("0 \\(NaN%\\)", "-", .x)
+      if (isTRUE(zero_to_dash)) gsub("0 \\(0%\\)", "-", x) else x
+    }))
 
   # Save with .indent intact for ternB multi-table export metadata
   out_tbl_with_indent <- out_tbl
@@ -511,7 +519,8 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
     font_family           = font_family,
     force_continuous      = force_continuous,
     force_normal      = force_normal,
-    show_missing          = show_missing
+    show_missing          = show_missing,
+    zero_to_dash          = zero_to_dash
   )
 
   out_tbl

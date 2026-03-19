@@ -47,7 +47,8 @@ ternG(
   citation = TRUE,
   font_family = getOption("TernTables.font_family", "Arial"),
   show_missing = FALSE,
-  show_p = TRUE
+  show_p = TRUE,
+  zero_to_dash = FALSE
 )
 }
 \arguments{
@@ -245,6 +246,11 @@ table — the output will contain only the Variable column, one column per group
 the Total column (if \code{show_total = TRUE}). When \code{FALSE}, \code{OR_col},
 \code{show_test}, \code{print_normality}, \code{post_hoc}, and \code{p_adjust} are
 all suppressed automatically.}
+
+\item{zero_to_dash}{Logical; if \code{TRUE}, replaces any categorical cell that would display
+\code{"0 (0\%)"} with \code{"-"} in the output table. Useful when zero counts in a group are
+not meaningful to report numerically (e.g. no patients with a condition in one arm).
+Default is \code{FALSE}.}
 }
 \value{
 A tibble with one row per variable (multi-row for multi-level factors), showing summary statistics by group,
