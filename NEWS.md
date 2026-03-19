@@ -1,3 +1,16 @@
+# TernTables 1.6.3.9027 (development)
+
+## New features
+
+* **`show_p` parameter in `ternG()`**: New logical argument (default `TRUE`) that
+  suppresses the P value column when set to `FALSE`, producing a descriptive-only
+  grouped table containing only the Variable, group, and Total columns. When
+  `FALSE`, `OR_col`, `show_test`, `print_normality`, `post_hoc`, and `p_adjust`
+  are all suppressed automatically. Useful for side-by-side baseline comparisons
+  where hypothesis testing is not the intent.
+
+---
+
 # TernTables 1.6.3.9026 (development)
 
 ## Internal changes

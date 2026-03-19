@@ -46,7 +46,8 @@ ternG(
   open_doc = TRUE,
   citation = TRUE,
   font_family = getOption("TernTables.font_family", "Arial"),
-  show_missing = FALSE
+  show_missing = FALSE,
+  show_p = TRUE
 )
 }
 \arguments{
@@ -236,6 +237,13 @@ variable's data rows showing the count and percentage of missing observations pe
 (denominator is each group's total N). Missing rows display \code{"-"} in the P and OR
 columns. A footnote is automatically appended noting that missing values are reported.
 Default is \code{FALSE}.}
+
+\item{show_p}{Logical; if \code{TRUE} (default), the P value column is included in the
+output and Excel/Word exports. Set to \code{FALSE} to produce a descriptive-only grouped
+table — the output will contain only the Variable column, one column per group level, and
+the Total column (if \code{show_total = TRUE}). When \code{FALSE}, \code{OR_col},
+\code{show_test}, \code{print_normality}, \code{post_hoc}, and \code{p_adjust} are
+all suppressed automatically.}
 }
 \value{
 A tibble with one row per variable (multi-row for multi-level factors), showing summary statistics by group,

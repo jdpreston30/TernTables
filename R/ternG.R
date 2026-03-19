@@ -159,6 +159,12 @@
 #'   (denominator is each group's total N). Missing rows display \code{"-"} in the P and OR
 #'   columns. A footnote is automatically appended noting that missing values are reported.
 #'   Default is \code{FALSE}.
+#' @param show_p Logical; if \code{TRUE} (default), the P value column is included in the
+#'   output and Excel/Word exports. Set to \code{FALSE} to produce a descriptive-only grouped
+#'   table — the output will contain only the Variable column, one column per group level, and
+#'   the Total column (if \code{show_total = TRUE}). When \code{FALSE}, \code{OR_col},
+#'   \code{show_test}, \code{print_normality}, \code{post_hoc}, and \code{p_adjust} are
+#'   all suppressed automatically.
 #'
 #' @return A tibble with one row per variable (multi-row for multi-level factors), showing summary statistics by group,
 #' P values, test type, and optionally odds ratios and total summary column.
@@ -239,7 +245,8 @@ ternG <- function(data,
                   p_adjust_display = "fdr_only",
                   open_doc = TRUE, citation = TRUE,
                   font_family = getOption("TernTables.font_family", "Arial"),
-                  show_missing = FALSE) {
+                  show_missing = FALSE,
+                  show_p = TRUE) {
 
   # Helper function for proper rounding (0.5 always rounds up)
   round_up_half <- function(x, digits = 0) {
@@ -264,6 +271,15 @@ ternG <- function(data,
 
   data <- data %>% filter(!is.na(.data[[group_var]]))
   n_levels <- length(unique(data[[group_var]]))
+
+  # ── show_p = FALSE: suppress all stat-output flags early ──────────────────
+  if (!isTRUE(show_p)) {
+    OR_col          <- FALSE
+    show_test       <- FALSE
+    print_normality <- FALSE
+    post_hoc        <- FALSE
+    p_adjust        <- FALSE
+  }
 
   if (isTRUE(OR_col) && n_levels != 2) {
     stop("`OR_col = TRUE` is only valid for 2-group comparisons. ",
@@ -947,6 +963,15 @@ ternG <- function(data,
   }
   out_tbl <- dplyr::select(out_tbl, -dplyr::any_of(".p_raw"))
 
+  # ── Drop P and associated columns when show_p = FALSE ─────────────────────
+  if (!isTRUE(show_p)) {
+    out_tbl <- dplyr::select(
+      out_tbl,
+      -dplyr::any_of(c("P", "P value", "P value (FDR corrected)", "OR", "OR_method")),
+      -dplyr::starts_with("SW_p_")
+    )
+  }
+
   if (!is.null(output_xlsx)) export_to_excel(out_tbl, output_xlsx)
   
   # Write methods document if requested
@@ -1094,8 +1119,9 @@ ternG <- function(data,
     citation              = citation,
     font_family           = font_family,
     force_continuous      = force_continuous,
-    force_normal      = force_normal,
-    show_missing          = show_missing
+    force_normal          = force_normal,
+    show_missing          = show_missing,
+    show_p                = show_p
   )
 
   return(out_tbl)
