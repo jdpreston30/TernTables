@@ -1,3 +1,15 @@
+# TernTables 1.6.3.9028 (development)
+
+## New features
+
+* **Pipe-separated keys in `variable_footnote`**: Multiple variables can now
+  share a single footnote symbol and note by separating their names with `|`
+  in the key: `c("Var A|Var B" = "Shared note text.")`. Both variables receive
+  the same superscript symbol in column 1, and only one footnote line is
+  rendered. Fully backward-compatible — single-variable keys are unchanged.
+
+---
+
 # TernTables 1.6.3.9027 (development)
 
 ## New features

@@ -111,7 +111,8 @@
 #' @param variable_footnote Optional named character vector. Names are display variable names
 #'   (case-insensitive); values are the footnote definition text. Each variable gets the next
 #'   symbol appended to its name in the table, and the footnote block lists each definition
-#'   below the abbreviation line. Default \code{NULL}.
+#'   below the abbreviation line. To share one footnote between multiple variables, separate
+#'   their names with a pipe: \code{c("Var A|Var B" = "Shared note text.")}. Default \code{NULL}.
 #' @param index_style Character; \code{"symbols"} (default) uses *, dagger, double-dagger ...
 #'   \code{"alphabet"} uses Unicode superscript letters. See \code{word_export} for details.
 #' @param line_break_header Logical; if \code{TRUE} (default), column headers are wrapped with

@@ -53,6 +53,8 @@
 #'   for that variable. Each entry is assigned the next symbol in the sequence (*, dagger,
 #'   double-dagger, ...) and the symbol is appended to the variable name in column 1.
 #'   The footnote block lists each as \code{"* Definition text."} below the abbreviations.
+#'   To map multiple variables to the same footnote symbol and note, separate the variable
+#'   names with a pipe character in the key: \code{c("Var A|Var B" = "Shared note text.")}.
 #'   Default \code{NULL}.
 #' @param index_style Character; controls the footnote symbol sequence. \code{"symbols"} (default)
 #'   uses *, dagger, double-dagger, section, pilcrow, double-vertical-bar, then doubled forms.
@@ -234,28 +236,34 @@ word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, catego
   }
 
   # ── Variable footnote: assign symbols and inject into column 1 ────────────
+  # Names may be pipe-separated ("Var A|Var B") to map multiple variables to
+  # the same footnote symbol and note text.
   vf_row_info <- list()
   if (!is.null(variable_footnote) && length(variable_footnote) > 0) {
-    vf_names     <- names(variable_footnote)
-    symbols      <- .footnote_symbol_seq(length(vf_names), index_style)
-    trimmed_col1 <- trimws(modified_tbl[[1]])
+    vf_names        <- names(variable_footnote)
+    symbols         <- .footnote_symbol_seq(length(vf_names), index_style)
+    trimmed_col1    <- trimws(modified_tbl[[1]])
+    vf_row_counter  <- 0L
     for (k in seq_along(vf_names)) {
-      vname <- vf_names[k]
-      sym   <- symbols[k]
-      row_matches <- which(trimmed_col1 == vname)
-      if (length(row_matches) == 0)
-        row_matches <- which(tolower(trimmed_col1) == tolower(vname))
-      if (length(row_matches) == 0) next
-      row_idx   <- row_matches[1]
-      il        <- if (!is.null(indent_col) && row_idx <= length(indent_col)) indent_col[row_idx] else 2L
-      is_italic <- isTRUE(il == 6L) ||
-                   (!is.null(manual_italic_indent) && vname %in% manual_italic_indent)
-      # symbols: superscript all except "*"; alphabet: never (glyphs inherently raised)
-      needs_super <- (index_style == "symbols") && (sym != "*")
-      modified_tbl[[1]][row_idx] <- paste0(trimmed_col1[row_idx], sym)
-      trimmed_col1[row_idx]      <- paste0(trimmed_col1[row_idx], sym)
-      vf_row_info[[k]] <- list(row_idx = row_idx, symbol = sym,
-                               needs_super = needs_super, is_italic = is_italic)
+      vnames_k <- trimws(strsplit(vf_names[k], "|", fixed = TRUE)[[1]])
+      sym      <- symbols[k]
+      for (vname in vnames_k) {
+        row_matches <- which(trimmed_col1 == vname)
+        if (length(row_matches) == 0)
+          row_matches <- which(tolower(trimmed_col1) == tolower(vname))
+        if (length(row_matches) == 0) next
+        row_idx   <- row_matches[1]
+        il        <- if (!is.null(indent_col) && row_idx <= length(indent_col)) indent_col[row_idx] else 2L
+        is_italic <- isTRUE(il == 6L) ||
+                     (!is.null(manual_italic_indent) && vname %in% manual_italic_indent)
+        # symbols: superscript all except "*"; alphabet: never (glyphs inherently raised)
+        needs_super <- (index_style == "symbols") && (sym != "*")
+        modified_tbl[[1]][row_idx] <- paste0(trimmed_col1[row_idx], sym)
+        trimmed_col1[row_idx]      <- paste0(trimmed_col1[row_idx], sym)
+        vf_row_counter <- vf_row_counter + 1L
+        vf_row_info[[vf_row_counter]] <- list(row_idx = row_idx, symbol = sym,
+                                              needs_super = needs_super, is_italic = is_italic)
+      }
     }
   }
 

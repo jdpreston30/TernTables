@@ -105,6 +105,8 @@ they appear in the table (case-insensitive match); values are the footnote defin
 for that variable. Each entry is assigned the next symbol in the sequence (*, dagger,
 double-dagger, ...) and the symbol is appended to the variable name in column 1.
 The footnote block lists each as \code{"* Definition text."} below the abbreviations.
+To map multiple variables to the same footnote symbol and note, separate the variable
+names with a pipe character in the key: \code{c("Var A|Var B" = "Shared note text.")}.
 Default \code{NULL}.}
 
 \item{index_style}{Character; controls the footnote symbol sequence. \code{"symbols"} (default)

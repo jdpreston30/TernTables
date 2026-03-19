@@ -60,7 +60,9 @@
 #'   of abbreviations. Always printed first in the footnote block. Default
 #'   \code{NULL}.
 #' @param variable_footnote Optional named character vector of per-variable
-#'   footnote definitions. Default \code{NULL}.
+#'   footnote definitions (case-insensitive name match). To share one footnote
+#'   symbol between multiple variables, separate their names with a pipe:
+#'   \code{c("Var A|Var B" = "Shared note text.")}. Default \code{NULL}.
 #' @param index_style Character; \code{"symbols"} (default) or
 #'   \code{"alphabet"}. Controls the footnote symbol sequence. See
 #'   \code{word_export} for details.
