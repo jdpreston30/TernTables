@@ -1,3 +1,19 @@
+# TernTables 1.6.3.9030 (development)
+
+## New features
+
+* **`classify_normality()`**: New exported function that applies the same
+  four-gate ROBUST normality assessment (or Shapiro-Wilk-only when
+  `consider_normality = TRUE`) used internally by `ternG()` and `ternD()`,
+  returning a tidy tibble with per-variable × per-group statistics
+  (n, skewness, excess kurtosis, Shapiro-Wilk p), the gate that made the
+  routing decision, a plain-language `gate_reason`, and the final
+  `routing` outcome (`"Parametric (mean ± SD)"` or
+  `"Non-parametric (median [IQR])"`). Designed for manuscript auditing and
+  responding to reviewer questions about normality testing.
+
+---
+
 # TernTables 1.6.3.9029 (development)
 
 ## New features
