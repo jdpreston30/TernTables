@@ -11,8 +11,11 @@
 #'     character columns where \eqn{\geq}80\% of values match a common date pattern) and
 #'     reported in \code{feedback$date_cols_detected}. They are not dropped
 #'     automatically — the caller decides whether to exclude or keep them.
-#'   \item String NA values (\code{"NA"}, \code{"na"}, \code{"Na"},
-#'     \code{"unk"}) are converted to \code{NA}.
+#'   \item String NA values (\code{"NA"}, \code{"na"}, \code{"N/A"}, \code{"NaN"},
+#'     \code{"missing"}, \code{"unknown"}, \code{"unk"}, \code{"not available"},
+#'     \code{"not applicable"}, \code{"none"}, \code{"null"}, \code{"nil"},
+#'     \code{"-"}, \code{"."}, \code{"?"}) are converted to \code{NA}
+#'     (matching is case-insensitive).
 #'   \item Leading and trailing whitespace is trimmed from all character
 #'     columns.
 #'   \item Columns that are 100\% empty (all \code{NA}) are silently dropped.
