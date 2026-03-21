@@ -48,7 +48,8 @@ ternG(
   font_family = getOption("TernTables.font_family", "Arial"),
   show_missing = FALSE,
   show_p = TRUE,
-  zero_to_dash = FALSE
+  zero_to_dash = FALSE,
+  percentage_compute = "column"
 )
 }
 \arguments{
@@ -251,6 +252,16 @@ all suppressed automatically.}
 \code{"0 (0\%)"} with \code{"-"} in the output table. Useful when zero counts in a group are
 not meaningful to report numerically (e.g. no patients with a condition in one arm).
 Default is \code{FALSE}.}
+
+\item{percentage_compute}{Character; controls the denominator used when computing percentages
+for categorical variables. \code{"column"} (default) divides each cell count by the column
+(group) total, so percentages describe the composition of each group -- the standard
+Table 1 interpretation (e.g. "60\% of the Recurrence group is Male"). \code{"row"} divides
+each cell count by the row total (the number of subjects with that category level across all
+groups), so percentages describe how each category level is distributed across groups
+(e.g. "30\% of Males had Recurrence"). When \code{"row"}, the Total column will always
+show 100\% for every level. Applies to both binary and multinomial categorical variables
+in both two- and three-group comparisons.}
 }
 \value{
 A tibble with one row per variable (multi-row for multi-level factors), showing summary statistics by group,

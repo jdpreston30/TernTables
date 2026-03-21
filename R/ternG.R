@@ -164,6 +164,15 @@
 #'   \code{"0 (0\%)"} with \code{"-"} in the output table. Useful when zero counts in a group are
 #'   not meaningful to report numerically (e.g. no patients with a condition in one arm).
 #'   Default is \code{FALSE}.
+#' @param percentage_compute Character; controls the denominator used when computing percentages
+#'   for categorical variables. \code{"column"} (default) divides each cell count by the column
+#'   (group) total, so percentages describe the composition of each group -- the standard
+#'   Table 1 interpretation (e.g. "60\% of the Recurrence group is Male"). \code{"row"} divides
+#'   each cell count by the row total (the number of subjects with that category level across all
+#'   groups), so percentages describe how each category level is distributed across groups
+#'   (e.g. "30\% of Males had Recurrence"). When \code{"row"}, the Total column will always
+#'   show 100\% for every level. Applies to both binary and multinomial categorical variables
+#'   in both two- and three-group comparisons.
 #' @param show_p Logical; if \code{TRUE} (default), the P value column is included in the
 #'   output and Excel/Word exports. Set to \code{FALSE} to produce a descriptive-only grouped
 #'   table — the output will contain only the Variable column, one column per group level, and
@@ -252,7 +261,8 @@ ternG <- function(data,
                   font_family = getOption("TernTables.font_family", "Arial"),
                   show_missing = FALSE,
                   show_p = TRUE,
-                  zero_to_dash = FALSE) {
+                  zero_to_dash = FALSE,
+                  percentage_compute = "column") {
 
   # Helper function for proper rounding (0.5 always rounds up)
   round_up_half <- function(x, digits = 0) {
@@ -277,6 +287,9 @@ ternG <- function(data,
 
   data <- data %>% filter(!is.na(.data[[group_var]]))
   n_levels <- length(unique(data[[group_var]]))
+
+  # ── Validate percentage_compute ───────────────────────────────────────────
+  percentage_compute <- match.arg(percentage_compute, c("column", "row"))
 
   # ── show_p = FALSE: suppress all stat-output flags early ──────────────────
   if (!isTRUE(show_p)) {
@@ -360,10 +373,20 @@ ternG <- function(data,
     if (is.character(v) || is.factor(v)) {
       g[[var]] <- factor(g[[var]])
       tab <- table(g[[group_var]], g[[var]])
-      tab_pct <- as.data.frame.matrix(round(prop.table(tab, 1) * 100))
+      # margin=1: % within each group (column %). margin=2: % within each level (row %).
+      if (percentage_compute == "row") {
+        tab_pct <- as.data.frame.matrix(round(prop.table(tab, 2) * 100))
+      } else {
+        tab_pct <- as.data.frame.matrix(round(prop.table(tab, 1) * 100))
+      }
       tab_n   <- as.data.frame.matrix(tab)
       tab_total_n   <- colSums(tab)
-      tab_total_pct <- round(prop.table(tab_total_n) * 100)
+      if (percentage_compute == "row") {
+        # Row percentages: Total column is always 100% per level
+        tab_total_pct <- setNames(rep(100L, length(tab_total_n)), names(tab_total_n))
+      } else {
+        tab_total_pct <- round(prop.table(tab_total_n) * 100)
+      }
 
       # Cochran (1954) criterion: use Fisher's exact when any *expected* cell count < 5
       fisher_flag <- any(suppressWarnings(stats::chisq.test(tab)$expected) < 5)
@@ -1132,7 +1155,8 @@ ternG <- function(data,
     force_normal          = force_normal,
     show_missing          = show_missing,
     show_p                = show_p,
-    zero_to_dash          = zero_to_dash
+    zero_to_dash          = zero_to_dash,
+    percentage_compute    = percentage_compute
   )
 
   return(out_tbl)

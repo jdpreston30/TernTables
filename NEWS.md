@@ -1,3 +1,18 @@
+# TernTables 1.6.3.9031 (development)
+
+## New features
+
+* **`percentage_compute` parameter** (`ternG`): New argument controlling the
+  denominator used for categorical variable percentages. `"column"` (default)
+  preserves existing behavior — percentages are computed within each group
+  column (e.g. "60% of the Recurrence group is Male"). `"row"` divides by
+  the row total instead, describing how each category level is distributed
+  across groups (e.g. "30% of Males had Recurrence"). Applies to both binary
+  and multinomial categorical variables in both two- and three-group
+  comparisons. When `"row"`, the Total column shows 100% for every level.
+
+---
+
 # TernTables 1.6.3.9030 (development)
 
 ## New features
