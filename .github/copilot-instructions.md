@@ -429,7 +429,7 @@ The service runs on AWS Lightsail (`tern-tables.com`). Package updates only take
 2. `sudo Rscript -e "remotes::install_github('jdpreston30/TernTables', force = TRUE)"` — server
 3. `sudo systemctl restart terntables-r` — server
 
-SSH key: `~/.ssh/LightsailDefaultKey-us-east-1-1.pem`, user: `ubuntu@tern-tables.com`
+SSH key: `~/.ssh/LightsailDefaultKey-us-east-1.pem`, user: `ubuntu@18.214.72.68` (tern-tables.com)
 Service name: `terntables-r`
 
 ---
@@ -468,8 +468,8 @@ Push the current local package to GitHub, then install it on the server and rest
    sudo systemctl status terntables-r --no-pager | head -6
    ```
 
-SSH key: `~/.ssh/LightsailDefaultKey-us-east-1-1.pem`
-Server: `ubuntu@tern-tables.com`
+SSH key: `~/.ssh/LightsailDefaultKey-us-east-1.pem`
+Server: `ubuntu@18.214.72.68` (tern-tables.com)
 
 > **Note:** This is the standard server deploy flow. Do NOT use `R CMD build` + `scp` + `R CMD INSTALL` unless `remotes::install_github` fails.
 
