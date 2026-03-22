@@ -61,6 +61,9 @@
 #' @param show_test Logical; if \code{TRUE}, includes the statistical test name as a column in the output. Default is \code{FALSE}.
 #' @param p_digits Integer; number of decimal places for P values (default 3).
 #' @param round_intg Logical; if \code{TRUE}, rounds all means, medians, IQRs, and standard deviations to nearest integer (0.5 rounds up). Default is \code{FALSE}.
+#' @param round_decimal Integer or \code{NULL}; number of decimal places for all continuous summary values
+#'   (means, SDs, medians, IQRs). Overrides the default of 1 decimal place when set. Ignored when
+#'   \code{round_intg = TRUE}. Default is \code{NULL} (1 decimal place).
 #' @param smart_rename Logical; if \code{TRUE}, automatically cleans variable names and subheadings for publication-ready output using built-in rule-based pattern matching for common medical abbreviations and prefixes. Default is \code{TRUE}.
 #' @param insert_subheads Logical; if \code{TRUE} (default), creates a hierarchical structure with a header row and
 #'   indented sub-category rows for categorical variables with 3 or more levels. Binary variables
@@ -238,6 +241,7 @@ ternG <- function(data,
                   show_test = FALSE,
                   p_digits = 3,
                   round_intg = FALSE,
+                  round_decimal = NULL,
                   smart_rename = TRUE,
                   insert_subheads = TRUE,
                   factor_order = "mixed",
@@ -325,7 +329,13 @@ ternG <- function(data,
   # Track which variables used Monte Carlo Fisher's exact (workspace limit fallback)
   fisher_sim_display  <- character(0)
 
-  .summarize_var_internal <- function(df, var, force_ordinal = NULL, force_continuous = NULL, show_test = FALSE, round_intg = FALSE, show_total = FALSE) {
+  .summarize_var_internal <- function(df, var, force_ordinal = NULL, force_continuous = NULL, show_test = FALSE, round_intg = FALSE, round_decimal = NULL, show_total = FALSE) {
+
+    # Rounding helper: integer mode, custom decimal, or default 1dp
+    rd <- function(x) {
+      if (round_intg) round_up_half(x, 0)
+      else round(x, if (!is.null(round_decimal)) as.integer(round_decimal) else 1L)
+    }
 
     # Count missings per group BEFORE the NA filter below (used when show_missing = TRUE)
     .missing_row <- function(result_tbl) {
@@ -641,9 +651,9 @@ ternG <- function(data,
     # ----- Force ordinal -----
     if (!is.null(force_ordinal) && var %in% force_ordinal) {
       stats <- g %>% group_by(.data[[group_var]]) %>% summarise(
-        Q1 = if (round_intg) round_up_half(quantile(.data[[var]], 0.25, na.rm = TRUE), 0) else round(quantile(.data[[var]], 0.25, na.rm = TRUE), 1),
-        med = if (round_intg) round_up_half(median(.data[[var]], na.rm = TRUE), 0) else round(median(.data[[var]], na.rm = TRUE), 1),
-        Q3 = if (round_intg) round_up_half(quantile(.data[[var]], 0.75, na.rm = TRUE), 0) else round(quantile(.data[[var]], 0.75, na.rm = TRUE), 1), .groups = "drop")
+        Q1 = rd(quantile(.data[[var]], 0.25, na.rm = TRUE)),
+        med = rd(median(.data[[var]], na.rm = TRUE)),
+        Q3 = rd(quantile(.data[[var]], 0.75, na.rm = TRUE)), .groups = "drop")
       result <- tibble(Variable = .clean_variable_name_for_header(var), .indent = 2)
       for (g_lvl in group_levels) {
         val <- stats %>% filter(.data[[group_var]] == g_lvl)
@@ -690,9 +700,9 @@ ternG <- function(data,
       if (OR_col) result$OR <- "-"
       if (show_total) {
         val_total <- g %>% dplyr::summarise(
-          Q1  = if (round_intg) round_up_half(quantile(.data[[var]], 0.25, na.rm = TRUE), 0) else round(quantile(.data[[var]], 0.25, na.rm = TRUE), 1),
-          med = if (round_intg) round_up_half(median(.data[[var]], na.rm = TRUE), 0) else round(median(.data[[var]], na.rm = TRUE), 1),
-          Q3  = if (round_intg) round_up_half(quantile(.data[[var]], 0.75, na.rm = TRUE), 0) else round(quantile(.data[[var]], 0.75, na.rm = TRUE), 1))
+          Q1  = rd(quantile(.data[[var]], 0.25, na.rm = TRUE)),
+          med = rd(median(.data[[var]], na.rm = TRUE)),
+          Q3  = rd(quantile(.data[[var]], 0.75, na.rm = TRUE)))
         result$Total <- paste0(val_total$med, " [", val_total$Q1, "\u2013", val_total$Q3, "]")
       }
       if (print_normality) {
@@ -819,7 +829,7 @@ ternG <- function(data,
     }
 
     if (!is_normal) {
-      return(.summarize_var_internal(df, var = var, force_ordinal = var, show_test = show_test, round_intg = round_intg, show_total = show_total))
+      return(.summarize_var_internal(df, var = var, force_ordinal = var, show_test = show_test, round_intg = round_intg, round_decimal = round_decimal, show_total = show_total))
     }
 
     # ----- Normally distributed numeric -----
@@ -831,11 +841,7 @@ ternG <- function(data,
     for (g_lvl in group_levels) {
       val <- stats %>% filter(.data[[group_var]] == g_lvl)
       result[[group_labels[g_lvl]]] <- if (nrow(val) == 1) {
-        if (round_intg) {
-          paste0(round_up_half(val$mean, 0), " \u00b1 ", round_up_half(val$sd, 0))
-        } else {
-          paste0(round(val$mean, 1), " \u00b1 ", round(val$sd, 1))
-        }
+        paste0(rd(val$mean), " \u00b1 ", rd(val$sd))
       } else {
         "NA \u00b1 NA"
       }
@@ -879,11 +885,7 @@ ternG <- function(data,
     if (OR_col) result$OR <- "-"
     if (show_total) {
       val_total <- g %>% dplyr::summarise(mean = mean(.data[[var]], na.rm = TRUE), sd = sd(.data[[var]], na.rm = TRUE))
-      if (round_intg) {
-        result$Total <- paste0(round_up_half(val_total$mean, 0), " \u00b1 ", round_up_half(val_total$sd, 0))
-      } else {
-        result$Total <- paste0(round(val_total$mean, 1), " \u00b1 ", round(val_total$sd, 1))
-      }
+      result$Total <- paste0(rd(val_total$mean), " \u00b1 ", rd(val_total$sd))
     }
 
     if (print_normality && length(sw_p_all) > 0) {
@@ -927,7 +929,7 @@ ternG <- function(data,
   }
 
   out_tbl <- suppressWarnings({
-    result <- bind_rows(lapply(vars, function(v) .summarize_var_internal(data, v, force_ordinal, force_continuous, show_test, round_intg, show_total)))
+    result <- bind_rows(lapply(vars, function(v) .summarize_var_internal(data, v, force_ordinal, force_continuous, show_test, round_intg, round_decimal, show_total)))
     cli::cli_alert_info("Multi-level categorical variables occupy more than one row in the output table.")
     result
   })
@@ -1122,7 +1124,7 @@ ternG <- function(data,
     abbreviation_footnote
   }
 
-  if (!is.null(output_docx)) word_export(out_tbl, output_docx, round_intg = round_intg, font_size = table_font_size, category_start = category_start, plain_header = plain_header, manual_italic_indent = manual_italic_indent, manual_underline = manual_underline, table_caption = table_caption, table_footnote = effective_footnote, abbreviation_footnote = effective_abbr, posthoc_footnote = posthoc_note, variable_footnote = variable_footnote, index_style = index_style, line_break_header = line_break_header, open_doc = open_doc, citation = citation, font_family = font_family)
+  if (!is.null(output_docx)) word_export(out_tbl, output_docx, round_intg = round_intg, round_decimal = round_decimal, font_size = table_font_size, category_start = category_start, plain_header = plain_header, manual_italic_indent = manual_italic_indent, manual_underline = manual_underline, table_caption = table_caption, table_footnote = effective_footnote, abbreviation_footnote = effective_abbr, posthoc_footnote = posthoc_note, variable_footnote = variable_footnote, index_style = index_style, line_break_header = line_break_header, open_doc = open_doc, citation = citation, font_family = font_family)
 
   if (!indent_info_column) out_tbl <- dplyr::select(out_tbl, -dplyr::any_of(".indent"))
 
@@ -1130,6 +1132,7 @@ ternG <- function(data,
   attr(out_tbl, "ternB_meta") <- list(
     tbl                   = out_tbl_with_indent,
     round_intg            = round_intg,
+    round_decimal         = round_decimal,
     font_size             = table_font_size,
     category_start        = category_start,
     plain_header          = plain_header,

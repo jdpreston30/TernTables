@@ -113,6 +113,7 @@ ternStyle <- function(
     italic_cols           = NULL,
     header_format_follow  = FALSE,
     round_intg            = FALSE,
+    round_decimal         = NULL,
     font_size             = 9,
     category_start        = NULL,
     plain_header          = NULL,
@@ -169,6 +170,7 @@ ternStyle <- function(
     tbl                   = tbl,
     filename              = filename,
     round_intg            = round_intg,
+    round_decimal         = round_decimal,
     font_size             = font_size,
     category_start        = category_start,
     plain_header          = plain_header,
@@ -201,6 +203,7 @@ ternStyle <- function(
   attr(tbl, "ternB_meta") <- list(
     tbl                   = tbl,
     round_intg            = round_intg,
+    round_decimal         = round_decimal,
     font_size             = font_size,
     category_start        = category_start,
     plain_header          = plain_header,

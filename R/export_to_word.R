@@ -100,7 +100,7 @@
 #' )
 #' }
 #' @export
-word_export <- function(tbl, filename, round_intg = FALSE, font_size = 9, category_start = NULL, plain_header = NULL, subheader_rows = NULL, bold_rows = NULL, italic_rows = NULL, bold_cols = NULL, italic_cols = NULL, header_format_follow = FALSE, manual_italic_indent = NULL, manual_underline = NULL, table_caption = NULL, table_footnote = NULL, abbreviation_footnote = NULL, posthoc_footnote = NULL, variable_footnote = NULL, index_style = "symbols", page_break_after = FALSE, col1_header = NULL, line_break_header = getOption("TernTables.line_break_header", TRUE), open_doc = TRUE, citation = TRUE, font_family = getOption("TernTables.font_family", "Arial")) {
+word_export <- function(tbl, filename, round_intg = FALSE, round_decimal = NULL, font_size = 9, category_start = NULL, plain_header = NULL, subheader_rows = NULL, bold_rows = NULL, italic_rows = NULL, bold_cols = NULL, italic_cols = NULL, header_format_follow = FALSE, manual_italic_indent = NULL, manual_underline = NULL, table_caption = NULL, table_footnote = NULL, abbreviation_footnote = NULL, posthoc_footnote = NULL, variable_footnote = NULL, index_style = "symbols", page_break_after = FALSE, col1_header = NULL, line_break_header = getOption("TernTables.line_break_header", TRUE), open_doc = TRUE, citation = TRUE, font_family = getOption("TernTables.font_family", "Arial")) {
   # Keep the table as-is
   modified_tbl <- tbl
 

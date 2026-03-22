@@ -35,6 +35,9 @@
 #'   additional column in the output. Default is \code{FALSE}.
 #' @param round_intg Logical; if \code{TRUE}, rounds all means, medians, IQRs, and standard 
 #'   deviations to nearest integer (0.5 rounds up). Default is \code{FALSE}.
+#' @param round_decimal Integer or \code{NULL}; number of decimal places for all continuous summary
+#'   values (means, SDs, medians, IQRs). Overrides the default of 1 decimal place when set.
+#'   Ignored when \code{round_intg = TRUE}. Default is \code{NULL} (1 decimal place).
 #' @param smart_rename Logical; if \code{TRUE}, automatically cleans variable names and
 #'   subheadings for publication-ready output using built-in rule-based pattern matching for
 #'   common medical abbreviations and prefixes. Default is \code{TRUE}.
@@ -175,7 +178,7 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
                   force_continuous = NULL,
                   output_xlsx = NULL, output_docx = NULL,
                   consider_normality = "ROBUST", print_normality = FALSE,
-                  round_intg = FALSE, smart_rename = TRUE, insert_subheads = TRUE,
+                  round_intg = FALSE, round_decimal = NULL, smart_rename = TRUE, insert_subheads = TRUE,
                   factor_order = "mixed", methods_doc = TRUE,
                   methods_filename = "TernTables_methods.docx", category_start = NULL,
                   plain_header = NULL,
@@ -210,19 +213,21 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
   fmt_mean_sd <- function(x) {
     m <- mean(x, na.rm = TRUE)
     s <- stats::sd(x, na.rm = TRUE)
+    dp <- if (!is.null(round_decimal)) as.integer(round_decimal) else 1L
     if (round_intg) {
       paste0(round_up_half(m, 0), " \u00b1 ", round_up_half(s, 0))
     } else {
-      paste0(round(m, 1), " \u00b1 ", round(s, 1))
+      paste0(round(m, dp), " \u00b1 ", round(s, dp))
     }
   }
 
   fmt_median_iqr <- function(x) {
     q <- stats::quantile(x, probs = c(0.25, 0.5, 0.75), na.rm = TRUE, names = FALSE)
+    dp <- if (!is.null(round_decimal)) as.integer(round_decimal) else 1L
     if (round_intg) {
       paste0(round_up_half(q[2], 0), " [", round_up_half(q[1], 0), "\u2013", round_up_half(q[3], 0), "]")
     } else {
-      paste0(round(q[2], 1), " [", round(q[1], 1), "\u2013", round(q[3], 1), "]")
+      paste0(round(q[2], dp), " [", round(q[1], dp), "\u2013", round(q[3], dp), "]")
     }
   }
 
@@ -478,6 +483,7 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
 
   if (!is.null(output_xlsx)) export_to_excel(out_tbl, output_xlsx)
   if (!is.null(output_docx)) word_export(out_tbl, output_docx, font_size = table_font_size,
+                                         round_decimal         = round_decimal,
                                          category_start        = category_start,
                                          plain_header          = plain_header,
                                          manual_italic_indent  = manual_italic_indent,
@@ -498,7 +504,8 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
   # Attach word-export metadata so ternB() can reproduce this table in a combined document
   attr(out_tbl, "ternB_meta") <- list(
     tbl                   = out_tbl_with_indent,
-    round_intg            = FALSE,
+    round_intg            = round_intg,
+    round_decimal         = round_decimal,
     font_size             = table_font_size,
     category_start        = category_start,
     plain_header          = plain_header,

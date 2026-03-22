@@ -1,3 +1,17 @@
+# TernTables 1.6.3.9032 (development)
+
+## New features
+
+* **`round_decimal` parameter** (`ternG`, `ternD`, `ternStyle`, `word_export`, `ternB`):
+  New argument accepting an integer number of decimal places for all continuous
+  summary values (means, SDs, medians, IQRs). Overrides the package default of
+  1 decimal place when set. Ignored when `round_intg = TRUE`. Default is `NULL`
+  (preserves existing 1 decimal place behavior). Also fixes a latent bug in
+  `ternD` where `ternB_meta` hardcoded `round_intg = FALSE` regardless of the
+  argument passed.
+
+---
+
 # TernTables 1.6.3.9031 (development)
 
 ## New features
