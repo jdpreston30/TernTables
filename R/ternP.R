@@ -185,29 +185,24 @@ ternP <- function(data) {
   # ---------------------------------------------------------------------------
   collapsed_detail <- list()
 
-  data <- dplyr::mutate(
-    data,
-    dplyr::across(
-      dplyr::where(is.character),
-      ~ {
-        lowered <- stringr::str_to_lower(.)
-        if (dplyr::n_distinct(lowered, na.rm = TRUE) <
-            dplyr::n_distinct(.,      na.rm = TRUE)) {
-          col_nm      <- dplyr::cur_column()
-          unique_vals <- unique(.[!is.na(.)])
-          title_vals  <- stringr::str_to_title(unique_vals)
-          changed_idx <- which(unique_vals != title_vals)
-          collapsed_detail[[col_nm]] <<- list(
-            changed_from = unique_vals[changed_idx],
-            changed_to   = title_vals[changed_idx]
-          )
-          stringr::str_to_title(.)
-        } else {
-          .
-        }
-      }
-    )
-  )
+  # Replace dplyr::across lambda that used <<- with an explicit for loop
+  # (avoids modifying the global search path; CRAN policy)
+  for (col_nm in names(data)) {
+    if (!is.character(data[[col_nm]])) next
+    col_vals <- data[[col_nm]]
+    lowered  <- stringr::str_to_lower(col_vals)
+    if (dplyr::n_distinct(lowered, na.rm = TRUE) <
+        dplyr::n_distinct(col_vals, na.rm = TRUE)) {
+      unique_vals <- unique(col_vals[!is.na(col_vals)])
+      title_vals  <- stringr::str_to_title(unique_vals)
+      changed_idx <- which(unique_vals != title_vals)
+      collapsed_detail[[col_nm]] <- list(
+        changed_from = unique_vals[changed_idx],
+        changed_to   = title_vals[changed_idx]
+      )
+      data[[col_nm]] <- stringr::str_to_title(col_vals)
+    }
+  }
 
   if (length(collapsed_detail) > 0) {
     feedback$case_normalized_vars <- list(

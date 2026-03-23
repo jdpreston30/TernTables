@@ -205,13 +205,13 @@ ternG <- function(data,
 
   # Initialize normality tracking variables
   normality_results <- list()
-  numeric_vars_tested <- 0
-  numeric_vars_failed <- 0
-
-  # Track which variables actually had post-hoc tests run (omnibus significant)
-  posthoc_ran_display <- character(0)
-  # Track which variables used Monte Carlo Fisher's exact (workspace limit fallback)
-  fisher_sim_display  <- character(0)
+  # Use an environment instead of <<- so closures can accumulate without
+  # modifying the global search path (CRAN policy)
+  .ternG_env <- new.env(parent = emptyenv())
+  .ternG_env$numeric_vars_tested <- 0L
+  .ternG_env$numeric_vars_failed <- 0L
+  .ternG_env$posthoc_ran_display <- character(0)
+  .ternG_env$fisher_sim_display  <- character(0)
 
   .summarize_var_internal <- function(df, var, force_ordinal = NULL, show_test = FALSE, round_intg = FALSE, show_total = FALSE) {
 
@@ -238,16 +238,18 @@ ternG <- function(data,
       fisher_flag <- any(suppressWarnings(stats::chisq.test(tab)$expected) < 5)
       test_result <- tryCatch({
         if (fisher_flag) {
-          sim_used <- FALSE
-          ft <- tryCatch(
-            stats::fisher.test(tab),
+          fisher_result <- tryCatch(
+            list(ft = stats::fisher.test(tab), simulated = FALSE),
             error = function(e) {
-              # Workspace limit exceeded for large tables — fall back to Monte Carlo
-              sim_used <<- TRUE
-              set.seed(getOption("TernTables.seed", 42L))
-              stats::fisher.test(tab, simulate.p.value = TRUE, B = 10000L)
+              # Workspace limit exceeded for large tables - fall back to Monte Carlo
+              withr::with_seed(getOption("TernTables.seed", 42L), {
+                list(ft = stats::fisher.test(tab, simulate.p.value = TRUE, B = 10000L),
+                     simulated = TRUE)
+              })
             }
           )
+          ft       <- fisher_result$ft
+          sim_used <- fisher_result$simulated
           list(p_value = ft$p.value,
                test_name = if (sim_used) "Fisher exact (simulated)" else "Fisher exact",
                error = NULL)
@@ -472,7 +474,7 @@ ternG <- function(data,
         result <- bind_rows(list(header_row), sub_rows)
       }
       if (grepl("simulated", test_result$test_name, fixed = FALSE))
-        fisher_sim_display <<- c(fisher_sim_display, result$Variable[1])
+        .ternG_env$fisher_sim_display <- c(.ternG_env$fisher_sim_display, result$Variable[1])
       return(result)
     }
 
@@ -568,12 +570,12 @@ ternG <- function(data,
               if (!is.null(sup) && nzchar(sup))
                 result[[group_labels[g_lvl]]] <- paste0(result[[group_labels[g_lvl]]], sup)
             }
-            posthoc_ran_display <<- c(posthoc_ran_display, result$Variable[1])
+            .ternG_env$posthoc_ran_display <- c(.ternG_env$posthoc_ran_display, result$Variable[1])
           }
         }
       }
       if (grepl("simulated", test_result$test_name, fixed = FALSE))
-        fisher_sim_display <<- c(fisher_sim_display, result$Variable[1])
+        .ternG_env$fisher_sim_display <- c(.ternG_env$fisher_sim_display, result$Variable[1])
       return(result)
     }
 
@@ -595,9 +597,9 @@ ternG <- function(data,
       baseline_normal <- all(sw_p_all > 0.05, na.rm = TRUE)
       
       # Track baseline normality results for reporting
-      numeric_vars_tested <<- numeric_vars_tested + 1
+      .ternG_env$numeric_vars_tested <- .ternG_env$numeric_vars_tested + 1L
       if (!baseline_normal) {
-        numeric_vars_failed <<- numeric_vars_failed + 1
+        .ternG_env$numeric_vars_failed <- .ternG_env$numeric_vars_failed + 1L
       }
       
       # Force all to be treated as ordinal regardless of normality
@@ -623,16 +625,16 @@ ternG <- function(data,
       group_ns       <- sapply(group_vals, function(v) sum(!is.na(v)))
       group_skewness <- sapply(group_vals, calc_skewness)
 
-      numeric_vars_tested <<- numeric_vars_tested + 1
+      .ternG_env$numeric_vars_tested <- .ternG_env$numeric_vars_tested + 1L
 
       if (any(group_ns < 3)) {
         # Gate 1: any group too small to test — non-parametric (conservative fail-safe)
         is_normal <- FALSE
-        numeric_vars_failed <<- numeric_vars_failed + 1
+        .ternG_env$numeric_vars_failed <- .ternG_env$numeric_vars_failed + 1L
       } else if (any(abs(group_skewness) > 2, na.rm = TRUE)) {
         # Gate 2: extreme skewness — non-parametric regardless of n
         is_normal <- FALSE
-        numeric_vars_failed <<- numeric_vars_failed + 1
+        .ternG_env$numeric_vars_failed <- .ternG_env$numeric_vars_failed + 1L
       } else if (all(group_ns >= 30)) {
         # Gate 3: CLT applies — parametric
         is_normal <- TRUE
@@ -647,7 +649,7 @@ ternG <- function(data,
           do.call(c, out)
         }, error = function(e) rep(NA_real_, n_levels))
         is_normal <- all(!is.na(sw_p_all) & sw_p_all > 0.05)
-        if (!is_normal) numeric_vars_failed <<- numeric_vars_failed + 1
+        if (!is_normal) .ternG_env$numeric_vars_failed <- .ternG_env$numeric_vars_failed + 1L
       }
     } else if (isTRUE(consider_normality)) {
       # TRUE: Shapiro-Wilk only (conservative at large n)
@@ -661,9 +663,9 @@ ternG <- function(data,
       }, error = function(e) rep(NA, n_levels))
       is_normal <- all(!is.na(sw_p_all) & sw_p_all > 0.05)
 
-      numeric_vars_tested <<- numeric_vars_tested + 1
+      .ternG_env$numeric_vars_tested <- .ternG_env$numeric_vars_tested + 1L
       if (!is_normal) {
-        numeric_vars_failed <<- numeric_vars_failed + 1
+        .ternG_env$numeric_vars_failed <- .ternG_env$numeric_vars_failed + 1L
       }
     } else {
       # consider_normality = FALSE: still run Shapiro-Wilk for informational reporting,
@@ -676,8 +678,8 @@ ternG <- function(data,
         })
         do.call(c, out)
       }, error = function(e) rep(NA_real_, n_levels))
-      numeric_vars_tested <<- numeric_vars_tested + 1
-      if (!all(sw_p_all > 0.05, na.rm = TRUE)) numeric_vars_failed <<- numeric_vars_failed + 1
+      .ternG_env$numeric_vars_tested <- .ternG_env$numeric_vars_tested + 1L
+      if (!all(sw_p_all > 0.05, na.rm = TRUE)) .ternG_env$numeric_vars_failed <- .ternG_env$numeric_vars_failed + 1L
     }
 
     if (!is_normal) {
@@ -777,7 +779,7 @@ ternG <- function(data,
             if (!is.null(sup) && nzchar(sup))
               result[[group_labels[g_lvl]]] <- paste0(result[[group_labels[g_lvl]]], sup)
           }
-          posthoc_ran_display <<- c(posthoc_ran_display, result$Variable[1])
+          .ternG_env$posthoc_ran_display <- c(.ternG_env$posthoc_ran_display, result$Variable[1])
         }
       }
     }
@@ -828,6 +830,12 @@ ternG <- function(data,
   if (methods_doc) {
     write_methods_doc(out_tbl, methods_filename, n_levels = n_levels, OR_col = OR_col, source = "ternG", post_hoc = post_hoc)
   }
+
+  # Extract counters/trackers from environment before reporting
+  numeric_vars_tested <- .ternG_env$numeric_vars_tested
+  numeric_vars_failed <- .ternG_env$numeric_vars_failed
+  posthoc_ran_display <- .ternG_env$posthoc_ran_display
+  fisher_sim_display  <- .ternG_env$fisher_sim_display
 
   # -- Report normality test results -----------------------------------------
   if (numeric_vars_tested > 0) {

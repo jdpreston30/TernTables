@@ -1,3 +1,15 @@
+# TernTables 1.6.4
+
+## Bug fixes / CRAN compliance
+
+* Removed all uses of `<<-` in `ternD()`, `ternG()`, and `ternP()`. Counter
+  and tracker variables are now accumulated via a local environment created
+  with `new.env(parent = emptyenv())` rather than super-assignment, which
+  avoids unintended side-effects on parent frames (CRAN policy).
+* Replaced bare `set.seed()` inside `ternG()` with
+  `withr::with_seed()` so the global RNG state is never modified
+  (CRAN policy). Added **withr** to `Imports`.
+
 # TernTables 1.6.3
 
 * CRAN resubmission addressing reviewer comments on v1.3.1.

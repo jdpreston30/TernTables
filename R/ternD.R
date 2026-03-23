@@ -297,8 +297,8 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
     # Check if variable is forced to be ordinal
     if (!is.null(force_ordinal) && var %in% force_ordinal) {
       # Force ordinal: use median/IQR regardless of consider_normality setting
-      norm_tested <<- norm_tested + 1
-      norm_failed <<- norm_failed + 1
+      .ternD_env$norm_tested <- .ternD_env$norm_tested + 1L
+      .ternD_env$norm_failed <- .ternD_env$norm_failed + 1L
       summary_str <- fmt_median_iqr(x)
     } else if (consider_normality == "ROBUST") {
       # ROBUST: four-gate decision tree applied to full variable vector
@@ -312,14 +312,14 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
       }
       n_obs    <- sum(!is.na(x))
       skewness <- calc_skewness(x)
-      norm_tested <<- norm_tested + 1
+      .ternD_env$norm_tested <- .ternD_env$norm_tested + 1L
       if (n_obs < 3) {
         # Gate 1: too few observations — non-parametric (conservative fail-safe)
-        norm_failed <<- norm_failed + 1
+        .ternD_env$norm_failed <- .ternD_env$norm_failed + 1L
         summary_str <- fmt_median_iqr(x)
       } else if (!is.na(skewness) && abs(skewness) > 2) {
         # Gate 2: extreme skewness — non-parametric regardless of n
-        norm_failed <<- norm_failed + 1
+        .ternD_env$norm_failed <- .ternD_env$norm_failed + 1L
         summary_str <- fmt_median_iqr(x)
       } else if (n_obs >= 30) {
         # Gate 3: CLT — parametric
@@ -329,13 +329,13 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
         if (!is.na(sw) && sw > 0.05) {
           summary_str <- fmt_mean_sd(x)
         } else {
-          norm_failed <<- norm_failed + 1
+          .ternD_env$norm_failed <- .ternD_env$norm_failed + 1L
           summary_str <- fmt_median_iqr(x)
         }
       }
     } else if (isTRUE(consider_normality)) {
-      norm_tested <<- norm_tested + 1
-      if (is.na(sw) || sw < 0.05) norm_failed <<- norm_failed + 1
+      .ternD_env$norm_tested <- .ternD_env$norm_tested + 1L
+      if (is.na(sw) || sw < 0.05) .ternD_env$norm_failed <- .ternD_env$norm_failed + 1L
       # choose mean +- SD if normal; else median [IQR]
       if (!is.na(sw) && sw > 0.05) {
         summary_str <- fmt_mean_sd(x)
@@ -343,8 +343,8 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
         summary_str <- fmt_median_iqr(x)
       }
     } else {
-      norm_tested <<- norm_tested + 1
-      if (is.na(sw) || sw < 0.05) norm_failed <<- norm_failed + 1
+      .ternD_env$norm_tested <- .ternD_env$norm_tested + 1L
+      if (is.na(sw) || sw < 0.05) .ternD_env$norm_failed <- .ternD_env$norm_failed + 1L
       # Default behavior when consider_normality = FALSE: use mean +/- SD
       summary_str <- fmt_mean_sd(x)
     }
@@ -358,9 +358,15 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
     return(out)
   }
 
-  norm_tested <- 0
-  norm_failed <- 0
+  # Use an environment instead of <<- (CRAN policy)
+  .ternD_env <- new.env(parent = emptyenv())
+  .ternD_env$norm_tested <- 0L
+  .ternD_env$norm_failed <- 0L
   out_tbl <- dplyr::bind_rows(lapply(vars, function(v) summarize_variable(data, v)))
+
+  # Extract counters from environment before reporting
+  norm_tested <- .ternD_env$norm_tested
+  norm_failed <- .ternD_env$norm_failed
 
   # -- Report normality results -----------------------------------------------
   if (norm_tested > 0) {
