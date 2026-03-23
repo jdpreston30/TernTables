@@ -40,6 +40,9 @@
 #'   \code{bold_cols} or \code{italic_cols} also have their header cell bolded
 #'   or italicized. Default \code{FALSE}.
 #' @param round_intg Logical; passed to \code{word_export}. Default \code{FALSE}.
+#' @param round_decimal Integer or NULL; if provided, rounds all numeric values in the
+#'   table to this many decimal places before rendering. Passed to \code{word_export}.
+#'   Default \code{NULL} (no rounding).
 #' @param font_size Numeric; font size for table body. Default \code{9}.
 #' @param category_start Named character vector; same as in \code{word_export}.
 #'   Insert new section-header rows at anchor variable positions, in addition to

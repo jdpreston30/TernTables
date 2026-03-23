@@ -22,6 +22,7 @@ ternG(
   show_test = FALSE,
   p_digits = 3,
   round_intg = FALSE,
+  round_decimal = NULL,
   smart_rename = TRUE,
   insert_subheads = TRUE,
   factor_order = "mixed",
@@ -116,6 +117,10 @@ If \code{"FORCE"}, all numeric variables are treated as non-normal (median [IQR]
 \item{p_digits}{Integer; number of decimal places for P values (default 3).}
 
 \item{round_intg}{Logical; if \code{TRUE}, rounds all means, medians, IQRs, and standard deviations to nearest integer (0.5 rounds up). Default is \code{FALSE}.}
+
+\item{round_decimal}{Integer or \code{NULL}; number of decimal places for all continuous summary values
+(means, SDs, medians, IQRs). Overrides the default of 1 decimal place when set. Ignored when
+\code{round_intg = TRUE}. Default is \code{NULL} (1 decimal place).}
 
 \item{smart_rename}{Logical; if \code{TRUE}, automatically cleans variable names and subheadings for publication-ready output using built-in rule-based pattern matching for common medical abbreviations and prefixes. Default is \code{TRUE}.}
 

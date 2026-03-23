@@ -15,6 +15,7 @@ ternStyle(
   italic_cols = NULL,
   header_format_follow = FALSE,
   round_intg = FALSE,
+  round_decimal = NULL,
   font_size = 9,
   category_start = NULL,
   plain_header = NULL,
@@ -72,6 +73,10 @@ body rows. Default \code{NULL}.}
 or italicized. Default \code{FALSE}.}
 
 \item{round_intg}{Logical; passed to \code{word_export}. Default \code{FALSE}.}
+
+\item{round_decimal}{Integer or NULL; if provided, rounds all numeric values in the
+table to this many decimal places before rendering. Passed to \code{word_export}.
+Default \code{NULL} (no rounding).}
 
 \item{font_size}{Numeric; font size for table body. Default \code{9}.}
 

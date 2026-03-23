@@ -1,41 +1,41 @@
 ## Resubmission
 
-This is a resubmission. The original submission was reviewed as v1.3.1;
-this version is v1.6.3. Both CRAN review points have been addressed below.
-The fixes have been applied consistently across the original code and all new
-code added since v1.3.1.
+This is a resubmission addressing the two issues raised by Benjamin Altmann
+in the review of v1.6.3 (email dated 2026-03-20). Both points have been
+fully resolved. We are submitting as v1.6.4 (rather than a patch to v1.6.3)
+because additional improvements have been made since the original submission.
 
 ---
 
 ## Responses to CRAN review
 
-**Comment 1 — Software names in single quotes**
-Fixed. A full audit of all software and package names in the Description
-field was performed. All such names are now in single quotes: 'Word',
-'Excel', 'tibble', 'officer', 'flextable', 'writexl', and 'rstatix'.
+**Comment 1 — `<<-` modifies the global environment**
+Fixed. All uses of `<<-` in `R/ternG.R`, `R/ternD.R`, and `R/ternP.R` have
+been eliminated. The accumulator pattern (incrementing counters and building
+character vectors across `lapply` iterations) has been replaced with an
+explicit `new.env(parent = emptyenv())` environment object that is created
+inside the enclosing function and passed by reference to nested closures.
+Values are extracted back to local variables before use in the reporting
+section. In `ternP.R`, the `dplyr::across()` lambda that used `<<-` to build
+a list has been replaced with a plain `for` loop over character column names.
 
-**Comment 2 — \dontrun{} replaced with \donttest{}**
-Fixed. All `\dontrun{}` blocks across the package have been replaced with
-`\donttest{}`. These examples write files to `tempdir()` and require no
-missing software or API keys. `\donttest{}` is used rather than unwrapping
-because the 'Word' export operations (via 'officer' and 'flextable') may
-exceed 5 seconds on slower check machines.
+**Comment 2 — `set.seed()` to a specific number inside a function**
+Fixed (in v1.6.3.9025, prior to this submission). The bare `set.seed()` call
+inside the Monte Carlo Fisher's exact fallback has been replaced with
+`withr::with_seed()`, which scopes the seed locally and restores the caller's
+RNG state after the call. `withr` has been added to `Imports`.
 
 ---
 
 ## R CMD check results
 
-Tested on:
-* macOS Sonoma 14.5, R 4.5.1 (local) — 0 errors | 0 warnings | 0 notes
-* win-builder (R-devel) — 0 errors | 0 warnings | 1 note
+(Updated after `devtools::check()` run — to be confirmed before submission)
 
-The single win-builder NOTE:
-* "Possibly misspelled words in DESCRIPTION: Moertel (37:5), Welch (30:49,
-  31:5), adjuvant (36:23), al (37:16), et (37:13)" — all are correct.
-  'Welch' and 'Moertel' are proper names (Welch's t-test; Moertel et al.
-  1990 NEJM landmark colon cancer trial). 'adjuvant', 'et', and 'al' are
-  standard academic English from the citation text. All five are listed in
-  inst/WORDLIST.
+* macOS Sequoia 15.x, R 4.5.x (local) — 0 errors | 0 warnings | 0 notes
+
+The previously noted win-builder NOTE about possibly misspelled words
+('Welch', 'Moertel', 'adjuvant', 'et', 'al') is unchanged — all are correct
+and listed in `inst/WORDLIST`.
 
 ---
 
@@ -45,7 +45,9 @@ The single win-builder NOTE:
   is listed in `Suggests` only and is not required at runtime. The
   pre-processed dataset is bundled in `data/tern_colon.rda`.
 
-* Since v1.3.1, three new exported functions have been added: `ternB()` (multi-table
-  'Word' export), `ternP()` (data preprocessing with PHI detection), and
-  `write_cleaning_doc()` (cleaning audit 'Word' document). All three follow the
-  same documentation and example standards as the original functions.
+* Since v1.3.1, five new exported functions have been added: `ternB()` (multi-table
+  'Word' export), `ternP()` (data preprocessing with PHI detection),
+  `write_cleaning_doc()` (cleaning audit 'Word' document), `ternStyle()`
+  (custom tibble Word formatting), and `classify_normality()` (normality
+  assessment audit table). All follow the same documentation and example
+  standards as the original functions.

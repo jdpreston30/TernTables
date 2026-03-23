@@ -16,6 +16,7 @@ ternD(
   consider_normality = "ROBUST",
   print_normality = FALSE,
   round_intg = FALSE,
+  round_decimal = NULL,
   smart_rename = TRUE,
   insert_subheads = TRUE,
   factor_order = "mixed",
@@ -80,6 +81,10 @@ additional column in the output. Default is \code{FALSE}.}
 
 \item{round_intg}{Logical; if \code{TRUE}, rounds all means, medians, IQRs, and standard 
 deviations to nearest integer (0.5 rounds up). Default is \code{FALSE}.}
+
+\item{round_decimal}{Integer or \code{NULL}; number of decimal places for all continuous summary
+values (means, SDs, medians, IQRs). Overrides the default of 1 decimal place when set.
+Ignored when \code{round_intg = TRUE}. Default is \code{NULL} (1 decimal place).}
 
 \item{smart_rename}{Logical; if \code{TRUE}, automatically cleans variable names and
 subheadings for publication-ready output using built-in rule-based pattern matching for

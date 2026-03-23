@@ -3,6 +3,8 @@
 #' @param tbl A tibble created by ternG or ternD
 #' @param filename Output file path ending in .docx
 #' @param round_intg Logical; if TRUE, adds note about integer rounding. Default is FALSE.
+#' @param round_decimal Integer or NULL; if provided, rounds all numeric values in the table
+#'   to this many decimal places before rendering. Default is \code{NULL} (no rounding).
 #' @param font_size Numeric; font size for table body. Default is 9.
 #' @param category_start Named character vector specifying category headers. Names are header
 #'   label text; values are anchor variable names -- either the original column name or the

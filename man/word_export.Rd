@@ -8,6 +8,7 @@ word_export(
   tbl,
   filename,
   round_intg = FALSE,
+  round_decimal = NULL,
   font_size = 9,
   category_start = NULL,
   plain_header = NULL,
@@ -39,6 +40,9 @@ word_export(
 \item{filename}{Output file path ending in .docx}
 
 \item{round_intg}{Logical; if TRUE, adds note about integer rounding. Default is FALSE.}
+
+\item{round_decimal}{Integer or NULL; if provided, rounds all numeric values in the table
+to this many decimal places before rendering. Default is \code{NULL} (no rounding).}
 
 \item{font_size}{Numeric; font size for table body. Default is 9.}
 

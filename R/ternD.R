@@ -365,26 +365,26 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
     # Check if variable is forced to be ordinal
     if (!is.null(force_ordinal) && var %in% force_ordinal) {
       # Force ordinal: use median/IQR regardless of consider_normality setting
-      norm_tested <<- norm_tested + 1
-      norm_failed <<- norm_failed + 1
+      .ternD_env$norm_tested <- .ternD_env$norm_tested + 1L
+      .ternD_env$norm_failed <- .ternD_env$norm_failed + 1L
       summary_str <- fmt_median_iqr(x)
     } else if (!is.null(force_normal) && var %in% force_normal) {
       # Force parametric: use mean/SD regardless of consider_normality setting
-      norm_tested <<- norm_tested + 1
+      .ternD_env$norm_tested <- .ternD_env$norm_tested + 1L
       summary_str <- fmt_mean_sd(x)
     } else if (consider_normality == "ROBUST") {
       # ROBUST: four-gate decision tree — see R/utils_normality.R
-      norm_tested <<- norm_tested + 1
+      .ternD_env$norm_tested <- .ternD_env$norm_tested + 1L
       robust_result <- .robust_normality(list(x))
       if (!robust_result$is_normal) {
-        norm_failed <<- norm_failed + 1
+        .ternD_env$norm_failed <- .ternD_env$norm_failed + 1L
         summary_str <- fmt_median_iqr(x)
       } else {
         summary_str <- fmt_mean_sd(x)
       }
     } else if (isTRUE(consider_normality)) {
-      norm_tested <<- norm_tested + 1
-      if (is.na(sw) || sw < 0.05) norm_failed <<- norm_failed + 1
+      .ternD_env$norm_tested <- .ternD_env$norm_tested + 1L
+      if (is.na(sw) || sw < 0.05) .ternD_env$norm_failed <- .ternD_env$norm_failed + 1L
       # choose mean +- SD if normal; else median [IQR]
       if (!is.na(sw) && sw > 0.05) {
         summary_str <- fmt_mean_sd(x)
@@ -392,8 +392,8 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
         summary_str <- fmt_median_iqr(x)
       }
     } else {
-      norm_tested <<- norm_tested + 1
-      if (is.na(sw) || sw < 0.05) norm_failed <<- norm_failed + 1
+      .ternD_env$norm_tested <- .ternD_env$norm_tested + 1L
+      if (is.na(sw) || sw < 0.05) .ternD_env$norm_failed <- .ternD_env$norm_failed + 1L
       # Default behavior when consider_normality = FALSE: use mean +/- SD
       summary_str <- fmt_mean_sd(x)
     }
@@ -407,9 +407,14 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
     return(dplyr::bind_rows(out, .make_missing_row()))
   }
 
-  norm_tested <- 0
-  norm_failed <- 0
+  .ternD_env <- new.env(parent = emptyenv())
+  .ternD_env$norm_tested <- 0L
+  .ternD_env$norm_failed <- 0L
   out_tbl <- dplyr::bind_rows(lapply(vars, function(v) summarize_variable(data, v)))
+
+  # Extract accumulator values from environment for reporting
+  norm_tested <- .ternD_env$norm_tested
+  norm_failed <- .ternD_env$norm_failed
 
   # -- Report normality results -----------------------------------------------
   if (norm_tested > 0) {
