@@ -70,7 +70,6 @@ Authors:
 \itemize{
   \item Helen Abadiotakis (\href{https://orcid.org/0009-0002-8268-927X}{ORCID})
   \item Ailin Tang (\href{https://orcid.org/0009-0007-8715-1678}{ORCID})
-  \item Maria V. Aslam (\href{https://orcid.org/0000-0002-0036-3851}{ORCID})
   \item Clayton J. Rust (\href{https://orcid.org/0000-0001-5929-0733}{ORCID})
   \item Joshua L. Chan (\href{https://orcid.org/0000-0001-7220-561X}{ORCID})
 }
