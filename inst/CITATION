@@ -7,11 +7,10 @@ bibentry(
     person("Joshua D.", "Preston"),
     person("Helen", "Abadiotakis"),
     person("Ailin", "Tang"),
-    person("Maria V.", "Aslam"),
     person("Clayton J.", "Rust"),
     person("Joshua L.", "Chan")
   ),
   year = "2026",
   note = "R package version 1.7.0",
-  url = "https://github.com/jdpreston30/TernTables"
+  url = "https://cran.r-project.org/package=TernTables"
 )

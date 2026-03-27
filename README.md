@@ -1,6 +1,8 @@
 # TernTables
 
 [![CRAN status](https://www.r-pkg.org/badges/version/TernTables)](https://cran.r-project.org/package=TernTables)
+[![CRAN downloads](https://cranlogs.r-pkg.org/badges/TernTables)](https://cran.r-project.org/package=TernTables)
+[![CRAN total downloads](https://cranlogs.r-pkg.org/badges/grand-total/TernTables)](https://cran.r-project.org/package=TernTables)
 [![Web App](https://img.shields.io/badge/Web%20App-tern--tables.com-blue?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMnM0LjQ4IDEwIDEwIDEwIDEwLTQuNDggMTAtMTBTMTcuNTIgMiAxMiAyem0tMSAxNy45M1Y0LjA3YzMuOTUuNDkgNyAzLjg1IDcgNy45M3MtMy4wNSA3LjQ0LTcgNy45M3oiLz48L3N2Zz4=)](https://tern-tables.com/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/jdpreston30/TernTables/blob/main/LICENSE)
 
@@ -248,6 +250,22 @@ The tibble can also be:
 - Combined with other tables into one document using `ternB(list(T1, T2, T3), output_docx = "tables.docx")`
 - Written to Excel with `writexl::write_xlsx()`
 - Inspected or further manipulated in R
+
+## Citation
+
+If you use TernTables in your research, please cite it:
+
+```r
+citation("TernTables")
+```
+
+Or directly:
+
+> Preston JD, Abadiotakis H, Tang A, Rust CJ, Chan JL (2026).
+> *TernTables: Automated Statistical Analysis and Table Generation for Biomedical Research.*
+> R package version 1.7.0. <https://cran.r-project.org/package=TernTables>
+
+---
 
 ## License
 
