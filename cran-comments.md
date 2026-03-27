@@ -38,15 +38,17 @@ wide-table page overflow.
 ## R CMD check results
 
 * macOS Sonoma 14.3, R 4.5.1 aarch64-apple-darwin23.6.0 (local) — 0 errors | 0 warnings | 1 note
-* Windows win-builder (to be run immediately prior to submission)
+* Windows Server 2022, R-devel r89724 x86_64-w64-mingw32 (win-builder) — 0 errors | 0 warnings | 1 note
 
-**NOTE: unable to verify current time**
-Standard message; no action required. Occurs in check environments without
-reliable network time access.
+**NOTE (local): unable to verify current time**
+Standard informational message; no action required.
 
-The win-builder NOTE about possibly misspelled words ('Welch', 'Moertel',
-'adjuvant', 'et', 'al') is expected and unchanged — all are correct and
-listed in `inst/WORDLIST`.
+**NOTE (win-builder): Days since last update: 1 / possibly invalid URL**
+The "Days since last update: 1" note is expected for a same-day resubmission.
+The URL flagged (`https://tern-tables.com/`) is valid and live; win-builder
+reported an SSL connection reset (`Recv failure: Connection was reset`) which
+is a transient network issue on the win-builder side, not a broken link. The
+URL resolves correctly in all other environments.
 
 ---
 
@@ -56,7 +58,7 @@ listed in `inst/WORDLIST`.
   is listed in `Suggests` only and is not required at runtime. The
   pre-processed dataset is bundled in `data/tern_colon.rda`.
 
-* Seven exported functions are now available: `ternG()`, `ternD()`, `ternB()`,
+* Eleven exported functions are now available: `ternG()`, `ternD()`, `ternB()`,
   `ternP()`, `ternStyle()`, `classify_normality()`, `write_methods_doc()`,
   `write_cleaning_doc()`, `word_export()`, `val_format()`, `val_p_format()`.
   All follow the same documentation and example standards established in v1.3.1.
