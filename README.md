@@ -1,5 +1,6 @@
 # TernTables
 
+[![CRAN status](https://www.r-pkg.org/badges/version/TernTables)](https://cran.r-project.org/package=TernTables)
 [![Web App](https://img.shields.io/badge/Web%20App-tern--tables.com-blue?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMnM0LjQ4IDEwIDEwIDEwIDEwLTQuNDggMTAtMTBTMTcuNTIgMiAxMiAyem0tMSAxNy45M1Y0LjA3YzMuOTUuNDkgNyAzLjg1IDcgNy45M3MtMy4wNSA3LjQ0LTcgNy45M3oiLz48L3N2Zz4=)](https://tern-tables.com/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/jdpreston30/TernTables/blob/main/LICENSE)
 
@@ -35,12 +36,10 @@ For batch processing, custom formatting, or programmatic integration with other 
 
 ## Installation
 
-Install from R-universe (no additional tools required):
+Install the released version from CRAN:
 
 ```r
-install.packages("TernTables",
-                 repos = c("https://jdpreston30.r-universe.dev",
-                           "https://cloud.r-project.org"))
+install.packages("TernTables")
 ```
 
 Or install the development version directly from GitHub:
@@ -50,7 +49,7 @@ Or install the development version directly from GitHub:
 devtools::install_github("jdpreston30/TernTables", build_vignettes = TRUE)
 ```
 
-A full walkthrough is available in the package vignette (built automatically when installing from R-universe; use `build_vignettes = TRUE` with the GitHub install):
+A full walkthrough is available in the package vignette (use `build_vignettes = TRUE` with the GitHub install; built automatically when installing from CRAN):
 
 ```r
 vignette("getting-started", package = "TernTables")

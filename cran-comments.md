@@ -1,41 +1,52 @@
-## Resubmission
+## New submission — v1.7.0
 
-This is a resubmission addressing the two issues raised by Benjamin Altmann
-in the review of v1.6.3 (email dated 2026-03-20). Both points have been
-fully resolved. We are submitting as v1.6.4 (rather than a patch to v1.6.3)
-because additional improvements have been made since the original submission.
+This is a new feature release building on v1.6.4, which was accepted to CRAN
+on 2026-03-26. Both reviewer comments raised during the v1.6.3 review cycle
+were fully resolved in the accepted v1.6.4. This submission introduces no
+breaking changes.
 
 ---
 
-## Responses to CRAN review
+## Summary of changes since v1.6.4
 
-**Comment 1 — `<<-` modifies the global environment**
-Fixed. All uses of `<<-` in `R/ternG.R`, `R/ternD.R`, and `R/ternP.R` have
-been eliminated. The accumulator pattern (incrementing counters and building
-character vectors across `lapply` iterations) has been replaced with an
-explicit `new.env(parent = emptyenv())` environment object that is created
-inside the enclosing function and passed by reference to nested closures.
-Values are extracted back to local variables before use in the reporting
-section. In `ternP.R`, the `dplyr::across()` lambda that used `<<-` to build
-a list has been replaced with a plain `for` loop over character column names.
+**New exported functions:**
 
-**Comment 2 — `set.seed()` to a specific number inside a function**
-Fixed (in v1.6.3.9025, prior to this submission). The bare `set.seed()` call
-inside the Monte Carlo Fisher's exact fallback has been replaced with
-`withr::with_seed()`, which scopes the seed locally and restores the caller's
-RNG state after the call. `withr` has been added to `Imports`.
+* `ternStyle()`: applies full TernTables Word formatting to any user-supplied
+  tibble; output carries `ternB_meta` for direct use in `ternB()`.
+* `classify_normality()`: exposes the internal normality routing algorithm as
+  a tidy audit tibble, for use in manuscript methods reporting.
+
+**New parameters** (across `ternG`, `ternD`, `ternB`, `ternStyle`,
+`word_export`, `write_methods_doc`, `write_cleaning_doc`):
+`font_family`, `plain_header`, `show_p`, `show_missing`, `force_continuous`,
+`force_normal`, `zero_to_dash`, `percentage_compute`, `round_decimal`,
+`p_adjust`, `p_adjust_display`, `citation`, `open_doc`,
+`variable_footnote`, `abbreviation_footnote`, `index_style`.
+
+**Statistical improvements:**
+* Excess kurtosis added as Gate 2 criterion in the four-gate ROBUST normality
+  algorithm; decision logic extracted to `utils_normality.R`.
+* CLD center-based letter re-mapping removed; letters now follow standard
+  `multcompLetters()` alphabetical ordering.
+
+**Bug fixes:** CLD dependency resolution, Word blank-page and citation-bleed
+bugs in `ternB()`, line-break header crash, name-cleaning false positives,
+wide-table page overflow.
 
 ---
 
 ## R CMD check results
 
-(Updated after `devtools::check()` run — to be confirmed before submission)
+* macOS Sonoma 14.3, R 4.5.1 aarch64-apple-darwin23.6.0 (local) — 0 errors | 0 warnings | 1 note
+* Windows win-builder (to be run immediately prior to submission)
 
-* macOS Sequoia 15.x, R 4.5.x (local) — 0 errors | 0 warnings | 0 notes
+**NOTE: unable to verify current time**
+Standard message; no action required. Occurs in check environments without
+reliable network time access.
 
-The previously noted win-builder NOTE about possibly misspelled words
-('Welch', 'Moertel', 'adjuvant', 'et', 'al') is unchanged — all are correct
-and listed in `inst/WORDLIST`.
+The win-builder NOTE about possibly misspelled words ('Welch', 'Moertel',
+'adjuvant', 'et', 'al') is expected and unchanged — all are correct and
+listed in `inst/WORDLIST`.
 
 ---
 
@@ -45,9 +56,7 @@ and listed in `inst/WORDLIST`.
   is listed in `Suggests` only and is not required at runtime. The
   pre-processed dataset is bundled in `data/tern_colon.rda`.
 
-* Since v1.3.1, five new exported functions have been added: `ternB()` (multi-table
-  'Word' export), `ternP()` (data preprocessing with PHI detection),
-  `write_cleaning_doc()` (cleaning audit 'Word' document), `ternStyle()`
-  (custom tibble Word formatting), and `classify_normality()` (normality
-  assessment audit table). All follow the same documentation and example
-  standards as the original functions.
+* Seven exported functions are now available: `ternG()`, `ternD()`, `ternB()`,
+  `ternP()`, `ternStyle()`, `classify_normality()`, `write_methods_doc()`,
+  `write_cleaning_doc()`, `word_export()`, `val_format()`, `val_p_format()`.
+  All follow the same documentation and example standards established in v1.3.1.

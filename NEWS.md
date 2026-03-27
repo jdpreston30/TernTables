@@ -1,4 +1,4 @@
-# TernTables 1.6.4
+# TernTables 1.7.0
 
 ## New features
 
@@ -157,6 +157,20 @@
   `patient_id`, `subject_id`, `participant_id`, and clinical-event date
   patterns from the PHI flag list. Only personal-identity date patterns (DOB,
   DOD) remain flagged, reducing false positives on common research variable names.
+
+---
+
+# TernTables 1.6.4
+
+* CRAN resubmission addressing two reviewer comments on v1.6.3.
+* Eliminated all uses of `<<-` in `R/ternG.R`, `R/ternD.R`, and `R/ternP.R`.
+  Accumulator patterns replaced with `new.env(parent = emptyenv())`-based
+  counters; the `dplyr::across()` lambda in `ternP.R` replaced with an
+  explicit `for` loop. No change to user-visible behavior.
+* Replaced bare `set.seed()` with `withr::with_seed()` in the Monte Carlo
+  Fisher's exact fallback, scoping the seed locally and restoring the
+  caller's RNG state. `withr` added to `Imports`.
+* Removed Maria V. Aslam from `Authors@R` at her request.
 
 ---
 

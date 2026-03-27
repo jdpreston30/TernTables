@@ -73,6 +73,7 @@ calling \code{ternG()}, \code{ternD()}, and \code{ternP()} directly.
 \seealso{
 Useful links:
 \itemize{
+  \item \url{https://cran.r-project.org/package=TernTables}
   \item \url{https://github.com/jdpreston30/TernTables}
   \item \url{https://tern-tables.com/}
   \item Report bugs at \url{https://github.com/jdpreston30/TernTables/issues}

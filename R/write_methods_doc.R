@@ -33,7 +33,8 @@
 #'   writes a single comprehensive Word document covering every possible
 #'   TernTables configuration (descriptive, two-group with and without odds
 #'   ratios, three-or-more-group with and without post-hoc testing), using
-#'   package-default phrasing throughout. Output is always written to
+#'   package-default phrasing throughout. Output is written to \code{filename}
+#'   if supplied; otherwise falls back to
 #'   \code{comprehensive_boilerplate_methods.docx} in the current working
 #'   directory. Intended as a reference document, not for inclusion in a
 #'   manuscript. Default \code{FALSE}.
@@ -59,10 +60,11 @@
 #' write_methods_doc(tbl, filename = file.path(tempdir(), "methods.docx"),
 #'                   open_doc = FALSE)
 #' }
-#' \dontrun{
+#' \donttest{
 #' # Write a comprehensive reference document covering all configurations.
-#' # Writes to comprehensive_boilerplate_methods.docx in the working directory.
-#' write_methods_doc(tbl = NULL, filename = "", boilerplate = TRUE)
+#' write_methods_doc(tbl = NULL,
+#'                   filename = file.path(tempdir(), "boilerplate_methods.docx"),
+#'                   boilerplate = TRUE, open_doc = FALSE)
 #' }
 #' @export
 write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
@@ -164,7 +166,11 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
       "For run-specific methods text, call write_methods_doc() from ternG() or ternD() directly."
     )
 
-    out_path <- file.path(getwd(), "comprehensive_boilerplate_methods.docx")
+    out_path <- if (!missing(filename) && nzchar(filename)) {
+      filename
+    } else {
+      file.path(getwd(), "comprehensive_boilerplate_methods.docx")
+    }
 
     doc <- read_docx() |>
       body_add_fpar(hd("TernTables \u2014 Comprehensive Statistical Methods Reference")) |>
