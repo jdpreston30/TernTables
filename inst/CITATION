@@ -2,7 +2,7 @@ citHeader("To cite TernTables in publications, use:")
 
 bibentry(
   bibtype = "Manual",
-  title = "TernTables: Publication-Ready Summary Tables and Statistical Testing for Clinical Research",
+  title = "TernTables: Automated Statistical Analysis and Table Generation for Biomedical Research",
   author = c(
     person("Joshua D.", "Preston"),
     person("Helen", "Abadiotakis"),
@@ -12,6 +12,6 @@ bibentry(
     person("Joshua L.", "Chan")
   ),
   year = "2026",
-  note = "R package version 1.6.4",
+  note = "R package version 1.7.0",
   url = "https://github.com/jdpreston30/TernTables"
 )
