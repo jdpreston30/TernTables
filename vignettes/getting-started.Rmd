@@ -336,6 +336,59 @@ comparisons using the Benjamini-Hochberg false discovery rate (FDR) procedure
 
 ---
 
+## Row Percentages (`percentage_compute`)
+
+By default, categorical percentages are **column percentages** — for each group, what proportion had that level. Set `percentage_compute = "row"` to use **row percentages** instead: for each category level, what proportion falls in each group. The Total column is automatically suppressed when `percentage_compute = "row"` (it would show 100% for every level, which is uninformative).
+
+Row percentages are useful when the clinical question is about how a characteristic is distributed across arms, rather than within-arm prevalence — e.g., *"of all patients who had colonic obstruction, what proportion recurred?"* rather than *"what proportion of each recurrence group had obstruction?"*
+
+```{r row-pct-example, eval = FALSE}
+tbl_rowpct <- ternG(
+  data               = tern_colon,
+  vars               = c("Tumor_Differentiation", "Extent_of_Local_Spread",
+                         "Colonic_Obstruction"),
+  group_var          = "Recurrence",
+  percentage_compute = "row",
+  output_docx        = file.path(out_dir, "Tern_row_pct.docx"),
+  open_doc           = FALSE,
+  citation           = FALSE
+)
+```
+
+---
+
+## Suppressing P Values (`show_p`) and Showing Missingness (`show_missing`)
+
+Set `show_p = FALSE` to produce a descriptive-only grouped table — group columns with summary statistics, but no *P* value, OR, test, or normality columns. Useful for baseline characteristic tables in randomised trials where hypothesis testing is not the intent.
+
+```{r show-p-example, eval = FALSE}
+tbl_desc_grouped <- ternG(
+  data         = tern_colon,
+  exclude_vars = c("ID"),
+  group_var    = "Treatment_Arm",
+  show_p       = FALSE,
+  output_docx  = file.path(out_dir, "Tern_no_pval.docx"),
+  open_doc     = FALSE,
+  citation     = FALSE
+)
+```
+
+Set `show_missing = TRUE` to append a `Missing: n (%)` sub-row beneath each variable. A footnote is added automatically:
+
+```{r show-missing-example, eval = FALSE}
+tbl_with_missing <- ternG(
+  data         = tern_colon,
+  exclude_vars = c("ID"),
+  group_var    = "Recurrence",
+  show_missing = TRUE,
+  output_docx  = file.path(out_dir, "Tern_missing.docx"),
+  open_doc     = FALSE,
+  citation     = FALSE
+)
+```
+
+---
+
 ## Word Output Formatting
 
 Two optional parameters control text that appears outside the table body in the
@@ -376,6 +429,37 @@ tbl_2group <- ternG(
 
 Both parameters are also stored in the table's metadata and reproduced
 automatically when combining tables with `ternB()`.
+
+**`font_family`** controls the font used in all Word output. Defaults to `getOption("TernTables.font_family", "Arial")`. Set a package-wide default for the session:
+
+```{r font-example, eval = FALSE}
+options(TernTables.font_family = "Times New Roman")
+# All subsequent ternG/ternD/word_export calls use Times New Roman
+```
+
+**`plain_header = TRUE`** renders the first column header without the dark background and white text — useful for journal styles that require a plain table header row.
+
+**`variable_footnote`** auto-assigns superscript symbols (`*`, `†`, `‡` …) to named variables and appends definitions below the table. Keys match either the raw column name or the cleaned display label:
+
+```{r variable-footnote-example, eval = FALSE}
+tbl <- ternG(
+  data              = tern_colon,
+  vars              = c("Age_Years", "Sex", "Colonic_Obstruction"),
+  group_var         = "Recurrence",
+  variable_footnote = c(
+    "Age (yr)"            = "Age at registration.",
+    "Colonic Obstruction" = "Defined as complete mechanical obstruction on imaging."
+  ),
+  open_doc          = FALSE,
+  citation          = FALSE
+)
+```
+
+Pass `index_style = "alphabet"` to use Unicode letter superscripts instead of symbols.
+
+**`zero_to_dash = TRUE`** replaces `"0 (0%)"` and `"0 (NaN%)"` cells with `"-"` for cleaner tables when sparse categories are present.
+
+**`round_decimal`** sets the number of decimal places for all continuous summary values (integer; default is 1 decimal place). Use `round_intg = TRUE` to round to whole numbers instead.
 
 ---
 
@@ -425,6 +509,19 @@ section above for details.
 
 ---
 
+## Auditing Normality Routing (`classify_normality`)
+
+Every decision made by the ROBUST algorithm is recorded internally. `classify_normality()` exposes these decisions as a tidy tibble — one row per variable × group — with columns for n, skewness, excess kurtosis, Shapiro-Wilk *p*, the gate that fired (1–4), a plain-language `gate_reason`, `is_normal`, and the final `routing` (`"parametric"` or `"non-parametric"`).
+
+```{r classify-normality-example, eval = FALSE}
+norm_tbl <- classify_normality(tern_colon, group_var = "Recurrence")
+print(norm_tbl)
+```
+
+This is particularly useful for addressing reviewer questions about normality assessment — you can present the exact statistics and gate decision for each variable in each group. Pass `consider_normality = TRUE` to route using Shapiro-Wilk alone (matching `ternG(consider_normality = TRUE)`).
+
+---
+
 ## Methods Document
 
 A methods paragraph is written automatically with every `ternD()` and `ternG()`
@@ -442,6 +539,28 @@ Without it, standard boilerplate is used.
 write_methods_doc(
   tbl      = tbl_2group,
   filename = file.path(out_dir, "Tern_methods.docx")
+)
+```
+
+---
+
+## Custom Tables (`ternStyle`)
+
+`ternStyle()` applies full TernTables Word formatting to any user-supplied tibble — useful for manually assembled tables, registry lookups, or supplemental tables that need to match the output style of `ternG()` / `ternD()`. The returned tibble carries a `ternB_meta` attribute so it can be bundled with other tables via `ternB()`.
+
+```{r ternStyle-example, eval = FALSE}
+custom <- tibble::tibble(
+  Variable = c("Institution",            "Study period",
+               "N enrolled",             "Median follow-up (months)"),
+  Value    = c("Single centre",          "2010 \u2013 2022",
+               "47",                     "28.3 [18.1, 40.2]")
+)
+ternStyle(
+  tbl           = custom,
+  table_caption = "Table S1. Study overview.",
+  output_docx   = file.path(out_dir, "Tern_custom.docx"),
+  open_doc      = FALSE,
+  citation      = FALSE
 )
 ```
 

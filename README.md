@@ -195,6 +195,21 @@ Set `consider_normality = TRUE` to use Shapiro-Wilk alone (original behaviour).
 
 BH FDR correction (Benjamini & Hochberg, 1995) is available via `p_adjust = TRUE`.
 
+**Selected additional `ternG()` and `ternD()` parameters:**
+
+| Parameter | What it does |
+|---|---|
+| `percentage_compute = "row"` | Row percentages — each level's % distributed across groups. Total column auto-suppressed. |
+| `show_p = FALSE` | Suppress *P* value, OR, test, and normality columns (descriptive-only grouped table). |
+| `show_missing = TRUE` | Append `Missing: n (%)` sub-rows beneath each variable. |
+| `zero_to_dash = TRUE` | Replace `"0 (0%)"` and `"0 (NaN%)"` cells with `"-"`. |
+| `font_family` | Word output font. Default: `getOption("TernTables.font_family", "Arial")`. Set once with `options(TernTables.font_family = "Times New Roman")`. |
+| `plain_header = TRUE` | White first-column header (no dark background). |
+| `force_normal` | Character vector: variables always routed to parametric (mean ± SD, Welch tests). |
+| `force_continuous` | Character vector: `{0, 1}` columns always treated as continuous, not binary. |
+| `round_decimal` | Integer decimal places for continuous summaries (default 1). |
+| `variable_footnote` | Named character vector assigning `*`, `†`, `‡`… superscripts to named variables, with definitions appended below the table. |
+
 ### `word_export()` — Format and export to Word
 
 Formats any TernTables result tibble as a flextable and writes to `.docx`.
@@ -225,6 +240,30 @@ write_methods_doc(
   tbl      = tbl_2group,
   filename = "methods.docx"
 )
+```
+
+### `ternStyle()` — Format a custom tibble in TernTables Word style
+
+Applies full TernTables Word formatting to any user-supplied tibble — useful for manually assembled tables or custom summaries that need to match the style of `ternG()` / `ternD()` output. The returned tibble carries a `ternB_meta` attribute so it can be passed to `ternB()` for inclusion in combined documents.
+
+```r
+custom <- tibble::tibble(
+  Variable = c("N", "Median follow-up (months)"),
+  Value    = c("47", "28.3 [18.1, 40.2]")
+)
+ternStyle(
+  tbl         = custom,
+  output_docx = "custom_table.docx"
+)
+```
+
+### `classify_normality()` — Inspect normality routing per variable
+
+Returns a tidy tibble with per-variable × per-group statistics used by `ternG()` and `ternD()` to route normality: n, skewness, excess kurtosis, Shapiro-Wilk *p*, the decision gate (1–4), a plain-language `gate_reason`, and the final `routing` outcome (`"parametric"` / `"non-parametric"`). Designed for auditing test selection or addressing reviewer questions.
+
+```r
+norm_tbl <- classify_normality(tern_colon, group_var = "Recurrence")
+print(norm_tbl)
 ```
 
 ### `val_p_format()` / `val_format()` — Formatting utilities
@@ -263,7 +302,7 @@ Or directly:
 
 > Preston JD, Abadiotakis H, Tang A, Rust CJ, Chan JL (2026).
 > *TernTables: Automated Statistical Analysis and Table Generation for Biomedical Research.*
-> R package version 1.7.0. <https://cran.r-project.org/package=TernTables>
+> R package version 1.7.1. <https://cran.r-project.org/package=TernTables>
 
 ---
 

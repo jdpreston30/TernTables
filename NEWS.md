@@ -1,3 +1,16 @@
+# TernTables 1.7.1
+
+## Bug fixes
+
+* **`percentage_compute = "row"` Total column auto-suppressed** (`ternG`):
+  When `percentage_compute = "row"`, the Total column is now automatically
+  suppressed. Previously the Total column was shown but displayed `n (100%)`
+  for every category level, which is correct but uninformative. The
+  `show_total` argument is now overridden to `FALSE` when row percentages are
+  requested. Roxygen documentation updated accordingly.
+
+---
+
 # TernTables 1.7.0
 
 ## New features

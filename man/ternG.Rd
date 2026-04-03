@@ -264,8 +264,9 @@ for categorical variables. \code{"column"} (default) divides each cell count by 
 Table 1 interpretation (e.g. "60\% of the Recurrence group is Male"). \code{"row"} divides
 each cell count by the row total (the number of subjects with that category level across all
 groups), so percentages describe how each category level is distributed across groups
-(e.g. "30\% of Males had Recurrence"). When \code{"row"}, the Total column will always
-show 100\% for every level. Applies to both binary and multinomial categorical variables
+(e.g. "30\% of Males had Recurrence"). When \code{"row"}, the Total column is automatically
+suppressed (a Total column would show 100\% for every level, which is uninformative).
+Applies to both binary and multinomial categorical variables
 in both two- and three-group comparisons.}
 }
 \value{

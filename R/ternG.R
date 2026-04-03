@@ -173,8 +173,9 @@
 #'   Table 1 interpretation (e.g. "60\% of the Recurrence group is Male"). \code{"row"} divides
 #'   each cell count by the row total (the number of subjects with that category level across all
 #'   groups), so percentages describe how each category level is distributed across groups
-#'   (e.g. "30\% of Males had Recurrence"). When \code{"row"}, the Total column will always
-#'   show 100\% for every level. Applies to both binary and multinomial categorical variables
+#'   (e.g. "30\% of Males had Recurrence"). When \code{"row"}, the Total column is automatically
+#'   suppressed (a Total column would show 100\% for every level, which is uninformative).
+#'   Applies to both binary and multinomial categorical variables
 #'   in both two- and three-group comparisons.
 #' @param show_p Logical; if \code{TRUE} (default), the P value column is included in the
 #'   output and Excel/Word exports. Set to \code{FALSE} to produce a descriptive-only grouped
@@ -294,6 +295,9 @@ ternG <- function(data,
 
   # ── Validate percentage_compute ───────────────────────────────────────────
   percentage_compute <- match.arg(percentage_compute, c("column", "row"))
+
+  # ── row %: auto-suppress Total (n (100%) per level is uninformative) ────────
+  if (percentage_compute == "row") show_total <- FALSE
 
   # ── show_p = FALSE: suppress all stat-output flags early ──────────────────
   if (!isTRUE(show_p)) {
