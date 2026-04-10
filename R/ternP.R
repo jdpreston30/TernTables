@@ -174,14 +174,7 @@ ternP <- function(data) {
   #   coerced to NA. Matching is case-insensitive via a vectorised tolower()
   #   comparison so the list below covers all capitalisation variants.
   # ---------------------------------------------------------------------------
-  string_na_values <- c(
-    "na", "n/a", "n\\a", "nan",
-    "missing", "unknown", "unk",
-    "not available", "not applicable",
-    "none", "null", "nil",
-    "-", "--", "---",
-    ".", "?"
-  )
+  string_na_values <- .tern_missing_strings()
 
   # Count total occurrences and record which columns are affected before cleaning.
   # Matching is case-insensitive: compare tolower(value) against the lowercase list.

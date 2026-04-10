@@ -192,6 +192,22 @@
 #'   threshold is derived directly from the omnibus test distribution. Only applied when
 #'   \code{group_var} has three or more levels; silently ignored for two-group comparisons.
 #'   Default is \code{FALSE}.
+#' @param show_missingness Controls whether a column of missing-value percentages is appended
+#'   to the table. Options:\cr
+#'   \code{FALSE} (default) — no missingness columns added.\cr
+#'   \code{"total"} — one column (\code{"Missing, n (\%)"}) appended at the far right showing
+#'   the number and percentage of missing observations across \emph{all} rows for each variable.\cr
+#'   \code{"group"} — one column per group level (\code{"Miss. [level]"}) interleaved immediately
+#'   after each group's data column, showing per-group missingness for each variable.\cr
+#'   Missingness is computed on the \emph{raw} data column (before ternG's internal NA filtering),
+#'   so both \code{NA} values and string representations of missing data (e.g., \code{"Unknown"},
+#'   \code{"N/A"}) are counted. See \code{missing_indicators} to customise which strings count.
+#' @param missing_indicators Optional character vector of string values to treat as missing
+#'   in addition to (or instead of) the built-in ternP defaults. When \code{NULL} (default),
+#'   the ternP canonical list is used (\code{"na"}, \code{"n/a"}, \code{"unknown"}, etc.).
+#'   When supplied, the custom list \strong{replaces} the ternP defaults — only the values
+#'   in \code{missing_indicators} (plus true \code{NA}) are counted as missing. Matching is
+#'   always case-insensitive and ignores leading/trailing whitespace.
 #'
 #' @return A tibble with one row per variable (multi-row for multi-level factors), showing summary statistics by group,
 #' P values, test type, and optionally odds ratios and total summary column.
@@ -277,7 +293,9 @@ ternG <- function(data,
                   show_p = TRUE,
                   zero_to_dash = FALSE,
                   percentage_compute = "column",
-                  categorical_posthoc = FALSE) {
+                  categorical_posthoc = FALSE,
+                  show_missingness = FALSE,
+                  missing_indicators = NULL) {
 
   # Helper function for proper rounding (0.5 always rounds up)
   round_up_half <- function(x, digits = 0) {
@@ -317,6 +335,12 @@ ternG <- function(data,
     post_hoc            <- FALSE
     categorical_posthoc <- FALSE
     p_adjust            <- FALSE
+  }
+
+  # ── Validate show_missingness ───────────────────────────────────────────
+  if (!isFALSE(show_missingness) &&
+      !(is.character(show_missingness) && show_missingness %in% c("total", "group"))) {
+    stop('`show_missingness` must be FALSE, "total", or "group".', call. = FALSE)
   }
 
   if (isTRUE(OR_col) && n_levels != 2) {
@@ -384,6 +408,35 @@ ternG <- function(data,
         mrow$Total <- paste0(total_miss, " (", round(total_miss / total_grp * 100), "%)")
       }
       bind_rows(result_tbl, mrow)
+    }
+
+    # ── Missingness column helper ─────────────────────────────────────────────
+    # Appends missingness % column(s) to result_tbl using the raw (unfiltered)
+    # data so that NA + string-NA values in df[[var]] are counted correctly.
+    .add_miss_cols <- function(result_tbl) {
+      if (isFALSE(show_missingness)) return(result_tbl)
+      raw_vec <- df[[var]]
+      is_miss <- .is_missing_value(raw_vec, missing_indicators)
+      n_total <- length(is_miss)
+      if (show_missingness == "total") {
+        n_miss   <- sum(is_miss)
+        pct      <- round(n_miss / n_total * 100)
+        miss_str <- paste0(n_miss, " (", pct, "%)")
+        result_tbl[["Missing, n (%)"]] <- ifelse(result_tbl$.indent == 6L, "-", miss_str)
+      } else if (show_missingness == "group") {
+        for (g_lvl in group_levels) {
+          grp_mask    <- !is.na(df[[group_var]]) & df[[group_var]] == g_lvl
+          is_miss_grp <- .is_missing_value(df[[var]][grp_mask], missing_indicators)
+          n_miss_grp  <- sum(is_miss_grp)
+          n_grp       <- sum(grp_mask)
+          pct_grp     <- if (n_grp > 0L) round(n_miss_grp / n_grp * 100) else 0L
+          miss_str_grp <- paste0(n_miss_grp, " (", pct_grp, "%)")
+          result_tbl[[paste0("Miss. [", g_lvl, "]")]] <- ifelse(
+            result_tbl$.indent == 6L, "-", miss_str_grp
+          )
+        }
+      }
+      result_tbl
     }
 
     g <- df %>% filter(!is.na(.data[[var]]), !is.na(.data[[group_var]]))
@@ -706,7 +759,7 @@ ternG <- function(data,
 
       if (grepl("simulated", test_result$test_name, fixed = FALSE))
         .ternG_env$fisher_sim_display <- c(.ternG_env$fisher_sim_display, result$Variable[1])
-      return(.missing_row(result))
+      return(.add_miss_cols(.missing_row(result)))
     }
 
     # ----- Force ordinal -----
@@ -811,7 +864,7 @@ ternG <- function(data,
       }
       if (grepl("simulated", test_result$test_name, fixed = FALSE))
         .ternG_env$fisher_sim_display <- c(.ternG_env$fisher_sim_display, result$Variable[1])
-      return(.missing_row(result))
+      return(.add_miss_cols(.missing_row(result)))
     }
 
     # ----- Normality assessment -----
@@ -986,7 +1039,7 @@ ternG <- function(data,
           .ternG_env$posthoc_ran_display <- c(.ternG_env$posthoc_ran_display, result$Variable[1])
         }
     }
-    return(.missing_row(result))
+    return(.add_miss_cols(.missing_row(result)))
   }
 
   out_tbl <- suppressWarnings({
@@ -1004,11 +1057,20 @@ ternG <- function(data,
   # The group columns should already have the "n = x" format from group_labels
   existing_group_cols <- intersect(unname(group_labels), names(out_tbl))
 
+  # For "group" missingness mode interleave miss columns after each group column
+  if (identical(show_missingness, "group") && n_levels >= 2L) {
+    miss_col_names <- paste0("Miss. [", group_levels, "]")
+    group_section  <- as.vector(rbind(existing_group_cols, miss_col_names))
+  } else {
+    group_section <- existing_group_cols
+  }
+  miss_total_col <- if (identical(show_missingness, "total")) "Missing, n (%)" else character(0)
+
   # Desired column order (keeping group columns with n = x format)
   if (show_test) {
-    desired <- c("Variable", existing_group_cols, "Total", "OR", "p", "test", "OR_method", normality_cols)
+    desired <- c("Variable", group_section, "Total", "OR", "p", "test", "OR_method", normality_cols)
   } else {
-    desired <- c("Variable", existing_group_cols, "Total", "OR", "p", normality_cols)
+    desired <- c("Variable", group_section, "Total", "OR", "p", normality_cols)
     # Remove test and OR_method columns if they exist
     if ("test" %in% names(out_tbl)) {
       out_tbl <- dplyr::select(out_tbl, -test)
@@ -1106,6 +1168,21 @@ ternG <- function(data,
       cli::cli_alert_info("{numeric_vars_passed} of {numeric_vars_tested} continuous variable{?s} normally distributed ({passed_pct}%)")
       cli::cli_alert_warning("consider_normality = FALSE: all continuous variables \u2192 mean \u00b1 SD, tested with {param_test}")
     }
+  }
+
+  # ── Missingness column report ─────────────────────────────────────────────
+  if (!isFALSE(show_missingness)) {
+    mode_desc <- if (show_missingness == "total") {
+      "one column appended at far right"
+    } else {
+      paste0(n_levels, " columns interleaved after each group column")
+    }
+    miss_vals <- if (!is.null(missing_indicators)) missing_indicators else .tern_missing_strings()
+    miss_str_list <- paste0('"', paste(miss_vals, collapse = '", "'), '"')
+    indicator_note <- if (!is.null(missing_indicators)) " (custom list)" else " (ternP defaults)"
+    cli::cli_rule(left = "Missingness columns added \u2014 ternG")
+    cli::cli_alert_info("Mode: \"{show_missingness}\" \u2014 {mode_desc}")
+    cli::cli_alert_info("Values treated as missing: NA + {miss_str_list}{indicator_note}")
   }
 
   # Insert category header rows if specified
@@ -1246,7 +1323,8 @@ ternG <- function(data,
     show_p                = show_p,
     zero_to_dash          = zero_to_dash,
     percentage_compute    = percentage_compute,
-    categorical_posthoc   = categorical_posthoc
+    show_missingness      = show_missingness,
+    missing_indicators    = missing_indicators
   )
 
   return(out_tbl)

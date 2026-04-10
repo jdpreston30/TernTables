@@ -1,3 +1,35 @@
+# TernTables 1.7.1.9003 (development)
+
+## New features
+
+* **`show_missingness` parameter** (`ternG`, `ternD`): Adds missing-value
+  percentage column(s) to the output table. Set to `"total"` to append one
+  `"Missing, n (%)"` column at the far right showing the count and percentage
+  of missing observations (true `NA` + string NAs) across all rows for each
+  variable. Set to `"group"` (ternG only) to interleave one `"Miss. [level]"`
+  column after each group's data column. Defaults to `FALSE` (no column added).
+  Using `"group"` in `ternD()` raises an informative error directing the user
+  to `ternG()`. A terminal message is printed after the run listing the mode
+  used and which string values were counted as missing.
+
+* **`missing_indicators` parameter** (`ternG`, `ternD`): Optional character
+  vector that overrides the default ternP string-NA list when computing
+  missingness columns (requires `show_missingness` to be active). When supplied,
+  the custom list **replaces** (not supplements) the built-in defaults; true
+  `NA` always counts regardless. Matching is case-insensitive and
+  whitespace-trimmed.
+
+## Internal changes
+
+* Extracted the canonical string-NA list and per-element missing-value test
+  into two shared helpers — `.tern_missing_strings()` and
+  `.is_missing_value()` — appended to `utils_preprocess.R`. `ternP()` now
+  sources the same list via `.tern_missing_strings()` instead of an inline
+  `c(...)`, ensuring a single source of truth for what counts as missing across
+  all functions.
+
+---
+
 # TernTables 1.7.1.9002 (development)
 
 ## New features

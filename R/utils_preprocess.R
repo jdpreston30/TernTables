@@ -130,3 +130,48 @@
 
   invisible(NULL)
 }
+
+# ── Shared missing-value utilities (single source of truth) ──────────────────
+# Used by ternP(), ternG() and ternD() to ensure consistent detection of
+# string representations of missing data.
+
+#' Canonical set of string values treated as missing
+#'
+#' Returns the same list that ternP() uses when converting string NAs to real
+#' NA values. Matching is always case-insensitive (callers should apply
+#' \code{tolower(trimws(x))} before comparing).
+#' @return A character vector of lowercase, trimmed string NA patterns.
+#' @noRd
+.tern_missing_strings <- function() {
+  c(
+    "na", "n/a", "n\\a", "nan",
+    "missing", "unknown", "unk",
+    "not available", "not applicable",
+    "none", "null", "nil",
+    "-", "--", "---",
+    ".", "?"
+  )
+}
+
+#' Test whether each element of a vector counts as "missing"
+#'
+#' An element is missing if \code{is.na(x)} is \code{TRUE} OR if the
+#' case-insensitive trimmed value matches one of the string patterns in
+#' \code{indicators} (or the ternP canonical list when \code{indicators} is
+#' \code{NULL}).  Non-character columns only trigger the \code{is.na()} check.
+#'
+#' @param x A vector (any type).
+#' @param indicators Optional character vector of string patterns to treat as
+#'   missing.  When supplied, \strong{replaces} (does not supplement) the
+#'   default ternP list.  Case is ignored; leading/trailing whitespace is
+#'   trimmed before comparison.
+#' @return A logical vector the same length as \code{x}.
+#' @noRd
+.is_missing_value <- function(x, indicators = NULL) {
+  miss_strings <- if (!is.null(indicators)) {
+    tolower(trimws(as.character(indicators)))
+  } else {
+    .tern_missing_strings()
+  }
+  is.na(x) | (is.character(x) & !is.na(x) & tolower(trimws(x)) %in% miss_strings)
+}

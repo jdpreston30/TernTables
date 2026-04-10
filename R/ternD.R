@@ -120,6 +120,19 @@
 #' @param zero_to_dash Logical; if \code{TRUE}, replaces any categorical cell that would display
 #'   \code{"0 (0\%)"} with \code{"-"} in the output table. Useful when zero counts are not
 #'   meaningful to report numerically. Default is \code{FALSE}.
+#' @param show_missingness Controls whether a \code{"Missing, n (\%)"} column is appended to
+#'   the table after the \code{Total} column. Options:\cr
+#'   \code{FALSE} (default) — no missingness column added.\cr
+#'   \code{"total"} — one column appended showing the count and percentage of missing
+#'   observations across all rows for each variable.\cr
+#'   \code{"group"} is not supported by \code{ternD()} (which has no group structure); use
+#'   \code{ternG()} with \code{show_missingness = "group"} instead. Missingness is computed on
+#'   the raw data column so both \code{NA} values and string representations of missing data
+#'   (e.g., \code{"Unknown"}, \code{"N/A"}) are counted. See \code{missing_indicators}.
+#' @param missing_indicators Optional character vector of string values to treat as missing
+#'   in addition to (or instead of) the built-in ternP defaults. When \code{NULL} (default),
+#'   the ternP canonical list is used. When supplied, the custom list \strong{replaces} the
+#'   ternP defaults. Matching is case-insensitive and trims whitespace.
 #'
 #' @details
 #' The function always returns a tibble with a single \code{Total (N = n)} column format, regardless of the
@@ -190,8 +203,24 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
                   open_doc = TRUE, citation = TRUE,
                   font_family = getOption("TernTables.font_family", "Arial"),
                   show_missing = FALSE,
-                  zero_to_dash = FALSE) {
+                  zero_to_dash = FALSE,
+                  show_missingness = FALSE,
+                  missing_indicators = NULL) {
   stopifnot(is.data.frame(data))
+
+  # ── Validate show_missingness ───────────────────────────────────────────
+  if (!isFALSE(show_missingness) &&
+      !(is.character(show_missingness) && show_missingness %in% c("total", "group"))) {
+    stop('`show_missingness` must be FALSE, "total", or "group".', call. = FALSE)
+  }
+  if (identical(show_missingness, "group")) {
+    stop(
+      '`show_missingness = "group"` requires a grouped comparison. ',
+      'Use `show_missingness = "total"` with `ternD()`, ',
+      'or use `ternG()` for per-group missingness columns.',
+      call. = FALSE
+    )
+  }
   
   # Store total N for column header
   total_n <- nrow(data)
@@ -254,7 +283,20 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
       if (print_normality) row$SW_p <- NA_real_
       row
     }
-
+    # ── Missingness column helper ─────────────────────────────────────────────
+    # Appends a "Missing, n (%)" column using raw (unfiltered) data so both
+    # true NAs and string-NA values are counted.
+    .add_miss_col_d <- function(result_tbl) {
+      if (isFALSE(show_missingness)) return(result_tbl)
+      raw_vec <- df[[var]]
+      is_miss <- .is_missing_value(raw_vec, missing_indicators)
+      n_miss  <- sum(is_miss)
+      n_total <- length(is_miss)
+      pct     <- round(n_miss / n_total * 100)
+      miss_str <- paste0(n_miss, " (", pct, "%)")
+      result_tbl[["Missing, n (%)"]] <- ifelse(result_tbl$.indent == 6L, "-", miss_str)
+      result_tbl
+    }
     # Auto-detect binary numeric (0/1) as categorical Y/N
     # Skipped when the variable is listed in force_continuous
     if (is.numeric(v) && length(unique(stats::na.omit(v))) == 2 && all(stats::na.omit(v) %in% c(0, 1)) &&
@@ -270,7 +312,7 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
         # all missing
         out <- tibble::tibble(Variable = .clean_variable_name_for_header(var), .indent = 2, Summary = "0 (0%)")
         if (print_normality) out$SW_p <- NA_real_
-        return(dplyr::bind_rows(out, .make_missing_row()))
+        return(.add_miss_col_d(dplyr::bind_rows(out, .make_missing_row())))
       }
       pct <- round(100 * prop.table(tab))
       
@@ -354,7 +396,7 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
         rows <- list(row)
         out <- dplyr::bind_rows(rows)
       }
-      return(dplyr::bind_rows(out, .make_missing_row()))
+      return(.add_miss_col_d(dplyr::bind_rows(out, .make_missing_row())))
     }
 
     # ---------- NUMERIC ----------
@@ -404,7 +446,7 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
       Summary  = summary_str
     )
     if (print_normality) out$SW_p <- sw
-    return(dplyr::bind_rows(out, .make_missing_row()))
+    return(.add_miss_col_d(dplyr::bind_rows(out, .make_missing_row())))
   }
 
   .ternD_env <- new.env(parent = emptyenv())
@@ -436,6 +478,16 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
       cli::cli_alert_info("{norm_passed} of {norm_tested} continuous variable{?s} normally distributed ({passed_pct}%)")
       cli::cli_alert_warning("consider_normality = FALSE: all continuous variables displayed as mean \u00b1 SD")
     }
+  }
+
+  # ── Missingness column report ─────────────────────────────────────────────
+  if (!isFALSE(show_missingness)) {
+    miss_vals <- if (!is.null(missing_indicators)) missing_indicators else .tern_missing_strings()
+    miss_str_list <- paste0('"', paste(miss_vals, collapse = '", "'), '"')
+    indicator_note <- if (!is.null(missing_indicators)) " (custom list)" else " (ternP defaults)"
+    cli::cli_rule(left = "Missingness columns added \u2014 ternD")
+    cli::cli_alert_info("Mode: \"total\" \u2014 one column appended at far right")
+    cli::cli_alert_info("Values treated as missing: NA + {miss_str_list}{indicator_note}")
   }
 
   # Rename Summary column to match ternG Total column format
@@ -532,7 +584,9 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
     force_continuous      = force_continuous,
     force_normal      = force_normal,
     show_missing          = show_missing,
-    zero_to_dash          = zero_to_dash
+    zero_to_dash          = zero_to_dash,
+    show_missingness      = show_missingness,
+    missing_indicators    = missing_indicators
   )
 
   out_tbl

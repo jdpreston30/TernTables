@@ -51,7 +51,9 @@ ternG(
   show_p = TRUE,
   zero_to_dash = FALSE,
   percentage_compute = "column",
-  categorical_posthoc = FALSE
+  categorical_posthoc = FALSE,
+  show_missingness = FALSE,
+  missing_indicators = NULL
 )
 }
 \arguments{
@@ -279,6 +281,24 @@ residuals and does not require a separate multiple-comparisons correction, as th
 threshold is derived directly from the omnibus test distribution. Only applied when
 \code{group_var} has three or more levels; silently ignored for two-group comparisons.
 Default is \code{FALSE}.}
+
+\item{show_missingness}{Controls whether a column of missing-value percentages is appended
+to the table. Options:\cr
+\code{FALSE} (default) — no missingness columns added.\cr
+\code{"total"} — one column (\code{"Missing, n (\%)"}) appended at the far right showing
+the number and percentage of missing observations across \emph{all} rows for each variable.\cr
+\code{"group"} — one column per group level (\code{"Miss. [level]"}) interleaved immediately
+after each group's data column, showing per-group missingness for each variable.\cr
+Missingness is computed on the \emph{raw} data column (before ternG's internal NA filtering),
+so both \code{NA} values and string representations of missing data (e.g., \code{"Unknown"},
+\code{"N/A"}) are counted. See \code{missing_indicators} to customise which strings count.}
+
+\item{missing_indicators}{Optional character vector of string values to treat as missing
+in addition to (or instead of) the built-in ternP defaults. When \code{NULL} (default),
+the ternP canonical list is used (\code{"na"}, \code{"n/a"}, \code{"unknown"}, etc.).
+When supplied, the custom list \strong{replaces} the ternP defaults — only the values
+in \code{missing_indicators} (plus true \code{NA}) are counted as missing. Matching is
+always case-insensitive and ignores leading/trailing whitespace.}
 }
 \value{
 A tibble with one row per variable (multi-row for multi-level factors), showing summary statistics by group,

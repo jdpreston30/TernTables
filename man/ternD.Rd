@@ -37,7 +37,9 @@ ternD(
   citation = TRUE,
   font_family = getOption("TernTables.font_family", "Arial"),
   show_missing = FALSE,
-  zero_to_dash = FALSE
+  zero_to_dash = FALSE,
+  show_missingness = FALSE,
+  missing_indicators = NULL
 )
 }
 \arguments{
@@ -188,6 +190,21 @@ Default is \code{FALSE}.}
 \item{zero_to_dash}{Logical; if \code{TRUE}, replaces any categorical cell that would display
 \code{"0 (0\%)"} with \code{"-"} in the output table. Useful when zero counts are not
 meaningful to report numerically. Default is \code{FALSE}.}
+
+\item{show_missingness}{Controls whether a \code{"Missing, n (\%)"} column is appended to
+the table after the \code{Total} column. Options:\cr
+\code{FALSE} (default) — no missingness column added.\cr
+\code{"total"} — one column appended showing the count and percentage of missing
+observations across all rows for each variable.\cr
+\code{"group"} is not supported by \code{ternD()} (which has no group structure); use
+\code{ternG()} with \code{show_missingness = "group"} instead. Missingness is computed on
+the raw data column so both \code{NA} values and string representations of missing data
+(e.g., \code{"Unknown"}, \code{"N/A"}) are counted. See \code{missing_indicators}.}
+
+\item{missing_indicators}{Optional character vector of string values to treat as missing
+in addition to (or instead of) the built-in ternP defaults. When \code{NULL} (default),
+the ternP canonical list is used. When supplied, the custom list \strong{replaces} the
+ternP defaults. Matching is case-insensitive and trims whitespace.}
 }
 \value{
 A tibble with one row per variable (multi-row for factors), containing:
