@@ -36,10 +36,10 @@
 #'   marked with an asterisk following a significant omnibus test. Default
 #'   \code{FALSE}.
 #' @param cat_posthoc_fisher_vars Character vector of variable names for which
-#'   Fisher\u2019s exact test was the omnibus test while \code{categorical_posthoc = TRUE}.
-#'   When non-empty, a caveat sentence is appended noting that Haberman\u2019s adjusted
+#'   Fisher's exact test was the omnibus test while \code{categorical_posthoc = TRUE}.
+#'   When non-empty, a caveat sentence is appended noting that Haberman's adjusted
 #'   residuals were derived from the chi-squared contingency table in the absence of a
-#'   Fisher\u2019s exact equivalent. Populated automatically when called from
+#'   Fisher's exact equivalent. Populated automatically when called from
 #'   \code{ternG()}. Default \code{character(0)}.
 #' @param show_missingness Logical or character; whether missingness columns were added
 #'   to the table (\code{FALSE}, \code{"total"}, or \code{"group"}). When

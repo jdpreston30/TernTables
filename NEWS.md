@@ -1,3 +1,35 @@
+# TernTables 1.7.1.9005 (development)
+
+## Bug fixes
+
+* **`categorical_posthoc` subscript out-of-bounds with `NA` level names**
+  (`ternG`): When a categorical variable had an `NA` factor level (e.g. from
+  `haven_labelled` data), `NA %in% vector` silently returned `FALSE` so the
+  guard did not skip the row, and the subsequent `stdres[g_lvl, NA]` matrix
+  subscript threw `subscript out of bounds`. Fixed by adding explicit
+  `is.na()` guards before the `%in%` checks and wrapping the matrix subscript
+  in `tryCatch()` in both the hierarchical and simple post-hoc paths.
+
+* **`cat_posthoc_fisher_display` referenced before extraction** (`ternG`):
+  The `write_methods_doc()` call used `cat_posthoc_fisher_display` before it
+  was extracted from `.ternG_env`, causing `object not found` errors when
+  `categorical_posthoc = TRUE`. Fixed by moving the entire `.ternG_env`
+  extraction block above the `write_methods_doc()` invocation.
+
+* **Blank-string factor levels produced `NA (NA%)` in output** (`ternG`):
+  Variables encoded with `""` (empty string) as a factor level — common in
+  UNOS/SRTR `haven_labelled` datasets — produced `NA (NA%)` for that level's
+  cell counts. Root cause: `as.data.frame.matrix()` internally passes column
+  names through `make.names()`, which renames `""` to `"X"` regardless of the
+  `check.names` argument (which is silently ignored by that function). All
+  downstream character-based lookups for the original `""` level then failed.
+  Fixed by saving `colnames(tab)` before conversion and explicitly restoring
+  them on `tab_n` and `tab_pct` afterward, and by switching all 2D cell
+  lookups to integer indexing via `match()` so any level name — blank, with
+  spaces, commas, parentheses, or leading digits — is handled safely.
+
+---
+
 # TernTables 1.7.1.9004 (development)
 
 ## New features

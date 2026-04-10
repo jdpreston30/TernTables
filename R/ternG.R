@@ -458,12 +458,19 @@ ternG <- function(data,
       g[[var]] <- factor(g[[var]])
       tab <- table(g[[group_var]], g[[var]])
       # margin=1: % within each group (column %). margin=2: % within each level (row %).
+      # We restore colnames explicitly from colnames(tab) because as.data.frame.matrix
+      # uses its own `make.names` parameter (not `check.names`), so `check.names=FALSE`
+      # is silently ignored and blank/special factor level names (e.g. "") get mangled
+      # to "X" or "V1" by make.names(). Restoring preserves exact original names.
+      .tab_col_names <- colnames(tab)
       if (percentage_compute == "row") {
         tab_pct <- as.data.frame.matrix(round(prop.table(tab, 2) * 100))
       } else {
         tab_pct <- as.data.frame.matrix(round(prop.table(tab, 1) * 100))
       }
+      colnames(tab_pct) <- .tab_col_names
       tab_n   <- as.data.frame.matrix(tab)
+      colnames(tab_n) <- .tab_col_names
       tab_total_n   <- colSums(tab)
       if (percentage_compute == "row") {
         # Row percentages: Total column is always 100% per level
@@ -544,9 +551,12 @@ ternG <- function(data,
           }
         }
         result <- tibble(Variable = .clean_variable_name_for_header(var), .indent = 2)
+        # Use integer indices to safely handle any level name (including blank "")
+        ci_ref <- match(ref_level, colnames(tab_n))
         for (g_lvl in group_levels) {
+          ri <- match(g_lvl, rownames(tab_n))
           result[[group_labels[g_lvl]]] <- paste0(
-            tab_n[g_lvl, ref_level], " (", tab_pct[g_lvl, ref_level], "%)"
+            tab_n[ri, ci_ref], " (", tab_pct[ri, ci_ref], "%)"
           )
         }
 
@@ -587,7 +597,8 @@ ternG <- function(data,
           if (show_test) result$OR_method <- "-"
         }
         if (show_total) {
-          result$Total <- paste0(tab_total_n[ref_level], " (", tab_total_pct[ref_level], "%)")
+          ti_ref <- match(ref_level, names(tab_total_n))
+          result$Total <- paste0(tab_total_n[ti_ref], " (", tab_total_pct[ti_ref], "%)")
         }
 
       } else {
@@ -670,9 +681,12 @@ ternG <- function(data,
         # Create sub-category rows (indented)
         sub_rows <- lapply(sorted_levels, function(level) {
           out <- tibble(Variable = level, .indent = 6)
+          # Use integer indices to safely handle any level name (including blank "")
+          ci <- match(level, colnames(tab_n))
           for (g_lvl in group_levels) {
-            val <- if (g_lvl %in% rownames(tab_n) && level %in% colnames(tab_n)) {
-              paste0(tab_n[g_lvl, level], " (", tab_pct[g_lvl, level], "%)")
+            ri <- match(g_lvl, rownames(tab_n))
+            val <- if (!is.na(ri) && !is.na(ci)) {
+              paste0(tab_n[ri, ci], " (", tab_pct[ri, ci], "%)")
             } else {
               "NA (NA%)"
             }
@@ -710,7 +724,8 @@ ternG <- function(data,
             }
           }
           if (show_total) {
-            out$Total <- paste0(tab_total_n[level], " (", tab_total_pct[level], "%)")
+            ti <- match(level, names(tab_total_n))
+            out$Total <- paste0(tab_total_n[ti], " (", tab_total_pct[ti], "%)")
           }
           out
         })
@@ -734,8 +749,8 @@ ternG <- function(data,
           if (use_simple_format) {
             # Single-row display: annotate the ref_level cell for each group
             for (g_lvl in group_levels) {
-              if (!g_lvl %in% rownames(stdres) || !ref_level %in% colnames(stdres)) next
-              val <- stdres[g_lvl, ref_level]
+              if (is.na(g_lvl) || !g_lvl %in% rownames(stdres) || is.na(ref_level) || !ref_level %in% colnames(stdres)) next
+              val <- tryCatch(stdres[g_lvl, ref_level], error = function(e) NA_real_)
               if (!is.na(val) && abs(val) > 1.96)
                 result[[group_labels[g_lvl]]] <- paste0(result[[group_labels[g_lvl]]], "*")
             }
@@ -744,10 +759,10 @@ ternG <- function(data,
             for (i in seq_len(nrow(result))) {
               if (!isTRUE(result$.indent[i] == 6L)) next  # header rows have .indent == 2
               level <- result$Variable[i]
-              if (!level %in% colnames(stdres)) next
+              if (is.na(level) || !level %in% colnames(stdres)) next
               for (g_lvl in group_levels) {
-                if (!g_lvl %in% rownames(stdres)) next
-                val <- stdres[g_lvl, level]
+                if (is.na(g_lvl) || !g_lvl %in% rownames(stdres)) next
+                val <- tryCatch(stdres[g_lvl, level], error = function(e) NA_real_)
                 if (!is.na(val) && abs(val) > 1.96)
                   result[[group_labels[g_lvl]]][i] <- paste0(result[[group_labels[g_lvl]]][i], "*")
               }
@@ -1133,11 +1148,6 @@ ternG <- function(data,
   }
 
   if (!is.null(output_xlsx)) export_to_excel(out_tbl, output_xlsx)
-  
-  # Write methods document if requested
-  if (methods_doc) {
-    write_methods_doc(out_tbl, methods_filename, n_levels = n_levels, OR_col = OR_col, OR_method = OR_method, source = "ternG", post_hoc = post_hoc, categorical_posthoc = categorical_posthoc, cat_posthoc_fisher_vars = cat_posthoc_fisher_display, show_missingness = show_missingness, missing_indicators = missing_indicators, p_adjust = p_adjust, open_doc = open_doc, citation = citation, font_family = font_family)
-  }
 
   # Extract accumulator values from environment for reporting
   numeric_vars_tested        <- .ternG_env$numeric_vars_tested
@@ -1146,6 +1156,11 @@ ternG <- function(data,
   cat_posthoc_ran_display    <- .ternG_env$cat_posthoc_ran_display
   cat_posthoc_fisher_display <- .ternG_env$cat_posthoc_fisher_display
   fisher_sim_display         <- .ternG_env$fisher_sim_display
+
+  # Write methods document if requested
+  if (methods_doc) {
+    write_methods_doc(out_tbl, methods_filename, n_levels = n_levels, OR_col = OR_col, OR_method = OR_method, source = "ternG", post_hoc = post_hoc, categorical_posthoc = categorical_posthoc, cat_posthoc_fisher_vars = cat_posthoc_fisher_display, show_missingness = show_missingness, missing_indicators = missing_indicators, p_adjust = p_adjust, open_doc = open_doc, citation = citation, font_family = font_family)
+  }
 
   # -- Report normality test results -----------------------------------------
   if (numeric_vars_tested > 0) {

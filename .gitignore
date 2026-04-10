@@ -20,6 +20,10 @@ Beamer
 # Private test data — NEVER commit
 test.csv
 *.csv
+bug.R
+mydf.rda
+TernTables_table.docx
+
 # Un-ignore bundled example data in inst/extdata (needed for package build)
 !inst/extdata/**/*.csv
 !inst/extdata/**/*.xlsx
