@@ -32,11 +32,22 @@
   k <- length(group_names)
   if (k <= 1L) return(setNames(rep("", k), group_names))
 
-  # Build named p-value vector required by multcompLetters
+  # Build named p-value vector required by multcompLetters.
+  # multcompLetters always splits pair names on "-", so group names that
+  # contain hyphens (e.g. "0-180", "181-365") would be mis-parsed.
+  # Work-around: proxy-rename groups to single uppercase letters / short safe
+  # tokens for the CLD step, then map results back to the real group names.
+  proxy <- setNames(paste0("G", seq_along(group_names)), group_names)
+  p1_proxy <- proxy[pairwise_df$group1]
+  p2_proxy <- proxy[pairwise_df$group2]
   pvec <- setNames(pairwise_df$p.adj,
-                   paste(pairwise_df$group1, pairwise_df$group2, sep = "-"))
+                   paste(p1_proxy, p2_proxy, sep = "-"))
 
-  # Compute CLD via multcompView (Piepho 2004) and align to original order
-  raw <- multcompView::multcompLetters(pvec, threshold = alpha)$Letters
+  # Compute CLD via multcompView (Piepho 2004)
+  raw_proxy <- multcompView::multcompLetters(pvec, threshold = alpha)$Letters
+
+  # Map proxy names back to real group names and align to original order
+  inv_proxy <- setNames(names(proxy), unname(proxy))
+  raw <- setNames(raw_proxy, inv_proxy[names(raw_proxy)])
   raw[group_names]
 }
