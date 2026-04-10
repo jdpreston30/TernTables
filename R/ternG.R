@@ -181,8 +181,17 @@
 #'   output and Excel/Word exports. Set to \code{FALSE} to produce a descriptive-only grouped
 #'   table — the output will contain only the Variable column, one column per group level, and
 #'   the Total column (if \code{show_total = TRUE}). When \code{FALSE}, \code{OR_col},
-#'   \code{show_test}, \code{print_normality}, \code{post_hoc}, and \code{p_adjust} are
-#'   all suppressed automatically.
+#'   \code{show_test}, \code{print_normality}, \code{post_hoc}, \code{categorical_posthoc},
+#'   and \code{p_adjust} are all suppressed automatically.
+#' @param categorical_posthoc Logical; if \code{TRUE}, computes adjusted standardized residuals
+#'   from the global contingency table for categorical variables following a significant omnibus
+#'   test (p < 0.05). Cells whose adjusted standardized residual exceeds \eqn{\pm 1.96}
+#'   are marked with an asterisk (\code{*}), indicating a significant deviation from expected
+#'   frequencies (\eqn{\alpha = 0.05}). This method is equivalent to Haberman's adjusted
+#'   residuals and does not require a separate multiple-comparisons correction, as the \eqn{\pm 1.96}
+#'   threshold is derived directly from the omnibus test distribution. Only applied when
+#'   \code{group_var} has three or more levels; silently ignored for two-group comparisons.
+#'   Default is \code{FALSE}.
 #'
 #' @return A tibble with one row per variable (multi-row for multi-level factors), showing summary statistics by group,
 #' P values, test type, and optionally odds ratios and total summary column.
@@ -267,7 +276,8 @@ ternG <- function(data,
                   show_missing = FALSE,
                   show_p = TRUE,
                   zero_to_dash = FALSE,
-                  percentage_compute = "column") {
+                  percentage_compute = "column",
+                  categorical_posthoc = FALSE) {
 
   # Helper function for proper rounding (0.5 always rounds up)
   round_up_half <- function(x, digits = 0) {
@@ -301,11 +311,12 @@ ternG <- function(data,
 
   # ── show_p = FALSE: suppress all stat-output flags early ──────────────────
   if (!isTRUE(show_p)) {
-    OR_col          <- FALSE
-    show_test       <- FALSE
-    print_normality <- FALSE
-    post_hoc        <- FALSE
-    p_adjust        <- FALSE
+    OR_col              <- FALSE
+    show_test           <- FALSE
+    print_normality     <- FALSE
+    post_hoc            <- FALSE
+    categorical_posthoc <- FALSE
+    p_adjust            <- FALSE
   }
 
   if (isTRUE(OR_col) && n_levels != 2) {
@@ -332,6 +343,8 @@ ternG <- function(data,
   .ternG_env$numeric_vars_failed <- 0L
   # Track which variables actually had post-hoc tests run (omnibus significant)
   .ternG_env$posthoc_ran_display <- character(0)
+  # Track which categorical variables had adjusted residuals applied
+  .ternG_env$cat_posthoc_ran_display <- character(0)
   # Track which variables used Monte Carlo Fisher's exact (workspace limit fallback)
   .ternG_env$fisher_sim_display  <- character(0)
 
@@ -650,6 +663,47 @@ ternG <- function(data,
         # Combine header and sub-rows
         result <- bind_rows(list(header_row), sub_rows)
       }
+
+      # ── Adjusted standardized residuals (categorical post-hoc) ─────────────
+      # Applied when categorical_posthoc = TRUE, 3+ groups, and omnibus p < 0.05.
+      # Haberman's adjusted residuals follow N(0,1); |z| > 1.96 ↔ α = 0.05.
+      # No additional multiple-comparisons correction is needed — the ±1.96
+      # threshold is derived directly from the omnibus chi-sq distribution.
+      if (categorical_posthoc && n_levels >= 3L && is.null(test_result$error) &&
+          !is.na(test_result$p_value) && test_result$p_value < 0.05) {
+        stdres <- tryCatch(
+          suppressWarnings(stats::chisq.test(tab)$stdres),
+          error = function(e) NULL
+        )
+        if (!is.null(stdres) && nrow(stdres) >= 2L) {
+          if (use_simple_format) {
+            # Single-row display: annotate the ref_level cell for each group
+            for (g_lvl in group_levels) {
+              if (!g_lvl %in% rownames(stdres) || !ref_level %in% colnames(stdres)) next
+              val <- stdres[g_lvl, ref_level]
+              if (!is.na(val) && abs(val) > 1.96)
+                result[[group_labels[g_lvl]]] <- paste0(result[[group_labels[g_lvl]]], "*")
+            }
+          } else {
+            # Hierarchical display: annotate each group × level cell (skip header row)
+            for (i in seq_len(nrow(result))) {
+              if (!isTRUE(result$.indent[i] == 6L)) next  # header rows have .indent == 2
+              level <- result$Variable[i]
+              if (!level %in% colnames(stdres)) next
+              for (g_lvl in group_levels) {
+                if (!g_lvl %in% rownames(stdres)) next
+                val <- stdres[g_lvl, level]
+                if (!is.na(val) && abs(val) > 1.96)
+                  result[[group_labels[g_lvl]]][i] <- paste0(result[[group_labels[g_lvl]]][i], "*")
+              }
+            }
+          }
+          .ternG_env$cat_posthoc_ran_display <- c(
+            .ternG_env$cat_posthoc_ran_display, result$Variable[1]
+          )
+        }
+      }
+
       if (grepl("simulated", test_result$test_name, fixed = FALSE))
         .ternG_env$fisher_sim_display <- c(.ternG_env$fisher_sim_display, result$Variable[1])
       return(.missing_row(result))
@@ -1014,14 +1068,15 @@ ternG <- function(data,
   
   # Write methods document if requested
   if (methods_doc) {
-    write_methods_doc(out_tbl, methods_filename, n_levels = n_levels, OR_col = OR_col, OR_method = OR_method, source = "ternG", post_hoc = post_hoc, p_adjust = p_adjust, open_doc = open_doc, citation = citation, font_family = font_family)
+    write_methods_doc(out_tbl, methods_filename, n_levels = n_levels, OR_col = OR_col, OR_method = OR_method, source = "ternG", post_hoc = post_hoc, categorical_posthoc = categorical_posthoc, p_adjust = p_adjust, open_doc = open_doc, citation = citation, font_family = font_family)
   }
 
   # Extract accumulator values from environment for reporting
-  numeric_vars_tested <- .ternG_env$numeric_vars_tested
-  numeric_vars_failed <- .ternG_env$numeric_vars_failed
-  posthoc_ran_display <- .ternG_env$posthoc_ran_display
-  fisher_sim_display  <- .ternG_env$fisher_sim_display
+  numeric_vars_tested        <- .ternG_env$numeric_vars_tested
+  numeric_vars_failed        <- .ternG_env$numeric_vars_failed
+  posthoc_ran_display        <- .ternG_env$posthoc_ran_display
+  cat_posthoc_ran_display    <- .ternG_env$cat_posthoc_ran_display
+  fisher_sim_display         <- .ternG_env$fisher_sim_display
 
   # -- Report normality test results -----------------------------------------
   if (numeric_vars_tested > 0) {
@@ -1101,6 +1156,23 @@ ternG <- function(data,
       "; \u03b1\u00a0=\u00a00.05); groups sharing a letter are not significantly different."
     )
   }
+  # Categorical residuals note: only shown when residuals were actually applied
+  cat_posthoc_note <- NULL
+  if (length(cat_posthoc_ran_display) > 0L) {
+    cat_vars_listed <- paste(unique(cat_posthoc_ran_display), collapse = ", ")
+    cat_posthoc_note <- paste0(
+      "Asterisk (*) indicates an adjusted standardized residual exceeding \u00b11.96 (",
+      cat_vars_listed,
+      "; \u03b1\u00a0=\u00a00.05) \u2014 a significant deviation from expected frequencies following a significant omnibus test."
+    )
+  }
+  # Merge continuous CLD note and categorical residuals note for the posthoc_footnote slot
+  combined_posthoc_note <- paste(
+    Filter(Negate(is.null), list(posthoc_note, cat_posthoc_note)),
+    collapse = " "
+  )
+  combined_posthoc_note <- if (nchar(trimws(combined_posthoc_note)) == 0L) NULL else combined_posthoc_note
+
   # Other auto-notes (Fisher simulation, show_missing) go into table_footnote slot
   effective_footnote <- table_footnote
   notes <- character(0)
@@ -1137,7 +1209,7 @@ ternG <- function(data,
     abbreviation_footnote
   }
 
-  if (!is.null(output_docx)) word_export(out_tbl, output_docx, round_intg = round_intg, round_decimal = round_decimal, font_size = table_font_size, category_start = category_start, plain_header = plain_header, manual_italic_indent = manual_italic_indent, manual_underline = manual_underline, table_caption = table_caption, table_footnote = effective_footnote, abbreviation_footnote = effective_abbr, posthoc_footnote = posthoc_note, variable_footnote = variable_footnote, index_style = index_style, line_break_header = line_break_header, open_doc = open_doc, citation = citation, font_family = font_family)
+  if (!is.null(output_docx)) word_export(out_tbl, output_docx, round_intg = round_intg, round_decimal = round_decimal, font_size = table_font_size, category_start = category_start, plain_header = plain_header, manual_italic_indent = manual_italic_indent, manual_underline = manual_underline, table_caption = table_caption, table_footnote = effective_footnote, abbreviation_footnote = effective_abbr, posthoc_footnote = combined_posthoc_note, variable_footnote = variable_footnote, index_style = index_style, line_break_header = line_break_header, open_doc = open_doc, citation = citation, font_family = font_family)
 
   if (!indent_info_column) out_tbl <- dplyr::select(out_tbl, -dplyr::any_of(".indent"))
 
@@ -1154,7 +1226,7 @@ ternG <- function(data,
     table_caption         = table_caption,
     table_footnote        = effective_footnote,
     abbreviation_footnote = effective_abbr,
-    posthoc_footnote      = posthoc_note,
+    posthoc_footnote      = combined_posthoc_note,
     variable_footnote     = variable_footnote,
     index_style           = index_style,
     line_break_header     = line_break_header,
@@ -1163,6 +1235,7 @@ ternG <- function(data,
     OR_col                = OR_col,
     OR_method             = OR_method,
     post_hoc              = post_hoc,
+    categorical_posthoc   = categorical_posthoc,
     p_adjust              = p_adjust,
     p_adjust_display      = p_adjust_display,
     citation              = citation,
@@ -1172,7 +1245,8 @@ ternG <- function(data,
     show_missing          = show_missing,
     show_p                = show_p,
     zero_to_dash          = zero_to_dash,
-    percentage_compute    = percentage_compute
+    percentage_compute    = percentage_compute,
+    categorical_posthoc   = categorical_posthoc
   )
 
   return(out_tbl)

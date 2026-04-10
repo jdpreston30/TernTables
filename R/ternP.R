@@ -364,6 +364,26 @@ Exclude them or keep as categorical."
   cli::cli_alert_info(
     "Cleaned data: {n_clean} row{?s} \u00d7 {n_cols} column{?s}."
   )
+
+  # ── Per-column missingness report ──────────────────────────────────────────
+  # Computed on clean_data after all transformations. Only shown if at least
+  # one column has missing values.
+  miss_n <- vapply(x$clean_data, function(col) sum(is.na(col)), integer(1))
+  miss_cols <- miss_n[miss_n > 0]
+
+  if (length(miss_cols) > 0) {
+    miss_pct <- round(miss_cols / n_clean * 100, 1)
+    miss_tbl <- data.frame(
+      Column    = names(miss_cols),
+      Missing_n = as.integer(miss_cols),
+      Missing_pct = paste0(miss_pct, "%"),
+      stringsAsFactors = FALSE
+    )
+    cli::cli_rule("Missingness Summary (columns with \u2265 1 missing value)")
+    print(miss_tbl, row.names = FALSE, right = FALSE)
+    cli::cli_rule()
+  }
+
   invisible(x)
 }
 

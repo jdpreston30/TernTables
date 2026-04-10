@@ -29,6 +29,12 @@
 #'   \code{n_levels >= 3}, the three-group methods paragraph is updated to
 #'   describe the post-hoc test pairing (Games-Howell or Dunn's + Holm).
 #'   Default \code{FALSE}.
+#' @param categorical_posthoc Logical; whether adjusted standardized residuals
+#'   were requested (\code{categorical_posthoc = TRUE} in \code{ternG}). When
+#'   \code{TRUE} and \code{n_levels >= 3}, the methods paragraph notes that
+#'   cells with adjusted standardized residuals exceeding \eqn{\pm 1.96} are
+#'   marked with an asterisk following a significant omnibus test. Default
+#'   \code{FALSE}.
 #' @param boilerplate Logical; if \code{TRUE}, ignores all other arguments and
 #'   writes a single comprehensive Word document covering every possible
 #'   TernTables configuration (descriptive, two-group with and without odds
@@ -69,6 +75,7 @@
 #' @export
 write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
                               OR_method = "dynamic", source = "ternG", post_hoc = FALSE,
+                              categorical_posthoc = FALSE,
                               boilerplate = FALSE, p_adjust = FALSE, open_doc = TRUE, citation = TRUE,
                               font_family = getOption("TernTables.font_family", "Arial")) {
 
@@ -358,7 +365,24 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
         "non-normally distributed and ordinal variables were compared using Dunn\u2019s test with Holm correction for multiple comparisons. ",
         "Results are presented using compact letter display (CLD) notation \u2014 superscript letters appended to cell values \u2014 ",
         "whereby groups sharing a superscript letter are not significantly different from each other. ",
-        "Categorical variables were not included in post-hoc comparisons. "
+        if (categorical_posthoc) {
+          paste0(
+            "For categorical variables with a significant omnibus test, post-hoc identification of specific group differences ",
+            "was performed by calculating adjusted standardized residuals for each cell of the global contingency table; ",
+            "cells with adjusted standardized residuals exceeding \u00b11.96 are marked with an asterisk (*), ",
+            "indicating a significant deviation from expected frequencies (\u03b1\u00a0=\u00a00.05). "
+          )
+        } else {
+          "Categorical variables were not included in post-hoc comparisons. "
+        }
+      )
+    } else if (categorical_posthoc) {
+      paste0(
+        "Omnibus P values are reported; pairwise post-hoc comparisons were not performed for continuous variables. ",
+        "For categorical variables with a significant omnibus test, post-hoc identification of specific group differences ",
+        "was performed by calculating adjusted standardized residuals for each cell of the global contingency table; ",
+        "cells with adjusted standardized residuals exceeding \u00b11.96 are marked with an asterisk (*), ",
+        "indicating a significant deviation from expected frequencies (\u03b1\u00a0=\u00a00.05). "
       )
     } else {
       "Omnibus P values are reported; pairwise post-hoc comparisons were not performed. "

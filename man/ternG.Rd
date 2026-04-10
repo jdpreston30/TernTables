@@ -50,7 +50,8 @@ ternG(
   show_missing = FALSE,
   show_p = TRUE,
   zero_to_dash = FALSE,
-  percentage_compute = "column"
+  percentage_compute = "column",
+  categorical_posthoc = FALSE
 )
 }
 \arguments{
@@ -250,8 +251,8 @@ Default is \code{FALSE}.}
 output and Excel/Word exports. Set to \code{FALSE} to produce a descriptive-only grouped
 table — the output will contain only the Variable column, one column per group level, and
 the Total column (if \code{show_total = TRUE}). When \code{FALSE}, \code{OR_col},
-\code{show_test}, \code{print_normality}, \code{post_hoc}, and \code{p_adjust} are
-all suppressed automatically.}
+\code{show_test}, \code{print_normality}, \code{post_hoc}, \code{categorical_posthoc},
+and \code{p_adjust} are all suppressed automatically.}
 
 \item{zero_to_dash}{Logical; if \code{TRUE}, replaces any categorical cell that would display
 \code{"0 (0\%)"} with \code{"-"} in the output table. Useful when zero counts in a group are
@@ -268,6 +269,16 @@ groups), so percentages describe how each category level is distributed across g
 suppressed (a Total column would show 100\% for every level, which is uninformative).
 Applies to both binary and multinomial categorical variables
 in both two- and three-group comparisons.}
+
+\item{categorical_posthoc}{Logical; if \code{TRUE}, computes adjusted standardized residuals
+from the global contingency table for categorical variables following a significant omnibus
+test (p < 0.05). Cells whose adjusted standardized residual exceeds \eqn{\pm 1.96}
+are marked with an asterisk (\code{*}), indicating a significant deviation from expected
+frequencies (\eqn{\alpha = 0.05}). This method is equivalent to Haberman's adjusted
+residuals and does not require a separate multiple-comparisons correction, as the \eqn{\pm 1.96}
+threshold is derived directly from the omnibus test distribution. Only applied when
+\code{group_var} has three or more levels; silently ignored for two-group comparisons.
+Default is \code{FALSE}.}
 }
 \value{
 A tibble with one row per variable (multi-row for multi-level factors), showing summary statistics by group,

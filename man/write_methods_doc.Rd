@@ -12,6 +12,7 @@ write_methods_doc(
   OR_method = "dynamic",
   source = "ternG",
   post_hoc = FALSE,
+  categorical_posthoc = FALSE,
   boilerplate = FALSE,
   p_adjust = FALSE,
   open_doc = TRUE,
@@ -43,6 +44,13 @@ section is populated with dynamic test information. Default \code{"ternG"}.}
 \code{n_levels >= 3}, the three-group methods paragraph is updated to
 describe the post-hoc test pairing (Games-Howell or Dunn's + Holm).
 Default \code{FALSE}.}
+
+\item{categorical_posthoc}{Logical; whether adjusted standardized residuals
+were requested (\code{categorical_posthoc = TRUE} in \code{ternG}). When
+\code{TRUE} and \code{n_levels >= 3}, the methods paragraph notes that
+cells with adjusted standardized residuals exceeding \eqn{\pm 1.96} are
+marked with an asterisk following a significant omnibus test. Default
+\code{FALSE}.}
 
 \item{boilerplate}{Logical; if \code{TRUE}, ignores all other arguments and
 writes a single comprehensive Word document covering every possible

@@ -1,3 +1,28 @@
+# TernTables 1.7.1.9002 (development)
+
+## New features
+
+* **`categorical_posthoc` parameter** (`ternG`): Opt-in post-hoc analysis for
+  categorical variables in three-or-more-group comparisons. When
+  `categorical_posthoc = TRUE`, adjusted standardized residuals (Haberman's
+  residuals) are computed from the global contingency table following a
+  significant omnibus test (p < 0.05). Cells whose residual exceeds ±1.96 are
+  annotated with an asterisk (*), indicating a significant deviation from
+  expected frequencies at α = 0.05. No additional multiple-comparisons
+  correction is required — the ±1.96 threshold is derived directly from the
+  omnibus chi-squared distribution. Defaults to `FALSE` (off). The auto-
+  generated methods document and table footnote are updated automatically when
+  residuals are applied.
+
+* **Per-column missingness report** (`ternP`): The preprocessing summary now
+  includes a `Missingness Summary` section listing every column with at least
+  one missing value, showing the count and percentage of missing cells. The
+  section is suppressed entirely when no missing values exist, keeping the
+  output clean for already-complete datasets. The missingness report reflects
+  the final state of `clean_data` after all transformations are applied.
+
+---
+
 # TernTables 1.7.1
 
 ## Bug fixes

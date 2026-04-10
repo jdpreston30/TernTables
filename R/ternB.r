@@ -172,16 +172,17 @@ ternB <- function(tables, output_docx, page_break = TRUE,
       if (src == "ternStyle") return(NA_character_)
       suppressMessages(
         write_methods_doc(
-          tbl       = m$tbl,
-          filename  = tempfile(fileext = ".docx"),
-          n_levels  = if (is.null(m$n_levels))   2L            else m$n_levels,
-          OR_col    = if (is.null(m$OR_col))      FALSE         else m$OR_col,
-          OR_method = if (is.null(m$OR_method))   "dynamic"     else m$OR_method,
-          source    = src,
-          post_hoc  = if (is.null(m$post_hoc))    FALSE         else m$post_hoc,
-          p_adjust  = if (is.null(m$p_adjust))    FALSE         else m$p_adjust,
-          open_doc  = FALSE,
-          citation  = citation
+          tbl                 = m$tbl,
+          filename            = tempfile(fileext = ".docx"),
+          n_levels            = if (is.null(m$n_levels))            2L        else m$n_levels,
+          OR_col              = if (is.null(m$OR_col))              FALSE     else m$OR_col,
+          OR_method           = if (is.null(m$OR_method))           "dynamic" else m$OR_method,
+          source              = src,
+          post_hoc            = if (is.null(m$post_hoc))            FALSE     else m$post_hoc,
+          categorical_posthoc = if (is.null(m$categorical_posthoc)) FALSE     else m$categorical_posthoc,
+          p_adjust            = if (is.null(m$p_adjust))            FALSE     else m$p_adjust,
+          open_doc            = FALSE,
+          citation            = citation
         )
       )
     }, character(1))
