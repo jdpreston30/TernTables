@@ -369,6 +369,8 @@ ternG <- function(data,
   .ternG_env$posthoc_ran_display <- character(0)
   # Track which categorical variables had adjusted residuals applied
   .ternG_env$cat_posthoc_ran_display <- character(0)
+  # Track which variables had categorical_posthoc run while omnibus was Fisher's exact
+  .ternG_env$cat_posthoc_fisher_display <- character(0)
   # Track which variables used Monte Carlo Fisher's exact (workspace limit fallback)
   .ternG_env$fisher_sim_display  <- character(0)
 
@@ -754,6 +756,10 @@ ternG <- function(data,
           .ternG_env$cat_posthoc_ran_display <- c(
             .ternG_env$cat_posthoc_ran_display, result$Variable[1]
           )
+          if (grepl("Fisher", test_result$test_name, ignore.case = TRUE))
+            .ternG_env$cat_posthoc_fisher_display <- c(
+              .ternG_env$cat_posthoc_fisher_display, result$Variable[1]
+            )
         }
       }
 
@@ -1130,7 +1136,7 @@ ternG <- function(data,
   
   # Write methods document if requested
   if (methods_doc) {
-    write_methods_doc(out_tbl, methods_filename, n_levels = n_levels, OR_col = OR_col, OR_method = OR_method, source = "ternG", post_hoc = post_hoc, categorical_posthoc = categorical_posthoc, p_adjust = p_adjust, open_doc = open_doc, citation = citation, font_family = font_family)
+    write_methods_doc(out_tbl, methods_filename, n_levels = n_levels, OR_col = OR_col, OR_method = OR_method, source = "ternG", post_hoc = post_hoc, categorical_posthoc = categorical_posthoc, cat_posthoc_fisher_vars = cat_posthoc_fisher_display, show_missingness = show_missingness, missing_indicators = missing_indicators, p_adjust = p_adjust, open_doc = open_doc, citation = citation, font_family = font_family)
   }
 
   # Extract accumulator values from environment for reporting
@@ -1138,6 +1144,7 @@ ternG <- function(data,
   numeric_vars_failed        <- .ternG_env$numeric_vars_failed
   posthoc_ran_display        <- .ternG_env$posthoc_ran_display
   cat_posthoc_ran_display    <- .ternG_env$cat_posthoc_ran_display
+  cat_posthoc_fisher_display <- .ternG_env$cat_posthoc_fisher_display
   fisher_sim_display         <- .ternG_env$fisher_sim_display
 
   # -- Report normality test results -----------------------------------------
@@ -1183,6 +1190,18 @@ ternG <- function(data,
     cli::cli_rule(left = "Missingness columns added \u2014 ternG")
     cli::cli_alert_info("Mode: \"{show_missingness}\" \u2014 {mode_desc}")
     cli::cli_alert_info("Values treated as missing: NA + {miss_str_list}{indicator_note}")
+  }
+
+  # ── Categorical post-hoc + Fisher's exact warning ────────────────────────
+  if (length(cat_posthoc_fisher_display) > 0L) {
+    fisher_cat_vars <- paste(unique(cat_posthoc_fisher_display), collapse = ", ")
+    cli::cli_rule(left = "Categorical Post-hoc Note \u2014 ternG")
+    cli::cli_alert_warning("Fisher\u2019s exact was the omnibus test for: {fisher_cat_vars}.")
+    cli::cli_alert_warning(paste0(
+      "Adjusted standardized residuals (Haberman\u2019s method) were derived from the ",
+      "global chi-squared contingency table \u2014 no Fisher\u2019s exact equivalent exists. ",
+      "Results may be less reliable when expected cell counts are very small."
+    ))
   }
 
   # Insert category header rows if specified

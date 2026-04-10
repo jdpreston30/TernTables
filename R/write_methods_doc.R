@@ -35,6 +35,22 @@
 #'   cells with adjusted standardized residuals exceeding \eqn{\pm 1.96} are
 #'   marked with an asterisk following a significant omnibus test. Default
 #'   \code{FALSE}.
+#' @param cat_posthoc_fisher_vars Character vector of variable names for which
+#'   Fisher\u2019s exact test was the omnibus test while \code{categorical_posthoc = TRUE}.
+#'   When non-empty, a caveat sentence is appended noting that Haberman\u2019s adjusted
+#'   residuals were derived from the chi-squared contingency table in the absence of a
+#'   Fisher\u2019s exact equivalent. Populated automatically when called from
+#'   \code{ternG()}. Default \code{character(0)}.
+#' @param show_missingness Logical or character; whether missingness columns were added
+#'   to the table (\code{FALSE}, \code{"total"}, or \code{"group"}). When
+#'   non-\code{FALSE}, a sentence is appended describing the missingness reporting
+#'   approach and the string representations used to flag missing values. Should match
+#'   the \code{show_missingness} argument passed to \code{ternG()} or \code{ternD()}.
+#'   Default \code{FALSE}.
+#' @param missing_indicators Character vector of string values treated as missing in
+#'   addition to R \code{NA}, or \code{NULL} to use TernTables defaults. Should match
+#'   the \code{missing_indicators} argument passed to \code{ternG()} or \code{ternD()}.
+#'   Default \code{NULL}.
 #' @param boilerplate Logical; if \code{TRUE}, ignores all other arguments and
 #'   writes a single comprehensive Word document covering every possible
 #'   TernTables configuration (descriptive, two-group with and without odds
@@ -76,6 +92,8 @@
 write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
                               OR_method = "dynamic", source = "ternG", post_hoc = FALSE,
                               categorical_posthoc = FALSE,
+                              cat_posthoc_fisher_vars = character(0),
+                              show_missingness = FALSE, missing_indicators = NULL,
                               boilerplate = FALSE, p_adjust = FALSE, open_doc = TRUE, citation = TRUE,
                               font_family = getOption("TernTables.font_family", "Arial")) {
 
@@ -321,8 +339,36 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
     "Statistical significance was defined as p\u2009<\u20090.05."
   }
 
-  # ── Section 1: Descriptive ───────────────────────────────────────────────────
-  sec1_body <- paste0(desc_sentence, " ", sig_sentence)
+  # ── Helper: missingness sentence ────────────────────────────────────────
+  miss_sentence <- if (!isFALSE(show_missingness)) {
+    miss_vals <- if (!is.null(missing_indicators)) missing_indicators else .tern_missing_strings()
+    miss_str <- paste0('"', paste(miss_vals, collapse = '", "'), '"')
+    col_desc <- if (isTRUE(show_missingness == "total")) {
+      "a dedicated 'Missing (total)' column at the right of the table"
+    } else {
+      "per-group 'Missing' columns interleaved after each comparison-group column"
+    }
+    paste0(
+      "Missing observations, defined as R NA values or any of the following string ",
+      "representations of missingness: ", miss_str, ", are reported as n (\u0025) in ",
+      col_desc, " for each variable. "
+    )
+  } else ""
+
+  # ── Helper: categorical posthoc Fisher's caveat ─────────────────────────────
+  cat_posthoc_fisher_sentence <- if (length(cat_posthoc_fisher_vars) > 0L) {
+    paste0(
+      "Note: Fisher\u2019s exact test was the omnibus test for ",
+      if (length(cat_posthoc_fisher_vars) == 1L) "one variable" else paste0(length(cat_posthoc_fisher_vars), " variables"),
+      " (", paste(cat_posthoc_fisher_vars, collapse = ", "), "); ",
+      "adjusted standardized residuals were nonetheless derived from the global chi-squared contingency table, ",
+      "as no established Fisher\u2019s exact equivalent exists for this procedure. ",
+      "This approach may be less reliable in cells with very small expected counts. "
+    )
+  } else ""
+
+  # ── Section 1: Descriptive ────────────────────────────────────────
+  sec1_body <- paste0(desc_sentence, " ", miss_sentence, sig_sentence)
 
   # ── Section 2: Two-group ─────────────────────────────────────────────────────
   if (source == "ternG" && n_levels == 2) {
@@ -335,14 +381,14 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
     } else {
       "Normally distributed continuous variables were compared using Welch's independent samples t-test; non-normally distributed variables were compared using the Wilcoxon rank-sum test. "
     }
-    sec2_body <- paste0(desc_sentence, " ", s2_cont, cat_sentence(has_fisher, has_chisq, has_fisher_sim), or_sentence, fdr_sentence, sig_sentence)
+    sec2_body <- paste0(desc_sentence, " ", s2_cont, cat_sentence(has_fisher, has_chisq, has_fisher_sim), or_sentence, fdr_sentence, miss_sentence, sig_sentence)
   } else {
     sec2_body <- paste0(
       desc_sentence, " ",
       "Normally distributed continuous variables were compared between groups using Welch's independent samples t-test; ",
       "non-normally distributed or ordinal continuous variables were compared using the Wilcoxon rank-sum test. ",
       "Categorical variables were compared using Chi-squared tests, or Fisher's exact tests when any expected cell count was less than 5 (Cochran criterion). ",
-      fdr_sentence, sig_sentence
+      fdr_sentence, miss_sentence, sig_sentence
     )
   }
 
@@ -370,7 +416,8 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
             "For categorical variables with a significant omnibus test, post-hoc identification of specific group differences ",
             "was performed by calculating adjusted standardized residuals for each cell of the global contingency table; ",
             "cells with adjusted standardized residuals exceeding \u00b11.96 are marked with an asterisk (*), ",
-            "indicating a significant deviation from expected frequencies (\u03b1\u00a0=\u00a00.05). "
+            "indicating a significant deviation from expected frequencies (\u03b1\u00a0=\u00a00.05). ",
+            cat_posthoc_fisher_sentence
           )
         } else {
           "Categorical variables were not included in post-hoc comparisons. "
@@ -382,12 +429,13 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
         "For categorical variables with a significant omnibus test, post-hoc identification of specific group differences ",
         "was performed by calculating adjusted standardized residuals for each cell of the global contingency table; ",
         "cells with adjusted standardized residuals exceeding \u00b11.96 are marked with an asterisk (*), ",
-        "indicating a significant deviation from expected frequencies (\u03b1\u00a0=\u00a00.05). "
+        "indicating a significant deviation from expected frequencies (\u03b1\u00a0=\u00a00.05). ",
+        cat_posthoc_fisher_sentence
       )
     } else {
       "Omnibus P values are reported; pairwise post-hoc comparisons were not performed. "
     }
-    sec3_body <- paste0(desc_sentence, " ", s3_cont, omnibus_note, cat_sentence(has_fisher, has_chisq, has_fisher_sim), or_sentence, fdr_sentence, sig_sentence)
+    sec3_body <- paste0(desc_sentence, " ", s3_cont, omnibus_note, cat_sentence(has_fisher, has_chisq, has_fisher_sim), or_sentence, fdr_sentence, miss_sentence, sig_sentence)
   } else {
     sec3_body <- paste0(
       desc_sentence, " ",
@@ -395,7 +443,7 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
       "non-normally distributed or ordinal continuous variables were compared using the Kruskal-Wallis test. ",
       "Omnibus P values are reported; pairwise post-hoc comparisons were not performed. ",
       "Categorical variables were compared using Chi-squared tests, or Fisher's exact tests when any expected cell count was less than 5 (Cochran criterion). ",
-      fdr_sentence, sig_sentence
+      fdr_sentence, miss_sentence, sig_sentence
     )
   }
 

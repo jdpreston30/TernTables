@@ -1,3 +1,25 @@
+# TernTables 1.7.1.9004 (development)
+
+## New features
+
+* **Fisher's exact + `categorical_posthoc` warning** (`ternG`): When the omnibus
+  test for a categorical variable was Fisher's exact but `categorical_posthoc = TRUE`,
+  a terminal warning is now emitted after the run noting that Haberman's adjusted
+  standardized residuals were derived from the chi-squared contingency table (no
+  Fisher's exact equivalent exists) and may be less reliable when expected cell
+  counts are very small. The same caveat sentence is also appended to the
+  statistical methods document for the affected variables.
+
+* **`show_missingness` and `missing_indicators` in `write_methods_doc()`**: The
+  methods document now dynamically includes a sentence describing missingness
+  reporting when `show_missingness` is non-`FALSE`. The sentence states the
+  mode used (`"total"` vs `"group"`), lists the string representations of
+  missing values that were counted, and is added to all three section types
+  (descriptive, two-group, three-or-more-group). `ternG()` and `ternD()` both
+  pass these arguments automatically when calling `write_methods_doc()`.
+
+---
+
 # TernTables 1.7.1.9003 (development)
 
 ## New features

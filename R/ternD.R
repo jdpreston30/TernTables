@@ -554,7 +554,7 @@ ternD <- function(data, vars = NULL, exclude_vars = NULL, force_ordinal = NULL,
                                          open_doc              = open_doc,
                                          citation              = citation,
                                          font_family           = font_family)
-  if (methods_doc) write_methods_doc(out_tbl, methods_filename, source = "ternD", open_doc = open_doc, citation = citation, font_family = font_family)
+  if (methods_doc) write_methods_doc(out_tbl, methods_filename, source = "ternD", show_missingness = show_missingness, missing_indicators = missing_indicators, open_doc = open_doc, citation = citation, font_family = font_family)
 
   out_tbl <- dplyr::select(out_tbl, -dplyr::any_of(".indent"))
 

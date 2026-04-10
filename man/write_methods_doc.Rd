@@ -13,6 +13,9 @@ write_methods_doc(
   source = "ternG",
   post_hoc = FALSE,
   categorical_posthoc = FALSE,
+  cat_posthoc_fisher_vars = character(0),
+  show_missingness = FALSE,
+  missing_indicators = NULL,
   boilerplate = FALSE,
   p_adjust = FALSE,
   open_doc = TRUE,
@@ -51,6 +54,25 @@ were requested (\code{categorical_posthoc = TRUE} in \code{ternG}). When
 cells with adjusted standardized residuals exceeding \eqn{\pm 1.96} are
 marked with an asterisk following a significant omnibus test. Default
 \code{FALSE}.}
+
+\item{cat_posthoc_fisher_vars}{Character vector of variable names for which
+Fisher\u2019s exact test was the omnibus test while \code{categorical_posthoc = TRUE}.
+When non-empty, a caveat sentence is appended noting that Haberman\u2019s adjusted
+residuals were derived from the chi-squared contingency table in the absence of a
+Fisher\u2019s exact equivalent. Populated automatically when called from
+\code{ternG()}. Default \code{character(0)}.}
+
+\item{show_missingness}{Logical or character; whether missingness columns were added
+to the table (\code{FALSE}, \code{"total"}, or \code{"group"}). When
+non-\code{FALSE}, a sentence is appended describing the missingness reporting
+approach and the string representations used to flag missing values. Should match
+the \code{show_missingness} argument passed to \code{ternG()} or \code{ternD()}.
+Default \code{FALSE}.}
+
+\item{missing_indicators}{Character vector of string values treated as missing in
+addition to R \code{NA}, or \code{NULL} to use TernTables defaults. Should match
+the \code{missing_indicators} argument passed to \code{ternG()} or \code{ternD()}.
+Default \code{NULL}.}
 
 \item{boilerplate}{Logical; if \code{TRUE}, ignores all other arguments and
 writes a single comprehensive Word document covering every possible
