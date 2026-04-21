@@ -1,16 +1,20 @@
 citHeader("To cite TernTables in publications, use:")
 
 bibentry(
-  bibtype = "Manual",
-  title = "TernTables: Automated Statistical Analysis and Table Generation for Biomedical Research",
-  author = c(
+  bibtype  = "Article",
+  title    = "TernTables: A Statistical Analysis and Table Generation Web Interface for Clinical and Biomedical Research",
+  author   = c(
     person("Joshua D.", "Preston"),
     person("Helen", "Abadiotakis"),
     person("Ailin", "Tang"),
     person("Clayton J.", "Rust"),
+    person("Michael E.", "Halkos"),
+    person("Mani A.", "Daneshmand"),
     person("Joshua L.", "Chan")
   ),
-  year = "2026",
-  note = "R package version 1.7.0",
-  url = "https://cran.r-project.org/package=TernTables"
+  journal  = "bioRxiv",
+  year     = "2026",
+  doi      = "10.64898/2026.04.15.717241",
+  url      = "https://doi.org/10.64898/2026.04.15.717241",
+  note     = "Preprint"
 )

@@ -292,17 +292,17 @@ The tibble can also be:
 
 ## Citation
 
-If you use TernTables in your research, please cite it:
+If you use TernTables in your research, please cite the preprint:
+
+> Preston JD, Abadiotakis H, Tang A, Rust CJ, Halkos ME, Daneshmand MA, Chan JL (2026).
+> *TernTables: A Statistical Analysis and Table Generation Web Interface for Clinical and Biomedical Research.*
+> bioRxiv 2026.04.15.717241. <https://doi.org/10.64898/2026.04.15.717241>
+
+Or from R:
 
 ```r
 citation("TernTables")
 ```
-
-Or directly:
-
-> Preston JD, Abadiotakis H, Tang A, Rust CJ, Chan JL (2026).
-> *TernTables: Automated Statistical Analysis and Table Generation for Biomedical Research.*
-> R package version 1.7.1. <https://cran.r-project.org/package=TernTables>
 
 ---
 

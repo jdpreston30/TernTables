@@ -16,6 +16,12 @@ Authors@R: c(
     person("Clayton J.", "Rust",
            role = "aut",
            comment = c(ORCID = "0000-0001-5929-0733")),
+    person("Michael E.", "Halkos",
+           role = "aut",
+           comment = c(ORCID = "0000-0001-9191-7743")),
+    person("Mani A.", "Daneshmand",
+           role = "aut",
+           comment = c(ORCID = "0000-0002-0191-9911")),
     person("Joshua L.", "Chan",
            role = "aut",
            comment = c(ORCID = "0000-0001-7220-561X"))

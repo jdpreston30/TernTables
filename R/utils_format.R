@@ -113,10 +113,9 @@ export_to_excel <- function(tbl, filename) {
   ver <- .tern_pkg_version()
   paste0(
     "Created with TernTables v", ver, ". Please cite: ",
-    "Preston JD, Abadiotakis H, Tang A, Rust CJ, Chan JL. ",
-    "TernTables: Automated statistical analysis and table generation for biomedical research. ",
-    "R package version ", ver, ", 2026. ",
-    "Available at: https://github.com/jdpreston30/TernTables ",
-    "(Web interface: https://tern-tables.com)"
+    "Preston JD, Abadiotakis H, Tang A, Rust CJ, Halkos ME, Daneshmand MA, Chan JL. ",
+    "TernTables: A statistical analysis and table generation web interface for clinical and biomedical research. ",
+    "bioRxiv 2026.04.15.717241. ",
+    "https://doi.org/10.64898/2026.04.15.717241"
   )
 }
