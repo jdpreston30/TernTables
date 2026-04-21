@@ -5,6 +5,10 @@
 [![CRAN total downloads](https://cranlogs.r-pkg.org/badges/grand-total/TernTables)](https://cran.r-project.org/package=TernTables)
 [![Web App](https://img.shields.io/badge/Web%20App-tern--tables.com-blue?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMnM0LjQ4IDEwIDEwIDEwIDEwLTQuNDggMTAtMTBTMTcuNTIgMiAxMiAyem0tMSAxNy45M1Y0LjA3YzMuOTUuNDkgNyAzLjg1IDcgNy45M3MtMy4wNSA3LjQ0LTcgNy45M3oiLz48L3N2Zz4=)](https://tern-tables.com/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/jdpreston30/TernTables/blob/main/LICENSE)
+[![DOI](https://img.shields.io/badge/DOI-10.64898%2F2026.04.15.717241-blue)](https://doi.org/10.64898/2026.04.15.717241)
+
+> **If you use TernTables, please cite:**
+> Preston JD, Abadiotakis H, Tang A, Rust CJ, Halkos ME, Daneshmand MA, Chan JL (2026). *TernTables: A Statistical Analysis and Table Generation Web Interface for Clinical and Biomedical Research.* bioRxiv 2026.04.15.717241. <https://doi.org/10.64898/2026.04.15.717241>
 
 Clinical researchers spend a disproportionate amount of time on the mechanics of generating summary tables: choosing the right test, formatting *P* values, cleaning variable names, writing the methods paragraph, and wrestling with Word. For descriptive statistics and standard univariate comparisons, this work is largely procedural — it follows well-established rules — yet it consistently becomes a bottleneck that slows down manuscript preparation.
 
