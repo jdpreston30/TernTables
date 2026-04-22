@@ -502,11 +502,30 @@ word_export <- function(tbl, filename, round_intg = FALSE, round_decimal = NULL,
   # For each p_col/hr_col pair, parse the p-value string and bold the cell (and its
   # paired HR cell) when the value is below the threshold. The Variable column is never
   # touched here — caller uses bold_rows for that.
+  #
+  # IMPORTANT: by the time this block runs, colnames(modified_tbl) reflect the renamed
+  # headers (e.g. "P" → "P value"; spaces → "\n" when line_break_header = TRUE). We
+  # build a reverse map from original → renamed name so caller-supplied names always
+  # resolve correctly regardless of whether line_break_header is TRUE or FALSE.
   if (!is.null(bold_sig) && is.list(bold_sig) && length(bold_sig$p_cols) > 0) {
     bsig_threshold <- if (!is.null(bold_sig$threshold)) as.numeric(bold_sig$threshold) else 0.05
     bsig_hr_cols   <- bold_sig$hr_cols  # may be NULL
+
+    # Build map: original column name → renamed column name
+    bsig_name_map  <- setNames(colnames(modified_tbl), original_colnames)
+
+    # Resolve a user-supplied column name to its renamed equivalent:
+    # 1. If the name appears directly in modified_tbl columns, use it as-is.
+    # 2. Otherwise try the original→renamed map.
+    # 3. Fall back to the supplied name (will be caught by the %in% check below).
+    resolve_colname <- function(nm) {
+      if (nm %in% colnames(modified_tbl)) return(nm)
+      if (nm %in% names(bsig_name_map))   return(bsig_name_map[[nm]])
+      nm
+    }
+
     for (pi in seq_along(bold_sig$p_cols)) {
-      pcol_name <- bold_sig$p_cols[[pi]]
+      pcol_name <- resolve_colname(bold_sig$p_cols[[pi]])
       if (!pcol_name %in% colnames(modified_tbl)) next
       pcol_idx  <- which(colnames(modified_tbl) == pcol_name)
       sig_rows_bs <- which(sapply(modified_tbl[[pcol_idx]], function(pv) {
@@ -521,7 +540,7 @@ word_export <- function(tbl, filename, round_intg = FALSE, round_decimal = NULL,
         ft <- bold(ft, i = sig_rows_bs, j = pcol_idx, part = "body")
         # Bold paired HR/effect column if supplied
         if (!is.null(bsig_hr_cols) && pi <= length(bsig_hr_cols)) {
-          hcol_name <- bsig_hr_cols[[pi]]
+          hcol_name <- resolve_colname(bsig_hr_cols[[pi]])
           if (nzchar(hcol_name) && hcol_name %in% colnames(modified_tbl)) {
             hcol_idx <- which(colnames(modified_tbl) == hcol_name)
             ft <- bold(ft, i = sig_rows_bs, j = hcol_idx, part = "body")

@@ -16,6 +16,20 @@
   `ternB_meta` so `ternB()` correctly replays the formatting in combined
   documents.
 
+## Bug fixes
+
+* **`bold_sig` HR cell bolding silently skipped when `line_break_header = TRUE`**
+  (`word_export`): `word_export()` renames column headers internally — the
+  `"P"` column becomes `"P value"`, and when `line_break_header = TRUE`
+  (the `word_export` default) spaces in all other column names are replaced
+  with `\n` (e.g. `"HR (95% CI)"` → `"HR\n(95%\nCI)"`). The `bold_sig`
+  block was comparing caller-supplied names against the already-renamed
+  `colnames(modified_tbl)`, so callers passing `"HR (95% CI)"` would never
+  match and HR bolding was silently skipped. Fixed by building an
+  `original → renamed` name map before the loop and resolving each caller-
+  supplied name through the map before the lookup, ensuring `bold_sig` works
+  correctly regardless of `line_break_header` setting or internal renames.
+
 ---
 
 # TernTables 1.7.1.9005 (development)
