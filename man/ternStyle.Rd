@@ -10,6 +10,7 @@ ternStyle(
   col1_name = NULL,
   subheader_rows = NULL,
   bold_rows = NULL,
+  bold_sig = NULL,
   italic_rows = NULL,
   bold_cols = NULL,
   italic_cols = NULL,
@@ -58,6 +59,27 @@ Default \code{NULL}.}
 \item{bold_rows}{Integer vector of body row indices (1-based, final rendered
 table) to bold across every column. Applied after all structural formatting
 so it always wins. Default \code{NULL}.}
+
+\item{bold_sig}{Optional named list for cell-level p-value-based bolding.
+Use this when your tibble has pre-formatted p-value strings in columns that
+are not named \code{"P value"} (e.g. \code{"Uni p"}, \code{"Multi p"}).
+Supply a list with:
+\itemize{
+  \item \code{p_cols} — character vector of column names containing p-value strings.
+  \item \code{hr_cols} — optional character vector of column names (same length and
+    order as \code{p_cols}) to also bold when the paired p-value is significant
+    (e.g. the corresponding HR or coefficient column). Pass \code{NULL} or omit
+    to skip paired-column bolding.
+  \item \code{threshold} — numeric significance threshold. Default \code{0.05}.
+}
+The Variable column is never modified by \code{bold_sig}; use \code{bold_rows} to
+bold entire rows (e.g., predictor-level rows where the p-value represents an
+omnibus LRT). Example:
+\preformatted{bold_sig = list(
+  p_cols    = c("Uni p", "Multi p"),
+  hr_cols   = c("Uni HR (95\% CI)", "Multi HR (95\% CI)"),
+  threshold = 0.05
+)}  Default \code{NULL}.}
 
 \item{italic_rows}{Integer vector of body row indices to italicize across
 every column. Default \code{NULL}.}

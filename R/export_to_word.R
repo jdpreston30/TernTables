@@ -22,6 +22,20 @@
 #' @param bold_rows Integer vector of body row indices (1-based, in the final rendered table) to
 #'   bold across every column. Applied as the last formatting pass so it overrides structural
 #'   formatting. Default \code{NULL}.
+#' @param bold_sig Optional named list for cell-level conditional bolding based on parsed p-values.
+#'   Intended for use with \code{ternStyle()} when columns contain pre-formatted p-values that
+#'   are not named \code{"P value"} (the name \code{ternG} uses internally). Supply a list with:
+#'   \itemize{
+#'     \item \code{p_cols} — character vector of column names containing p-value strings.
+#'     \item \code{hr_cols} — optional character vector of column names to also bold when the
+#'       paired p-value is significant (must be the same length and order as \code{p_cols},
+#'       or \code{NULL} to skip paired HR bolding).
+#'     \item \code{threshold} — numeric significance threshold; default \code{0.05}.
+#'   }
+#'   For each p-value cell where the parsed numeric value is below \code{threshold}, that cell
+#'   is bolded. If \code{hr_cols} is supplied, the corresponding HR cell in the same row is also
+#'   bolded. The Variable column is never touched by this argument — use \code{bold_rows} to bold
+#'   entire rows (e.g., predictor header rows). Default \code{NULL}.
 #' @param italic_rows Integer vector of body row indices to italicize across every column.
 #'   Default \code{NULL}.
 #' @param bold_cols Integer vector of column indices (1-based) to bold across all body rows.
@@ -102,7 +116,7 @@
 #' )
 #' }
 #' @export
-word_export <- function(tbl, filename, round_intg = FALSE, round_decimal = NULL, font_size = 9, category_start = NULL, plain_header = NULL, subheader_rows = NULL, bold_rows = NULL, italic_rows = NULL, bold_cols = NULL, italic_cols = NULL, header_format_follow = FALSE, manual_italic_indent = NULL, manual_underline = NULL, table_caption = NULL, table_footnote = NULL, abbreviation_footnote = NULL, posthoc_footnote = NULL, variable_footnote = NULL, index_style = "symbols", page_break_after = FALSE, col1_header = NULL, line_break_header = getOption("TernTables.line_break_header", TRUE), open_doc = TRUE, citation = TRUE, font_family = getOption("TernTables.font_family", "Arial")) {
+word_export <- function(tbl, filename, round_intg = FALSE, round_decimal = NULL, font_size = 9, category_start = NULL, plain_header = NULL, subheader_rows = NULL, bold_rows = NULL, bold_sig = NULL, italic_rows = NULL, bold_cols = NULL, italic_cols = NULL, header_format_follow = FALSE, manual_italic_indent = NULL, manual_underline = NULL, table_caption = NULL, table_footnote = NULL, abbreviation_footnote = NULL, posthoc_footnote = NULL, variable_footnote = NULL, index_style = "symbols", page_break_after = FALSE, col1_header = NULL, line_break_header = getOption("TernTables.line_break_header", TRUE), open_doc = TRUE, citation = TRUE, font_family = getOption("TernTables.font_family", "Arial")) {
   # Keep the table as-is
   modified_tbl <- tbl
 
@@ -480,6 +494,40 @@ word_export <- function(tbl, filename, round_intg = FALSE, round_decimal = NULL,
     }))
     if (length(sig_or_rows) > 0) {
       ft <- bold(ft, i = sig_or_rows, j = or_col_index, part = "body")
+    }
+  }
+
+  # ── bold_sig: cell-level significance bolding for caller-specified p-value columns ────
+  # Used by ternStyle() for custom tibbles where p-value columns are not named "P value".
+  # For each p_col/hr_col pair, parse the p-value string and bold the cell (and its
+  # paired HR cell) when the value is below the threshold. The Variable column is never
+  # touched here — caller uses bold_rows for that.
+  if (!is.null(bold_sig) && is.list(bold_sig) && length(bold_sig$p_cols) > 0) {
+    bsig_threshold <- if (!is.null(bold_sig$threshold)) as.numeric(bold_sig$threshold) else 0.05
+    bsig_hr_cols   <- bold_sig$hr_cols  # may be NULL
+    for (pi in seq_along(bold_sig$p_cols)) {
+      pcol_name <- bold_sig$p_cols[[pi]]
+      if (!pcol_name %in% colnames(modified_tbl)) next
+      pcol_idx  <- which(colnames(modified_tbl) == pcol_name)
+      sig_rows_bs <- which(sapply(modified_tbl[[pcol_idx]], function(pv) {
+        if (is.na(pv) || pv == "" || pv == "-") return(FALSE)
+        pv_clean <- trimws(gsub("<\\s*", "", pv))  # handle "< 0.001" and "<0.001"
+        p_num <- suppressWarnings(as.numeric(pv_clean))
+        if (!is.na(p_num) && p_num < bsig_threshold) return(TRUE)
+        if (grepl("E-", pv, ignore.case = TRUE)) return(TRUE)  # scientific notation
+        FALSE
+      }))
+      if (length(sig_rows_bs) > 0) {
+        ft <- bold(ft, i = sig_rows_bs, j = pcol_idx, part = "body")
+        # Bold paired HR/effect column if supplied
+        if (!is.null(bsig_hr_cols) && pi <= length(bsig_hr_cols)) {
+          hcol_name <- bsig_hr_cols[[pi]]
+          if (nzchar(hcol_name) && hcol_name %in% colnames(modified_tbl)) {
+            hcol_idx <- which(colnames(modified_tbl) == hcol_name)
+            ft <- bold(ft, i = sig_rows_bs, j = hcol_idx, part = "body")
+          }
+        }
+      }
     }
   }
 

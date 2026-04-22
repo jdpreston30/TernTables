@@ -1,3 +1,23 @@
+# TernTables 1.7.1.9007 (development)
+
+## New features
+
+* **`bold_sig` parameter** (`ternStyle`, `word_export`): Adds cell-level
+  significance-based bolding for custom tibbles where p-value columns are not
+  named `"P value"` (the internal name used by `ternG`). Supply a named list
+  with `p_cols` (character vector of column names containing p-value strings),
+  `hr_cols` (optional paired effect-size column names to also bold, same
+  length and order as `p_cols`), and `threshold` (default `0.05`). For each
+  significant p-value cell, that cell is bolded; if `hr_cols` is supplied, the
+  corresponding HR/coefficient cell in the same row is also bolded. The
+  Variable column is never touched by `bold_sig` — use `bold_rows` to bold
+  entire predictor-header rows (e.g., where p represents an omnibus LRT).
+  Handles `< 0.001`-style strings and scientific notation. Carried through
+  `ternB_meta` so `ternB()` correctly replays the formatting in combined
+  documents.
+
+---
+
 # TernTables 1.7.1.9005 (development)
 
 ## Bug fixes

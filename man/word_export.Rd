@@ -14,6 +14,7 @@ word_export(
   plain_header = NULL,
   subheader_rows = NULL,
   bold_rows = NULL,
+  bold_sig = NULL,
   italic_rows = NULL,
   bold_cols = NULL,
   italic_cols = NULL,
@@ -65,6 +66,21 @@ divider rows are pre-built into the tibble. Case-insensitive match. Default \cod
 \item{bold_rows}{Integer vector of body row indices (1-based, in the final rendered table) to
 bold across every column. Applied as the last formatting pass so it overrides structural
 formatting. Default \code{NULL}.}
+
+\item{bold_sig}{Optional named list for cell-level conditional bolding based on parsed p-values.
+Intended for use with \code{ternStyle()} when columns contain pre-formatted p-values that
+are not named \code{"P value"} (the name \code{ternG} uses internally). Supply a list with:
+\itemize{
+  \item \code{p_cols} — character vector of column names containing p-value strings.
+  \item \code{hr_cols} — optional character vector of column names to also bold when the
+    paired p-value is significant (must be the same length and order as \code{p_cols},
+    or \code{NULL} to skip paired HR bolding).
+  \item \code{threshold} — numeric significance threshold; default \code{0.05}.
+}
+For each p-value cell where the parsed numeric value is below \code{threshold}, that cell
+is bolded. If \code{hr_cols} is supplied, the corresponding HR cell in the same row is also
+bolded. The Variable column is never touched by this argument — use \code{bold_rows} to bold
+entire rows (e.g., predictor header rows). Default \code{NULL}.}
 
 \item{italic_rows}{Integer vector of body row indices to italicize across every column.
 Default \code{NULL}.}
