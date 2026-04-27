@@ -43,6 +43,34 @@
 #'   character columns are processed; numeric and logical columns are passed
 #'   through unchanged by the string-cleaning steps.
 #'
+#' @param mode Preprocessing mode. One of \code{"auto"} (default) or
+#'   \code{"manual"}.
+#'   \describe{
+#'     \item{\code{"auto"}}{Default behaviour. PHI column-name detection and
+#'       unnamed-column checks run as hard stops before any cleaning. All
+#'       other transformations (string-NA conversion, whitespace trimming,
+#'       empty-column removal, blank-row removal, case normalisation) run
+#'       automatically.}
+#'     \item{\code{"manual"}}{PHI detection is \strong{skipped}. You take
+#'       full responsibility for ensuring no patient identifiers are present.
+#'       A prominent warning is emitted. All other cleaning transformations
+#'       still run. Use \code{drop_cols} to explicitly remove any columns
+#'       you do not want in the cleaned data.}
+#'   }
+#'
+#' @param extra_na Optional character vector of additional string values to
+#'   treat as missing (converted to \code{NA}). These are \strong{appended}
+#'   to the built-in list (na, n/a, missing, unknown, etc.) — not a
+#'   replacement. Matching is case-insensitive and whitespace-trimmed.
+#'   Works in both \code{"auto"} and \code{"manual"} modes. Example:
+#'   \code{extra_na = c("9999", "Not Done", "PENDING")}.
+#'
+#' @param drop_cols Optional character vector of column names to drop from
+#'   the data before cleaning begins. Intended for use in \code{"manual"}
+#'   mode to explicitly remove identifier or unwanted columns without
+#'   triggering the PHI check. Any names not found in \code{data} are
+#'   silently ignored. Works in both modes.
+#'
 #' @return A named list with three elements:
 #' \describe{
 #'   \item{\code{clean_data}}{A tibble containing the fully cleaned dataset,
@@ -70,7 +98,12 @@
 #'         \code{cols} (character vector of affected column names) and
 #'         \code{detail} (a named list per column, each with
 #'         \code{changed_from} and \code{changed_to} character vectors
-#'         showing the exact value changes), or \code{NULL} if none.}  #'       \item{\code{dropped_empty_cols}}{Character vector of column names
+#'         showing the exact value changes), or \code{NULL} if none.}  #'       \item{\code{dropped_user_cols}}{Character vector of column names
+  #'         explicitly dropped via the \code{drop_cols} parameter, or
+  #'         \code{NULL} if \code{drop_cols} was not used.}
+  #'       \item{\code{manual_mode}}{Logical. \code{TRUE} when \code{mode = "manual"}
+  #'         was used (PHI check skipped), \code{FALSE} otherwise.}
+  #'       \item{\code{dropped_empty_cols}}{Character vector of column names
   #'         (or \code{""} for unnamed columns) that were dropped because they
   #'         were 100\% empty, or \code{NULL} if none.}
   #'       \item{\code{date_cols_detected}}{Character vector of column names
@@ -103,7 +136,7 @@
 #' }
 #'
 #' @export
-ternP <- function(data) {
+ternP <- function(data, mode = "auto", extra_na = NULL, drop_cols = NULL) {
 
   # --- Input validation -------------------------------------------------------
   if (!is.data.frame(data)) {
@@ -115,10 +148,27 @@ ternP <- function(data) {
   if (ncol(data) == 0) {
     stop("`data` has no columns.", call. = FALSE)
   }
+  mode <- match.arg(mode, c("auto", "manual"))
+  if (!is.null(extra_na) && !is.character(extra_na)) {
+    stop("`extra_na` must be a character vector.", call. = FALSE)
+  }
+  if (!is.null(drop_cols) && !is.character(drop_cols)) {
+    stop("`drop_cols` must be a character vector.", call. = FALSE)
+  }
 
   # --- Hard stops (before any cleaning) ---------------------------------------
-  .check_phi(data)
-  .check_unnamed_cols(data)
+  if (mode == "auto") {
+    .check_phi(data)
+    .check_unnamed_cols(data)
+  } else {
+    # Manual mode: PHI check skipped — emit a prominent warning
+    cli::cli_alert_warning(
+      "Manual mode: PHI check has been skipped. You are responsible for ensuring \\
+no patient identifiers or protected health information are present in this dataset."
+    )
+    # Still check unnamed cols — this is a data quality issue, not PHI
+    .check_unnamed_cols(data)
+  }
 
   # --- Initialise feedback trackers -------------------------------------------
   feedback <- list(
@@ -127,8 +177,19 @@ ternP <- function(data) {
     sparse_rows_flagged  = NULL,
     case_normalized_vars = NULL,
     dropped_empty_cols   = NULL,
-    date_cols_detected   = NULL
+    date_cols_detected   = NULL,
+    dropped_user_cols    = NULL,
+    manual_mode          = (mode == "manual")
   )
+
+  # --- Drop user-specified columns (before cleaning) --------------------------
+  if (!is.null(drop_cols) && length(drop_cols) > 0) {
+    cols_to_drop <- intersect(drop_cols, names(data))
+    if (length(cols_to_drop) > 0) {
+      feedback$dropped_user_cols <- cols_to_drop
+      data <- data[, setdiff(names(data), cols_to_drop), drop = FALSE]
+    }
+  }
 
   # ---------------------------------------------------------------------------
   # Step 0: Detect date columns
@@ -175,6 +236,9 @@ ternP <- function(data) {
   #   comparison so the list below covers all capitalisation variants.
   # ---------------------------------------------------------------------------
   string_na_values <- .tern_missing_strings()
+  if (!is.null(extra_na) && length(extra_na) > 0) {
+    string_na_values <- unique(c(string_na_values, tolower(trimws(extra_na))))
+  }
 
   # Count total occurrences and record which columns are affected before cleaning.
   # Matching is case-insensitive: compare tolower(value) against the lowercase list.
@@ -304,13 +368,25 @@ ternP <- function(data) {
 
   cli::cli_rule("ternP Preprocessing Summary")
 
-  clean_flag <- all(vapply(fb, is.null, logical(1)))
+  if (isTRUE(fb$manual_mode)) {
+    cli::cli_alert_warning(
+      "Manual mode \u2014 PHI check was skipped."
+    )
+  }
+
+  clean_flag <- all(vapply(fb[names(fb) != "manual_mode"], is.null, logical(1)))
 
   if (clean_flag) {
     cli::cli_alert_success(
       "No transformations required. Data passed through unchanged."
     )
   } else {
+    if (!is.null(fb$dropped_user_cols)) {
+      n_u <- length(fb$dropped_user_cols)
+      cli::cli_alert_info(
+        "{n_u} column{?s} dropped as specified by {.code drop_cols}: {.val {fb$dropped_user_cols}}."
+      )
+    }
     if (!is.null(fb$date_cols_detected)) {
       dc <- fb$date_cols_detected
       cli::cli_alert_warning(

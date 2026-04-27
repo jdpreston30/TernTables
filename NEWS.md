@@ -1,3 +1,26 @@
+# TernTables 1.7.1.9010 (development)
+
+## New features
+
+* **`mode`, `extra_na`, and `drop_cols` parameters added to `ternP()`**:
+  `ternP()` now supports two preprocessing modes and additional user control
+  over NA detection and column removal.
+
+  - `mode = "auto"` (default): existing behaviour — PHI detection runs as a
+    hard stop, all cleaning transformations apply automatically.
+  - `mode = "manual"`: PHI check is skipped (a prominent warning is emitted).
+    Intended for users whose data triggers false-positive PHI flags (e.g.
+    columns named `"Address"` that contain a non-PHI clinical address field).
+    All other cleaning steps (string-NA conversion, whitespace trimming,
+    empty-column removal, blank-row removal, case normalisation) still run.
+  - `extra_na`: character vector of additional strings to treat as `NA`,
+    appended to the built-in list. Works in both modes. Example:
+    `extra_na = c("9999", "Not Done", "PENDING")`.
+  - `drop_cols`: character vector of column names to drop before cleaning
+    begins. Intended for explicit identifier removal in `"manual"` mode.
+    Column names not found in the data are silently ignored. Works in both
+    modes.
+
 # TernTables 1.7.1.9008 (development)
 
 ## New features

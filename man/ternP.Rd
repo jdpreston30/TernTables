@@ -4,13 +4,41 @@
 \alias{ternP}
 \title{Preprocess a raw data frame for use with ternG or ternD}
 \usage{
-ternP(data)
+ternP(data, mode = "auto", extra_na = NULL, drop_cols = NULL)
 }
 \arguments{
 \item{data}{A data frame or tibble as loaded from a CSV or XLSX file (e.g.
 via \code{readr::read_csv()} or \code{readxl::read_excel()}). All
 character columns are processed; numeric and logical columns are passed
 through unchanged by the string-cleaning steps.}
+
+\item{mode}{Preprocessing mode. One of \code{"auto"} (default) or
+\code{"manual"}.
+\describe{
+  \item{\code{"auto"}}{Default behaviour. PHI column-name detection and
+    unnamed-column checks run as hard stops before any cleaning. All
+    other transformations (string-NA conversion, whitespace trimming,
+    empty-column removal, blank-row removal, case normalisation) run
+    automatically.}
+  \item{\code{"manual"}}{PHI detection is \strong{skipped}. You take
+    full responsibility for ensuring no patient identifiers are present.
+    A prominent warning is emitted. All other cleaning transformations
+    still run. Use \code{drop_cols} to explicitly remove any columns
+    you do not want in the cleaned data.}
+}}
+
+\item{extra_na}{Optional character vector of additional string values to
+treat as missing (converted to \code{NA}). These are \strong{appended}
+to the built-in list (na, n/a, missing, unknown, etc.) — not a
+replacement. Matching is case-insensitive and whitespace-trimmed.
+Works in both \code{"auto"} and \code{"manual"} modes. Example:
+\code{extra_na = c("9999", "Not Done", "PENDING")}.}
+
+\item{drop_cols}{Optional character vector of column names to drop from
+the data before cleaning begins. Intended for use in \code{"manual"}
+mode to explicitly remove identifier or unwanted columns without
+triggering the PHI check. Any names not found in \code{data} are
+silently ignored. Works in both modes.}
 }
 \value{
 A named list with three elements:
@@ -40,7 +68,12 @@ A named list with three elements:
         \code{cols} (character vector of affected column names) and
         \code{detail} (a named list per column, each with
         \code{changed_from} and \code{changed_to} character vectors
-        showing the exact value changes), or \code{NULL} if none.}  #'       \item{\code{dropped_empty_cols}}{Character vector of column names
+        showing the exact value changes), or \code{NULL} if none.}  #'       \item{\code{dropped_user_cols}}{Character vector of column names
+        explicitly dropped via the \code{drop_cols} parameter, or
+        \code{NULL} if \code{drop_cols} was not used.}
+      \item{\code{manual_mode}}{Logical. \code{TRUE} when \code{mode = "manual"}
+        was used (PHI check skipped), \code{FALSE} otherwise.}
+      \item{\code{dropped_empty_cols}}{Character vector of column names
         (or \code{""} for unnamed columns) that were dropped because they
         were 100\% empty, or \code{NULL} if none.}
       \item{\code{date_cols_detected}}{Character vector of column names
