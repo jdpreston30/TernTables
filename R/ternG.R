@@ -765,7 +765,7 @@ ternG <- function(data,
           suppressWarnings(stats::chisq.test(tab)$stdres),
           error = function(e) NULL
         )
-        if (!is.null(stdres) && nrow(stdres) >= 2L) {
+        if (!is.null(stdres) && is.matrix(stdres) && !anyNA(dim(stdres)) && nrow(stdres) >= 2L) {
           if (use_simple_format) {
             # Single-row display: annotate the ref_level cell for each group
             for (g_lvl in group_levels) {

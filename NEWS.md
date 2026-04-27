@@ -35,7 +35,18 @@
   and routing them directly to `fisher.test(..., simulate.p.value = TRUE)`. Exact Fisher
   is still used for 2×2 tables (which are always safe) with the simulation fallback
   retained for those edge cases.
-* **`bold_sig` HR cell bolding silently skipped when `line_break_header = TRUE`**
+* **`methods_filename = NULL` crashes with `dirname` error** (`ternG`, `ternD`, `write_methods_doc`):
+  Passing `methods_filename = NULL` explicitly caused `dirname(NULL)` to throw
+  `"a character vector argument expected"` inside `write_methods_doc()`. Fixed by
+  resolving `NULL` (or empty string) to `"TernTables_methods.docx"` at the top of
+  `write_methods_doc()` before any branching, matching the documented default.
+
+* **`categorical_posthoc` crash when `stdres` is not a matrix** (`ternG`):
+  On degenerate contingency tables, `chisq.test()$stdres` could return a named
+  vector instead of a matrix. `nrow()` on a vector returns `NULL`, making
+  `NULL >= 2L` evaluate to `logical(0)`, causing the `if()` condition to error
+  with `"missing value where TRUE/FALSE needed"`. Fixed by adding `is.matrix(stdres)`
+  to the guard condition.
   (`word_export`): `word_export()` renames column headers internally — the
   `"P"` column becomes `"P value"`, and when `line_break_header = TRUE`
   (the `word_export` default) spaces in all other column names are replaced

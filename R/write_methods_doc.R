@@ -97,6 +97,11 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
                               boilerplate = FALSE, p_adjust = FALSE, open_doc = TRUE, citation = TRUE,
                               font_family = getOption("TernTables.font_family", "Arial")) {
 
+  # Resolve NULL filename to the package default before any branching
+  if (is.null(filename) || !nzchar(filename)) {
+    filename <- "TernTables_methods.docx"
+  }
+
   # ── Boilerplate mode: comprehensive reference document, all configurations ──
   if (isTRUE(boilerplate)) {
 
@@ -191,7 +196,7 @@ write_methods_doc <- function(tbl, filename, n_levels = 2, OR_col = FALSE,
       "For run-specific methods text, call write_methods_doc() from ternG() or ternD() directly."
     )
 
-    out_path <- if (!missing(filename) && nzchar(filename)) {
+    out_path <- if (!missing(filename) && !is.null(filename) && nzchar(filename)) {
       filename
     } else {
       file.path(getwd(), "comprehensive_boilerplate_methods.docx")
