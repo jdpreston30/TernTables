@@ -480,22 +480,42 @@ ternG <- function(data,
       }
 
       # Cochran (1954) criterion: use Fisher's exact when any *expected* cell count < 5
-      fisher_flag <- any(suppressWarnings(stats::chisq.test(tab)$expected) < 5)
+      # Wrapped in tryCatch: chisq.test() errors on degenerate tables (e.g. single-level
+      # variable after NA removal). Default TRUE (Fisher) so the test_result block below
+      # handles it gracefully and returns "NA (insufficient variation)".
+      fisher_flag <- tryCatch(
+        any(suppressWarnings(stats::chisq.test(tab)$expected) < 5),
+        error = function(e) TRUE
+      )
       test_result <- tryCatch({
         if (fisher_flag) {
-          ft_wrap <- tryCatch(
-            list(result = stats::fisher.test(tab), simulated = FALSE),
-            error = function(e) {
-              # Workspace limit exceeded for large tables — fall back to Monte Carlo
-              list(
-                result = withr::with_seed(
-                  getOption("TernTables.seed", 42L),
-                  stats::fisher.test(tab, simulate.p.value = TRUE, B = 10000L)
-                ),
-                simulated = TRUE
-              )
-            }
-          )
+          # Fisher's exact is only safe for 2×2 tables. For larger tables the C-level
+          # workspace algorithm can segfault (not catchable by tryCatch) when the table
+          # has many levels or large marginal counts. Go directly to Monte Carlo simulation
+          # for any table larger than 2×2; for 2×2, try exact first then fall back.
+          is_large_table <- nrow(tab) > 2L || ncol(tab) > 2L
+          ft_wrap <- if (is_large_table) {
+            list(
+              result = withr::with_seed(
+                getOption("TernTables.seed", 42L),
+                stats::fisher.test(tab, simulate.p.value = TRUE, B = 10000L)
+              ),
+              simulated = TRUE
+            )
+          } else {
+            tryCatch(
+              list(result = stats::fisher.test(tab), simulated = FALSE),
+              error = function(e) {
+                list(
+                  result = withr::with_seed(
+                    getOption("TernTables.seed", 42L),
+                    stats::fisher.test(tab, simulate.p.value = TRUE, B = 10000L)
+                  ),
+                  simulated = TRUE
+                )
+              }
+            )
+          }
           list(p_value = ft_wrap$result$p.value,
                test_name = if (ft_wrap$simulated) "Fisher exact (simulated)" else "Fisher exact",
                error = NULL)

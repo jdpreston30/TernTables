@@ -1,4 +1,4 @@
-# TernTables 1.7.1.9007 (development)
+# TernTables 1.7.1.9008 (development)
 
 ## New features
 
@@ -18,6 +18,23 @@
 
 ## Bug fixes
 
+* **Degenerate single-level categorical variable crashes entire `ternG()` call** (`ternG`):
+  When a variable is cleaned by converting sparse values (e.g. `"Unknown"`) to `NA`,
+  it can be left with only one non-`NA` level. The `fisher_flag` detection line called
+  `chisq.test()` outside any `tryCatch`, which throws an uncaught error on a single-column
+  contingency table and terminates the entire run. Fixed by wrapping that call in
+  `tryCatch(..., error = function(e) TRUE)` — degenerate variables now default to Fisher
+  and fall through to the existing `"insufficient variation"` display path, showing counts
+  with `NA (insufficient variation)` for the p-value instead of crashing.
+* **`fisher.test()` segfaults on large multi-level contingency tables** (`ternG`):
+  For categorical variables with many levels (e.g. diagnosis codes with 50+ categories),
+  `fisher.test()` triggers a C-level segfault — not an R error — which cannot be caught
+  by `tryCatch` and kills the entire R session. The existing Monte Carlo simulation
+  fallback only fired on R-level errors, so it never helped here. Fixed by detecting
+  tables larger than 2×2 (`nrow(tab) > 2 || ncol(tab) > 2`) before calling `fisher.test`
+  and routing them directly to `fisher.test(..., simulate.p.value = TRUE)`. Exact Fisher
+  is still used for 2×2 tables (which are always safe) with the simulation fallback
+  retained for those edge cases.
 * **`bold_sig` HR cell bolding silently skipped when `line_break_header = TRUE`**
   (`word_export`): `word_export()` renames column headers internally — the
   `"P"` column becomes `"P value"`, and when `line_break_header = TRUE`

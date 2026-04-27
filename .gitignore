@@ -19,6 +19,7 @@ Beamer
 
 # Private test data — NEVER commit
 test.csv
+test
 *.csv
 bug.R
 mydf.rda
