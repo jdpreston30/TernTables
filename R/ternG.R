@@ -658,11 +658,11 @@ ternG <- function(data,
               }
               or_rec$method <- "Fisher"
             } else {
-              or_obj <- tryCatch(epitools::oddsratio(tab, method = "wald")$measure, error = function(e) NULL)
+              or_obj <- tryCatch(.wald_or(tab), error = function(e) NULL)
               if (!is.null(or_obj)) {
-                or_rec$value <- or_obj[2, 1]
-                or_rec$lcl   <- or_obj[2, 2]
-                or_rec$ucl   <- or_obj[2, 3]
+                or_rec$value <- or_obj[1]
+                or_rec$lcl   <- or_obj[2]
+                or_rec$ucl   <- or_obj[3]
                 or_ok        <- TRUE
               }
               or_rec$method <- "Wald"
@@ -743,8 +743,7 @@ ternG <- function(data,
                 fisher_obj2 <- stats::fisher.test(tab_hier2)
                 c(unname(fisher_obj2$estimate), fisher_obj2$conf.int[1], fisher_obj2$conf.int[2])
               } else if (OR_method == "dynamic" || OR_method == "wald") {
-                or_obj2 <- epitools::oddsratio(tab_hier2, method = "wald")$measure
-                c(or_obj2[2, 1], or_obj2[2, 2], or_obj2[2, 3])
+                .wald_or(tab_hier2)
               } else {
                 NULL
               }

@@ -119,7 +119,7 @@ Some functions (notably `word_export`) use a single long line for the signature.
 ### Dependencies
 - Word rendering: `officer` + `flextable`
 - Data manipulation: `dplyr`, `tibble`, `stringr`
-- Statistics: `stats` (base), `epitools` (OR), `rstatix` (post-hoc), `multcompView` (CLD)
+- Statistics: `stats` (base, including the Wald OR), `rstatix` (post-hoc), `multcompView` (CLD)
 - All statistical dependencies are in `Imports` (not `Suggests`)
 
 ---
