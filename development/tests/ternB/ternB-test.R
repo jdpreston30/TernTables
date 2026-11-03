@@ -17,7 +17,7 @@ pkg_root <- local({
 
 # Fresh setup
 {
-devtools::install(pkg = ".", quick = TRUE, upgrade = "never", quiet = TRUE)
+devtools::install(pkg = ".", quick = TRUE, upgrade = FALSE, quiet = TRUE)
 library(TernTables)
 data(tern_colon)
 

@@ -16,64 +16,74 @@ export(write_cleaning_doc)
 export(write_methods_doc)
 import(dplyr)
 import(tibble)
-importFrom(cli,cli_alert_info)
-importFrom(cli,cli_alert_success)
-importFrom(cli,cli_alert_warning)
-importFrom(cli,cli_bullets)
-importFrom(cli,cli_rule)
-importFrom(flextable,add_footer_lines)
-importFrom(flextable,add_header_row)
-importFrom(flextable,align)
-importFrom(flextable,as_chunk)
-importFrom(flextable,as_paragraph)
-importFrom(flextable,autofit)
-importFrom(flextable,bg)
-importFrom(flextable,body_add_flextable)
-importFrom(flextable,bold)
-importFrom(flextable,border)
-importFrom(flextable,border_remove)
-importFrom(flextable,compose)
-importFrom(flextable,flextable)
-importFrom(flextable,font)
-importFrom(flextable,fontsize)
-importFrom(flextable,height)
-importFrom(flextable,hline_bottom)
-importFrom(flextable,hline_top)
-importFrom(flextable,hrule)
-importFrom(flextable,italic)
-importFrom(flextable,merge_at)
-importFrom(flextable,padding)
-importFrom(flextable,set_header_labels)
-importFrom(flextable,set_table_properties)
-importFrom(flextable,style)
-importFrom(flextable,width)
+importFrom(cli,
+  cli_alert_info,
+  cli_alert_success,
+  cli_alert_warning,
+  cli_bullets,
+  cli_rule
+)
+importFrom(flextable,
+  add_footer_lines,
+  add_header_row,
+  align,
+  as_chunk,
+  as_paragraph,
+  autofit,
+  bg,
+  body_add_flextable,
+  bold,
+  border,
+  border_remove,
+  compose,
+  flextable,
+  font,
+  fontsize,
+  height,
+  hline_bottom,
+  hline_top,
+  hrule,
+  italic,
+  merge_at,
+  padding,
+  set_header_labels,
+  set_table_properties,
+  style,
+  width
+)
 importFrom(magrittr,"%>%")
-importFrom(officer,block_list)
-importFrom(officer,body_add_break)
-importFrom(officer,body_add_docx)
-importFrom(officer,body_add_fpar)
-importFrom(officer,body_add_par)
-importFrom(officer,body_set_default_section)
-importFrom(officer,fp_border)
-importFrom(officer,fp_par)
-importFrom(officer,fp_text)
-importFrom(officer,fpar)
-importFrom(officer,ftext)
-importFrom(officer,prop_section)
-importFrom(officer,read_docx)
+importFrom(officer,
+  block_list,
+  body_add_break,
+  body_add_docx,
+  body_add_fpar,
+  body_add_par,
+  body_set_default_section,
+  fp_border,
+  fp_par,
+  fp_text,
+  fpar,
+  ftext,
+  prop_section,
+  read_docx
+)
 importFrom(rlang,.data)
-importFrom(stats,chisq.test)
-importFrom(stats,median)
-importFrom(stats,na.omit)
-importFrom(stats,p.adjust)
-importFrom(stats,quantile)
-importFrom(stats,sd)
-importFrom(stats,setNames)
-importFrom(stats,shapiro.test)
-importFrom(stats,var)
-importFrom(stringr,str_extract)
-importFrom(stringr,str_to_lower)
-importFrom(stringr,str_to_title)
-importFrom(stringr,str_trim)
+importFrom(stats,
+  chisq.test,
+  median,
+  na.omit,
+  p.adjust,
+  quantile,
+  sd,
+  setNames,
+  shapiro.test,
+  var
+)
+importFrom(stringr,
+  str_extract,
+  str_to_lower,
+  str_to_title,
+  str_trim
+)
 importFrom(utils,globalVariables)
 importFrom(withr,with_seed)

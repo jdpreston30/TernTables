@@ -38,7 +38,7 @@ libreoffice     <- %s
 
 # Install from source in this clean session (no loaded namespace to conflict)
 message("Installing TernTables from source...")
-devtools::install(pkg_root, quick = TRUE, upgrade = "never", quiet = TRUE)
+devtools::install(pkg_root, quick = TRUE, upgrade = FALSE, quiet = TRUE)
 message("Install complete. Rendering vignette...")
 
 dir.create(outdir,          recursive = TRUE, showWarnings = FALSE)

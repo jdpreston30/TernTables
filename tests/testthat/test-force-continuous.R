@@ -90,9 +90,9 @@ test_that("the P value is the rank-based test, not the contingency-table test", 
   expect_equal(s$p_value,
                quiet(stats::wilcox.test(d$Dose01 ~ d$Grp)$p.value),
                tolerance = 1e-12)
-  # ... and demonstrably different from what the pre-fix output reported
-  expect_false(isTRUE(all.equal(s$p_value,
-                                stats::fisher.test(table(d$Grp, d$Dose01))$p.value)))
+  # No check that this differs from Fisher's exact P: from R 4.6, wilcox.test()
+  # computes exact conditional P values with ties, which for 0/1 data is the
+  # same test as Fisher's exact, so the two P values can legitimately coincide.
 })
 
 

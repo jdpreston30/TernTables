@@ -85,6 +85,7 @@ Useful links:
 
 Authors:
 \itemize{
+  \item Joshua D. Preston \email{joshua.preston@emory.edu} (\href{https://orcid.org/0000-0001-9834-3017}{ORCID})
   \item Helen Abadiotakis (\href{https://orcid.org/0009-0002-8268-927X}{ORCID})
   \item Ailin Tang (\href{https://orcid.org/0009-0007-8715-1678}{ORCID})
   \item Clayton J. Rust (\href{https://orcid.org/0000-0001-5929-0733}{ORCID})

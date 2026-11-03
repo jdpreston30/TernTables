@@ -1,4 +1,12 @@
-# TernTables (development)
+# TernTables 1.8.0
+
+## Dependencies
+
+* **epitools is no longer a dependency.** CRAN has scheduled epitools for
+  archival, which would also archive TernTables. The Wald odds ratio and its
+  95% CI for 2x2 tables in `ternG()` are now computed internally with the same
+  formula epitools used (no zero-cell correction), so reported odds ratios are
+  unchanged.
 
 ## New exported functions
 
@@ -66,6 +74,11 @@ the tidy data together.
   )
   # renders: r  p | r  p  under SLAM / Control spanners
   ```
+
+* `col1_spanner_pos` — Where the first-column header label sits when `spanner`
+  is used. `"top"` (default) moves the label up into the spanner row and leaves
+  the cell below it empty; `"bottom"` keeps it in the column-names row. Carried
+  through `ternB()` bundling. No effect without `spanner`.
 
 ## Bug fixes
 

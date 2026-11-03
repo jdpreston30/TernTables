@@ -1,7 +1,7 @@
 Package: TernTables
 Type: Package
 Title: Automated Statistical Analysis and Table Generation for Biomedical Research
-Version: 1.7.2.9005
+Version: 1.8.0
 Authors@R: c(
     person("Joshua D.", "Preston",
            email = "joshua.preston@emory.edu",
@@ -46,7 +46,6 @@ URL: https://cran.r-project.org/package=TernTables,
     https://tern-tables.com/
 BugReports: https://github.com/jdpreston30/TernTables/issues
 Encoding: UTF-8
-RoxygenNote: 7.3.3
 Imports: 
     cli,
     dplyr (>= 1.0.0),
@@ -71,3 +70,4 @@ Depends:
     R (>= 4.1.0)
 LazyData: true
 Config/testthat/edition: 3
+Config/roxygen2/version: 8.1.1

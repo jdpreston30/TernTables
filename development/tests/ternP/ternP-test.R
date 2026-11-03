@@ -3,7 +3,7 @@
 # Reinstall and load the package fresh before each test run.
 
 devtools::document()
-devtools::install(pkg = ".", quick = TRUE, upgrade = "never", quiet = TRUE)
+devtools::install(pkg = ".", quick = TRUE, upgrade = FALSE, quiet = TRUE)
 library(TernTables)
 library(readr)
 library(readxl)
